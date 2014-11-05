@@ -15,4 +15,11 @@ public class ByteMessage implements ZWaveMessage {
     public int getSingleByte() {
         return singleByte;
     }
+
+    @Override
+    public String toString() {
+        return "ByteMessage{" +
+                "singleByte=" + singleByte +
+                '}';
+    }
 }

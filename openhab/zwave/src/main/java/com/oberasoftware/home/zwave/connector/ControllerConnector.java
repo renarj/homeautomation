@@ -1,6 +1,6 @@
 package com.oberasoftware.home.zwave.connector;
 
-import com.oberasoftware.home.TopicListener;
+import com.oberasoftware.home.api.EventListener;
 import com.oberasoftware.home.zwave.exceptions.ZWaveException;
 import com.oberasoftware.home.zwave.messages.ZWaveMessage;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
@@ -13,7 +13,7 @@ public interface ControllerConnector {
 
     void close() throws ZWaveException;
 
-    void subscribe(TopicListener<ZWaveMessage> zWaveMessageTopicListener);
+    void subscribe(EventListener<ZWaveMessage> zWaveMessageTopicListener);
 
     void send(ZWaveRawMessage rawMessage);
 

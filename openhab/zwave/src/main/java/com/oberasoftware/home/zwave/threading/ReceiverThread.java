@@ -1,7 +1,7 @@
 package com.oberasoftware.home.zwave.threading;
 
-import com.oberasoftware.home.MessageTopic;
-import com.oberasoftware.home.TopicManager;
+import com.oberasoftware.home.api.Topic;
+import com.oberasoftware.home.api.TopicManager;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import com.oberasoftware.home.zwave.messages.ByteMessage;
 import com.oberasoftware.home.zwave.messages.ZWaveMessage;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.NAK;
 import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.ACK;
@@ -28,11 +29,14 @@ public class ReceiverThread extends Thread {
 
     private final InputStream inputStream;
 
-    private MessageTopic<ZWaveMessage> receiverQueue;
-    private MessageTopic<ZWaveMessage> senderQueue;
+    private Topic<ZWaveMessage> receiverQueue;
+    private Topic<ZWaveMessage> senderQueue;
 
-    public ReceiverThread(TopicManager topicManager, InputStream inputStream) {
+    private OutputStream outputStream;
+
+    public ReceiverThread(TopicManager topicManager, InputStream inputStream, OutputStream outputStream) {
         this.inputStream = inputStream;
+        this.outputStream = outputStream;
         receiverQueue = topicManager.provideTopic(ZWaveMessage.class, "receiver");
         senderQueue = topicManager.provideTopic(ZWaveMessage.class, "sender");
     }
@@ -42,16 +46,16 @@ public class ReceiverThread extends Thread {
      * @param response the response code to send.
      */
     private void sendResponse(int response) {
-//        try {
-            senderQueue.push(new ByteMessage(response));
+        try {
+//            senderQueue.push(new ByteMessage(response));
 //
 //            synchronized (serialPort.getOutputStream()) {
-//                serialPort.getOutputStream().write(response);
-//                serialPort.getOutputStream().flush();
+            outputStream.write(response);
+            outputStream.flush();
 //            }
-//        } catch (IOException e) {
-//            LOG.error(e.getMessage());
-//        }
+        } catch (IOException e) {
+            LOG.error(e.getMessage());
+        }
     }
 
     /**
@@ -129,6 +133,7 @@ public class ReceiverThread extends Thread {
                 case ACK:
                 case NAK:
                 case CAN:
+                    LOG.debug("Received a raw byte message: {}", nextByte);
                     receiverQueue.push(new ByteMessage(nextByte));
                     break;
                 default:

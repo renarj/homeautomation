@@ -1,6 +1,6 @@
 package com.oberasoftware.home.zwave.messages;
 
-import com.oberasoftware.home.Message;
+import com.oberasoftware.home.api.Message;
 
 /**
  * @author renarj

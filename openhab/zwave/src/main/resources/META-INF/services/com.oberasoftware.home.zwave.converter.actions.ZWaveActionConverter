@@ -1,0 +1,2 @@
+com.oberasoftware.home.zwave.converter.actions.SwitchActionConverter
+com.oberasoftware.home.zwave.converter.actions.RequestNodeInfoConverter

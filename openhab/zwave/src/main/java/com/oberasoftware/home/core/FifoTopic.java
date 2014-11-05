@@ -1,10 +1,7 @@
-package com.oberasoftware.home.impl;
+package com.oberasoftware.home.core;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.oberasoftware.home.Message;
-import com.oberasoftware.home.MessageTopic;
-import com.oberasoftware.home.TopicListener;
+import com.oberasoftware.home.api.Topic;
+import com.oberasoftware.home.api.EventListener;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,13 +12,13 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author renarj
  */
-public class FifoTopic<T extends Message> implements MessageTopic<T> {
+public class FifoTopic<T> implements Topic<T> {
 
     private LinkedList<T> items = new LinkedList<>();
 
     private Lock lock = new ReentrantLock();
 
-    private ConcurrentMap<String, List<TopicListener<T>>> topicSubscribers = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, List<EventListener<T>>> topicSubscribers = new ConcurrentHashMap<>();
 
     @Override
     public void push(T item) {
@@ -70,21 +67,21 @@ public class FifoTopic<T extends Message> implements MessageTopic<T> {
     }
 
     private void notifyMessageTypeListeners(String messageType, T item) {
-        List<TopicListener<T>> topicListeners = topicSubscribers.getOrDefault(messageType, new ArrayList<>());
+        List<EventListener<T>> topicListeners = topicSubscribers.getOrDefault(messageType, new ArrayList<>());
         topicListeners.forEach(l -> l.receive(item));
     }
 
     @Override
-    public void subscribe(Class<? extends T> messageType, TopicListener<T> listener) {
-        subscribe(messageType.getSimpleName(), listener);
+    public void subscribe(String messageType, EventListener<T> listener) {
+        addSubscriber(messageType, listener);
     }
 
     @Override
-    public void subscribe(TopicListener<T> listener) {
+    public void subscribe(EventListener<T> listener) {
         subscribe("*", listener);
     }
 
-    private void subscribe(String name, TopicListener<T> listener) {
+    private void addSubscriber(String name, EventListener<T> listener) {
         topicSubscribers.computeIfAbsent(name, v -> new ArrayList<>());
         topicSubscribers.get(name).add(listener);
     }

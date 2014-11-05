@@ -1,15 +1,19 @@
 package com.oberasoftware.home;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+import com.oberasoftware.home.api.EventListener;
+import com.oberasoftware.home.api.exceptions.HomeAutomationException;
+import com.oberasoftware.home.zwave.api.actions.SwitchAction;
+import com.oberasoftware.home.zwave.api.events.ZWaveEvent;
 import com.oberasoftware.home.zwave.connector.SerialZWaveConnector;
 import com.oberasoftware.home.zwave.ZWaveController;
-import com.oberasoftware.home.zwave.messages.ZWaveMessage;
-import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
-import com.oberasoftware.home.zwave.exceptions.ZWaveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
 
-public class ZWaveTest implements TopicListener<ZWaveMessage> {
+
+public class ZWaveTest implements EventListener<ZWaveEvent> {
     private static final Logger LOG = LoggerFactory.getLogger(ZWaveTest.class);
 
     private ZWaveController zWaveController;
@@ -19,8 +23,6 @@ public class ZWaveTest implements TopicListener<ZWaveMessage> {
 
         ZWaveTest test = new ZWaveTest();
         test.initialise();
-
-
     }
 
     /**
@@ -31,84 +33,45 @@ public class ZWaveTest implements TopicListener<ZWaveMessage> {
         try {
             this.zWaveController = new ZWaveController();
             this.zWaveController.connect(new SerialZWaveConnector("/dev/tty.SLAB_USBtoUART"));
+//            this.zWaveController.connect(new SerialZWaveConnector("/Users/renarj/ttyAMA0"));
             this.zWaveController.subscribe(this);
 
-            int setOn = 0xFF;
-            int setOff = 0x00;
-            int command = setOn;
-            final int SWITCH_BINARY_SET = 0x01;
-            final int SWITCH_BINARY_GET = 0x02;
-            final int SWITCH_BINARY_REPORT = 0x03;
-
-            //SWITCH_BINARY(0x25,"SWITCH_BINARY",ZWaveBinarySwitchCommandClass.class),
-
-
-            ZWaveRawMessage message = new ZWaveRawMessage(7, ZWaveRawMessage.SerialMessageClass.SendData,
-                    ZWaveRawMessage.SerialMessageType.Request, ZWaveRawMessage.SerialMessageClass.SendData, ZWaveRawMessage.SerialMessagePriority.Set);
-            byte[] newPayload = { 	(byte) 7,
-                    3,
-                    (byte) 0x25,
-                    (byte) SWITCH_BINARY_SET,
-                    (byte) (command > 0 ? 0xFF : 0x00)
-            };
-            message.setMessagePayload(newPayload);
-
             LOG.info("Wait for 20 seconds before putting on light");
-            Thread.sleep(10000);
+            Thread.sleep(3000);
+
+
+//            this.zWaveController.send(new RequestNodeInfoAction(4));
+//            Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
 
             LOG.info("Wait over, sending message");
-            zWaveController.send(message);
+            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
+            Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
+//            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
 
             LOG.info("Waiting another 20 seconds, before putting light off");
-            command = setOff;
-            message = new ZWaveRawMessage(7, ZWaveRawMessage.SerialMessageClass.SendData,
-                    ZWaveRawMessage.SerialMessageType.Request, ZWaveRawMessage.SerialMessageClass.SendData, ZWaveRawMessage.SerialMessagePriority.Set);
-            byte[] offPayload = { 	(byte) 7,
-                    3,
-                    (byte) 0x25,
-                    (byte) SWITCH_BINARY_SET,
-                    (byte) (command > 0 ? 0xFF : 0x00)
-            };
-            message.setMessagePayload(offPayload);
 
-            Thread.sleep(10000);
+//            Thread.sleep(3000);
             LOG.info("Wait over, sending Off message");
-            zWaveController.send(message);
+            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
+//            Thread.sleep(5000);
+//            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
+
 
             LOG.info("Message sent, wait another 20 secs");
-            Thread.sleep(10000);
+            Thread.sleep(5000);
 
 
             zWaveController.disconnect();
 
-//            if(healtime != null) {
-//                this.networkMonitor.setHealTime(healtime);
-//            }
-//            if(softReset != false) {
-//                this.networkMonitor.resetOnError(softReset);
-//            }
-
-            // The config service needs to know the controller and the network monitor...
-//            this.zConfigurationService = new ZWaveConfiguration(this.zController, this.networkMonitor);
-//            zController.addEventListener(this.zConfigurationService);
-//            return;
-        } catch (ZWaveException | InterruptedException e) {
+        } catch (HomeAutomationException | InterruptedException e) {
             LOG.error("", e);
         }
     }
 
     @Override
-    public void receive(ZWaveMessage message) {
+    public void receive(ZWaveEvent message) {
 
 //        LOG.info("Got an even from node: {} endpoint: {}", message.getNodeId(), message.getEndpointId());
     }
 
-//    @Override
-//    public void ZWaveIncomingEvent(ZWaveEvent event) {
-//        LOG.info("Got an even from node: {} endpoint: {}", event.getNodeId(), event.getEndpoint());
-//
-//        if(event instanceof ZWaveCommandClassValueEvent) {
-//            LOG.info("Raw value: {}", ((ZWaveCommandClassValueEvent) event).getValue());
-//        }
-//    }
 }

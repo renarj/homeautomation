@@ -1,8 +1,7 @@
-package com.oberasoftware.home.impl;
+package com.oberasoftware.home.core;
 
-import com.oberasoftware.home.Message;
-import com.oberasoftware.home.MessageTopic;
-import com.oberasoftware.home.TopicManager;
+import com.oberasoftware.home.api.Topic;
+import com.oberasoftware.home.api.TopicManager;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -12,19 +11,19 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class TopicManagerImpl implements TopicManager {
 
-    private ConcurrentMap<String, MessageTopic> messageQueueMap = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, Topic> messageQueueMap = new ConcurrentHashMap<>();
 
     @Override
-    public <T extends Message> MessageTopic<T> provideTopic(Class<T> messageType) {
+    public <T> Topic<T> provideTopic(Class<T> messageType) {
         return getOrCreateQueue(messageType.getSimpleName());
     }
 
     @Override
-    public <T extends Message> MessageTopic<T> provideTopic(Class<T> messageType, String subType) {
+    public <T> Topic<T> provideTopic(Class<T> messageType, String subType) {
         return getOrCreateQueue(messageType.getSimpleName() + subType);
     }
 
-    private <T extends Message> MessageTopic<T> getOrCreateQueue(String key) {
+    private <T> Topic<T> getOrCreateQueue(String key) {
         return messageQueueMap.computeIfAbsent(key, v -> new FifoTopic<T>());
     }
 

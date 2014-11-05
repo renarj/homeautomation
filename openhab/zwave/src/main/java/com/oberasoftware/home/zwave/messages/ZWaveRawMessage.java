@@ -8,19 +8,15 @@
  */
 package com.oberasoftware.home.zwave.messages;
 
-import com.oberasoftware.home.zwave.messages.ZWaveMessage;
+import com.oberasoftware.home.zwave.converter.controller.ControllerMessageType;
+import com.oberasoftware.home.zwave.converter.controller.ControllerMessageUtil;
 import org.apache.commons.lang.ArrayUtils;
-import org.openhab.binding.zwave.internal.protocol.ZWaveController;
-import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,8 +47,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	private byte[] messagePayload;
 	private int messageLength = 0;
 	private SerialMessageType messageType;
-	private SerialMessageClass messageClass;
-	private SerialMessagePriority priority;
+	private ControllerMessageType controllerMessageType;
 	private SerialMessageClass expectedReply;
 
 	private int messageNode = 255;
@@ -89,10 +84,9 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * @param messageClass the message class to use
 	 * @param messageType the message type to use
 	 * @param expectedReply the expected Reply for this messaage
-	 * @param priority the message priority
 	 */
-	public ZWaveRawMessage(SerialMessageClass messageClass, SerialMessageType messageType, SerialMessageClass expectedReply, SerialMessagePriority priority) {
-		this(255, messageClass, messageType, expectedReply, priority);
+	public ZWaveRawMessage(ControllerMessageType messageClass, SerialMessageType messageType, SerialMessageClass expectedReply) {
+		this(255, messageClass, messageType, expectedReply);
 	}
 	
 	/**
@@ -102,21 +96,19 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * priority to send the message with. Higher priority messages are taken from
 	 * the send queue earlier than lower priority messages.
 	 * @param nodeId the node the message is destined for
-	 * @param messageClass the message class to use
+	 * @param controllerMessageType the message class to use
 	 * @param messageType the message type to use
 	 * @param expectedReply the expected Reply for this messaage
-	 * @param priority the message priority
 	 */
-	public ZWaveRawMessage(int nodeId, SerialMessageClass messageClass, SerialMessageType messageType, SerialMessageClass expectedReply, SerialMessagePriority priority) {
+	public ZWaveRawMessage(int nodeId, ControllerMessageType controllerMessageType, SerialMessageType messageType, SerialMessageClass expectedReply) {
 		logger.debug(String.format("NODE %d: Creating empty message of class = %s (0x%02X), type = %s (0x%02X)", 
-				new Object[] { nodeId, messageClass, messageClass.key, messageType, messageType.ordinal()}));
+				new Object[] { nodeId, controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal()}));
 		this.sequenceNumber = sequence.getAndIncrement();
-		this.messageClass = messageClass;
+		this.controllerMessageType = controllerMessageType;
 		this.messageType = messageType;
 		this.messagePayload = new byte[] {};
 		this.messageNode = nodeId;
 		this.expectedReply = expectedReply;
-		this.priority = priority;
 	}
 
 	/**
@@ -149,7 +141,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 			return;
 		}
 		this.messageType = buffer[2] == 0x00 ? SerialMessageType.Request : SerialMessageType.Response;;
-		this.messageClass = SerialMessageClass.getMessageClass(buffer[3] & 0xFF);
+		this.controllerMessageType = ControllerMessageUtil.getMessageClass(buffer[3] & 0xFF);
 		this.messagePayload = ArrayUtils.subarray(buffer, 4, messageLength + 1);
 		this.messageNode = nodeId;
 		logger.trace("NODE {}: Message payload = {}", getMessageNode(), ZWaveRawMessage.bb2hex(messagePayload));
@@ -190,7 +182,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	@Override
 	public String toString() {
 		return String.format("Message: class = %s (0x%02X), type = %s (0x%02X), payload = %s", 
-				new Object[] { messageClass, messageClass.key, messageType, messageType.ordinal(),
+				new Object[] { controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal(),
 				ZWaveRawMessage.bb2hex(this.getMessagePayload()) });
 	};
 	
@@ -203,12 +195,12 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		byte[] result;
 		resultByteBuffer.write((byte)0x01);
 		int messageLength = messagePayload.length + 
-				(this.messageClass == SerialMessageClass.SendData && 
+				(this.controllerMessageType == ControllerMessageType.SendData &&
 				this.messageType == SerialMessageType.Request ? 5 : 3); // calculate and set length
 		
 		resultByteBuffer.write((byte) messageLength);
 		resultByteBuffer.write((byte) messageType.ordinal());
-		resultByteBuffer.write((byte) messageClass.getKey());
+		resultByteBuffer.write((byte) controllerMessageType.getKey());
 		
 		try {
 			resultByteBuffer.write(messagePayload);
@@ -217,7 +209,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		}
 
 		// callback ID and transmit options for a Send Data message.
-		if (this.messageClass == SerialMessageClass.SendData && this.messageType == SerialMessageType.Request) {
+		if (this.controllerMessageType == ControllerMessageType.SendData && this.messageType == SerialMessageType.Request) {
 			resultByteBuffer.write(transmitOptions);
 			resultByteBuffer.write(callbackId);
 		}
@@ -228,38 +220,6 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		result[result.length - 1] = calculateChecksum(result);
 		logger.debug("Assembled message buffer = " + ZWaveRawMessage.bb2hex(result));
 		return result;
-	}
-	
-	/**
-	 * Check whether an object is equal to this serial message.
-	 * A serial message is considered equal when:
-	 * - the object passed in is a serial message.
-	 * - the message class is equal
-	 * - the message type is equal
-	 * - the expected reply is equal
-	 * - the payload is equal
-	 * @param obj the object to compare this message with.
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		
-		if (!obj.getClass().equals(this.getClass()))
-			return false;
-		
-		ZWaveRawMessage other = (ZWaveRawMessage)obj;
-		
-		if (other.messageClass != this.messageClass)
-			return false;
-		
-		if (other.messageType != this.messageType)
-			return false;
-
-		if (other.expectedReply != this.expectedReply)
-			return false;
-
-		return Arrays.equals(other.messagePayload, this.messagePayload);
 	}
 	
 	/**
@@ -274,8 +234,8 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * Gets the message class. This is the function it represents.
 	 * @return
 	 */
-	public SerialMessageClass getMessageClass() {
-		return messageClass;
+	public ControllerMessageType getMessageClass() {
+		return controllerMessageType;
 	}
 
 	/**
@@ -353,14 +313,6 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	}
 
 	/**
-	 * Returns the priority of this Serial message.
-	 * @return the priority
-	 */
-	public SerialMessagePriority getPriority() {
-		return priority;
-	}
-
-	/**
 	 * Indicates that the transaction for the incoming message is canceled by a command class
 	 * @return the transActionCanceled
 	 */
@@ -386,19 +338,6 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	{
 		Request,																			// 0x00
 		Response																			// 0x01
-	}
-	
-	/**
-	 * Serial message priority enumeration. Indicates the message priority.
-	 * @author Jan-Willem Spuij
-	 * @since 1.3.0
-	 */
-	public enum SerialMessagePriority
-	{
-		High,																				// 0x01
-		Set,																				// 0x02
-		Get,																				// 0x03
-		Low 																				// 0x04
 	}
 	
 	/**
@@ -527,85 +466,4 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		}
 	}
 
-	/**
-	 * Comparator Class. Compares two serial messages with each other based on
-	 * node status (awake / sleep), priority and sequence number. 
-	 * @author Jan-Willem Spuij
-	 * @since 1.3.0
-	 */
-	public static class SerialMessageComparator implements Comparator<ZWaveRawMessage> {
-
-		private final ZWaveController controller;
-		
-		/**
-		 * Constructor. Creates a new instance of the SerialMessageComparator class.
-		 * @param controller the {@link org.openhab.binding.zwave.internal.protocol.ZWaveController to use}
-		 */
-		public SerialMessageComparator(ZWaveController controller) {
-			this.controller = controller;
-		}
-
-		/**
-		 * Compares a serial message to another serial message.
-		 * Used by the priority queue to order messages.
-		 * @param arg0 the first serial message to compare the other to.
-		 * @param arg1 the other serial message to compare the first one to.
-		 */
-		@Override
-		public int compare(ZWaveRawMessage arg0, ZWaveRawMessage arg1) {
-
-			boolean arg0Awake = false;
-			boolean arg0Listening = true;
-			boolean arg1Awake = false;
-			boolean arg1Listening = true;
-			
-			if ((arg0.getMessageClass() == SerialMessageClass.RequestNodeInfo ||
-					arg0.getMessageClass() == SerialMessageClass.SendData)) {
-				ZWaveNode node = this.controller.getNode(arg0.getMessageNode());
-				
-				if (node != null && !node.isListening() && !node.isFrequentlyListening()) {
-					arg0Listening = false;
-					ZWaveWakeUpCommandClass wakeUpCommandClass = (ZWaveWakeUpCommandClass)node.getCommandClass(CommandClass.WAKE_UP);
-					
-					if (wakeUpCommandClass != null && wakeUpCommandClass.isAwake())
-						arg0Awake = true;
-				}
-			}
-			
-			if ((arg1.getMessageClass() == SerialMessageClass.RequestNodeInfo ||
-					arg1.getMessageClass() == SerialMessageClass.SendData)) {
-				ZWaveNode node = this.controller.getNode(arg1.getMessageNode());
-				
-				if (node != null && !node.isListening() && !node.isFrequentlyListening()) {
-					arg1Listening = false;
-					ZWaveWakeUpCommandClass wakeUpCommandClass = (ZWaveWakeUpCommandClass)node.getCommandClass(CommandClass.WAKE_UP);
-					
-					if (wakeUpCommandClass != null && wakeUpCommandClass.isAwake())
-						arg1Awake = true;
-				}
-			}
-			
-			// messages for awake nodes get priority over 
-			// messages for sleeping (or listening) nodes.
-			if (arg0Awake && !arg1Awake)
-				return -1;
-			else if (arg1Awake && !arg0Awake)
-				return 1;
-			
-			// messages for listening nodes get priority over
-			// non listening nodes.
-			if (arg0Listening && !arg1Listening)
-				return -1;
-			else if (arg1Listening && !arg0Listening)
-				return 1;
-			
-			int res = arg0.priority.compareTo(arg1.priority);
-			
-			if (res == 0 && arg0 != arg1)
-			   res = (arg0.sequenceNumber < arg1.sequenceNumber ? -1 : 1);
-			
-			return res;
-		}
-
-	}
 }

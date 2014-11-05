@@ -1,8 +1,8 @@
 package com.oberasoftware.home.zwave.threading;
 
-import com.oberasoftware.home.MessageTopic;
-import com.oberasoftware.home.TopicListener;
-import com.oberasoftware.home.TopicManager;
+import com.oberasoftware.home.api.Topic;
+import com.oberasoftware.home.api.EventListener;
+import com.oberasoftware.home.api.TopicManager;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import com.oberasoftware.home.zwave.messages.ByteMessage;
 import com.oberasoftware.home.zwave.messages.ZWaveMessage;
@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.CAN;
+import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.ACK;
 import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.NAK;
 
 import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.ZWAVE_RESPONSE_TIMEOUT;
@@ -25,14 +26,14 @@ import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.ZWAVE_RESPONSE_TIMEOU
 /**
  * @author Renze de Vries
  */
-public class SenderThread extends Thread implements TopicListener<ByteMessage> {
+public class SenderThread extends Thread implements EventListener<ZWaveMessage> {
     private static final Logger LOG = LoggerFactory.getLogger(SenderThread.class);
 
     private int zWaveResponseTimeout = ZWAVE_RESPONSE_TIMEOUT;
 
     private final Semaphore barrier = new Semaphore(1);
 
-    private final MessageTopic<ZWaveMessage> senderTopic;
+    private final Topic<ZWaveMessage> senderTopic;
 
     private final OutputStream outputStream;
 
@@ -76,15 +77,22 @@ public class SenderThread extends Thread implements TopicListener<ByteMessage> {
                     long messageTimeStart = System.currentTimeMillis();
                     if(sendMessage instanceof ZWaveRawMessage) {
                         sendRawMessage((ZWaveRawMessage) sendMessage);
+
+                        // Clear the semaphore used to acknowledge the response.
+                        barrier.drainPermits();
+
+                        if (barrier.tryAcquire(1, zWaveResponseTimeout, TimeUnit.MILLISECONDS)) {
+                            long responseTime = System.currentTimeMillis() - messageTimeStart;
+                            LOG.debug("Response processed after {} ms.", responseTime);
+                        } else {
+                            LOG.error("NODE {}: Timeout while sending message. Requeueing");
+                        }
+
                     } else if(sendMessage instanceof ByteMessage) {
                         sendByte(((ByteMessage) sendMessage).getSingleByte());
                     }
 
-                    // Clear the semaphore used to acknowledge the response.
-                    barrier.drainPermits();
 
-                    long responseTime = System.currentTimeMillis() - messageTimeStart;
-                    LOG.debug("Response processed after {} ms.", responseTime);
                 } else {
                     LOG.debug("Sleep");
                     sleepUninterruptibly(1, TimeUnit.SECONDS);
@@ -92,10 +100,9 @@ public class SenderThread extends Thread implements TopicListener<ByteMessage> {
             } catch (NoSuchElementException e1) {
                 LOG.debug("Sleep no queue elements");
                 sleepUninterruptibly(1, TimeUnit.SECONDS);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 LOG.error("", e);
             }
-
 
 
 //            // Now wait for the response...
@@ -137,6 +144,7 @@ public class SenderThread extends Thread implements TopicListener<ByteMessage> {
     }
 
     private void sendByte(int singleByte) throws IOException {
+        LOG.debug("Sending raw byte: {}", singleByte);
         outputStream.write(singleByte);
     }
 
@@ -152,12 +160,19 @@ public class SenderThread extends Thread implements TopicListener<ByteMessage> {
     }
 
     @Override
-    public void receive(ByteMessage message) {
-        int receivedByte = message.getSingleByte();
-        switch(receivedByte) {
-            case CAN:
-            case NAK:
-                barrier.release();
+    public void receive(ZWaveMessage message) {
+        if(message instanceof ByteMessage) {
+            ByteMessage byteMessage = (ByteMessage) message;
+            LOG.debug("Received a byte message: {}", byteMessage);
+
+            int receivedByte = byteMessage.getSingleByte();
+            switch (receivedByte) {
+                case ACK:
+                case CAN:
+                case NAK:
+                    LOG.debug("Got a ACK/CAN/NAK response: {}", receivedByte);
+                    barrier.release();
+            }
         }
     }
 }

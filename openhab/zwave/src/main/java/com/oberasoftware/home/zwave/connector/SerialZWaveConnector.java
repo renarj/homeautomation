@@ -1,10 +1,10 @@
 package com.oberasoftware.home.zwave.connector;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-import com.oberasoftware.home.MessageTopic;
-import com.oberasoftware.home.TopicListener;
-import com.oberasoftware.home.TopicManager;
-import com.oberasoftware.home.impl.TopicManagerImpl;
+import com.oberasoftware.home.api.Topic;
+import com.oberasoftware.home.api.EventListener;
+import com.oberasoftware.home.api.TopicManager;
+import com.oberasoftware.home.core.TopicManagerImpl;
+import com.oberasoftware.home.zwave.messages.ByteMessage;
 import com.oberasoftware.home.zwave.threading.ReceiverThread;
 import com.oberasoftware.home.zwave.threading.SenderThread;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
@@ -36,8 +36,8 @@ public class SerialZWaveConnector implements ControllerConnector {
 
     private final TopicManager topicManager;
 
-    private final MessageTopic<ZWaveMessage> receiverTopic;
-    private final MessageTopic<ZWaveMessage> senderTopic;
+    private final Topic<ZWaveMessage> receiverTopic;
+    private final Topic<ZWaveMessage> senderTopic;
 
     public SerialZWaveConnector(String portName) {
         this.portName = portName;
@@ -63,11 +63,13 @@ public class SerialZWaveConnector implements ControllerConnector {
             this.serialPort.enableReceiveTimeout(ZWAVE_RECEIVE_TIMEOUT);
 
 
-            this.receiverThread = new ReceiverThread(topicManager, serialPort.getInputStream());
+            this.receiverThread = new ReceiverThread(topicManager, serialPort.getInputStream(), serialPort.getOutputStream());
             this.receiverThread.start();
 
             this.senderThread = new SenderThread(topicManager, serialPort.getOutputStream());
             this.senderThread.start();
+
+            this.receiverTopic.subscribe(ByteMessage.class.getSimpleName(), senderThread);
 
             LOG.info("ZWave controller is connected");
         } catch (NoSuchPortException e) {
@@ -99,7 +101,7 @@ public class SerialZWaveConnector implements ControllerConnector {
     }
 
     @Override
-    public void subscribe(TopicListener<ZWaveMessage> zWaveMessageTopicListener) {
+    public void subscribe(EventListener<ZWaveMessage> zWaveMessageTopicListener) {
         receiverTopic.subscribe(zWaveMessageTopicListener);
     }
 
