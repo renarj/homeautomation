@@ -84,19 +84,19 @@ public class ZWaveController implements Controller, EventListener<ZWaveMessage> 
         if(message instanceof ZWaveRawMessage) {
             LOG.debug("Received a raw message from node: {}", ((ZWaveRawMessage) message).getMessageNode());
 
-            int messageSize = ((ZWaveRawMessage) message).getMessagePayload().length;
-            LOG.debug("Message payload size: {}", messageSize);
-            if(messageSize > 1) {
-                LOG.debug("Node could also be: {}", ((ZWaveRawMessage) message).getMessagePayloadByte(1));
-                LOG.debug("Command class: {}", ((ZWaveRawMessage) message).getMessageClass());
-                LOG.debug("Callback Id: {}", ((ZWaveRawMessage) message).getMessagePayloadByte(0));
-
-                if(messageSize > 2) {
-                    int commandClassCode = ((ZWaveRawMessage) message).getMessagePayloadByte(3);
-                    ZWaveCommandClass.CommandClass commandClass = ZWaveCommandClass.CommandClass.getCommandClass(commandClassCode);
-                    LOG.debug("Command class: {} code: {}", commandClass, commandClassCode);
-                }
-            }
+//            int messageSize = ((ZWaveRawMessage) message).getMessagePayload().length;
+//            LOG.debug("Message payload size: {}", messageSize);
+//            if(messageSize > 1) {
+//                LOG.debug("Node could also be: {}", ((ZWaveRawMessage) message).getMessagePayloadByte(1));
+//                LOG.debug("Command class: {}", ((ZWaveRawMessage) message).getMessageClass());
+//                LOG.debug("Callback Id: {}", ((ZWaveRawMessage) message).getMessagePayloadByte(0));
+//
+//                if(messageSize > 2) {
+//                    int commandClassCode = ((ZWaveRawMessage) message).getMessagePayloadByte(3);
+//                    ZWaveCommandClass.CommandClass commandClass = ZWaveCommandClass.CommandClass.getCommandClass(commandClassCode);
+//                    LOG.debug("Command class: {} code: {}", commandClass, commandClassCode);
+//                }
+//            }
         }
     }
 
