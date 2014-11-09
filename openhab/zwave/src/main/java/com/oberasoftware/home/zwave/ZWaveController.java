@@ -10,12 +10,10 @@ import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.api.events.ControllerEvent;
 import com.oberasoftware.home.zwave.api.events.ZWaveEvent;
 import com.oberasoftware.home.zwave.connector.ControllerConnector;
-import com.oberasoftware.home.zwave.converter.actions.ZWaveActionConverter;
-import com.oberasoftware.home.zwave.converter.controller.ControllerEventConverter;
+import com.oberasoftware.home.zwave.converter.ConverterHandler;
 import com.oberasoftware.home.zwave.exceptions.ZWaveException;
 import com.oberasoftware.home.zwave.messages.ZWaveMessage;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,17 +25,17 @@ public class ZWaveController implements Controller, EventListener<ZWaveMessage> 
 
     private ControllerConnector connector;
 
-    private final ZWaveActionConverter actionConverter;
+    private final ConverterHandler<ZWaveAction, ZWaveRawMessage> actionConverter;
 
-    private final ControllerEventConverter controllerEventConverter;
+    private final ConverterHandler<ZWaveRawMessage, ControllerEvent> controllerEventConverter;
 
     private final Topic<ControllerEvent> controllerEventTopic;
     private final Topic<ZWaveEvent> deviceEvents;
 
     public ZWaveController() {
         TopicManager topicManager = new TopicManagerImpl();
-        actionConverter = new ZWaveActionConverter();
-        controllerEventConverter = new ControllerEventConverter();
+        actionConverter = new ConverterHandler<>(v -> v.getClass().getSimpleName());
+        controllerEventConverter = new ConverterHandler<>(v -> v.getControllerMessageType().getLabel());
 
         controllerEventTopic = topicManager.provideTopic(ControllerEvent.class);
         deviceEvents = topicManager.provideTopic(ZWaveEvent.class);
@@ -82,13 +80,19 @@ public class ZWaveController implements Controller, EventListener<ZWaveMessage> 
         LOG.debug("Received a raw data message: {}", message);
 
         if(message instanceof ZWaveRawMessage) {
-            LOG.debug("Received a raw message from node: {}", ((ZWaveRawMessage) message).getMessageNode());
+            LOG.debug("Received a raw message from node: {}", ((ZWaveRawMessage) message).getNodeId());
 
+            try {
+                ZWaveEvent event = controllerEventConverter.convert((ZWaveRawMessage) message);
+                LOG.debug("Event received: {}", event);
+            } catch (HomeAutomationException e) {
+                LOG.error("", e);
+            }
 //            int messageSize = ((ZWaveRawMessage) message).getMessagePayload().length;
 //            LOG.debug("Message payload size: {}", messageSize);
 //            if(messageSize > 1) {
 //                LOG.debug("Node could also be: {}", ((ZWaveRawMessage) message).getMessagePayloadByte(1));
-//                LOG.debug("Command class: {}", ((ZWaveRawMessage) message).getMessageClass());
+//                LOG.debug("Command class: {}", ((ZWaveRawMessage) message).getControllerMessageType());
 //                LOG.debug("Callback Id: {}", ((ZWaveRawMessage) message).getMessagePayloadByte(0));
 //
 //                if(messageSize > 2) {

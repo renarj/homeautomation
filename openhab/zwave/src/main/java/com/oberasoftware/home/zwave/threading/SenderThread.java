@@ -45,7 +45,7 @@ public class SenderThread extends Thread implements EventListener<ZWaveMessage> 
 //                    // If this message is a data packet to a node
 //                    // then make sure the node is not a battery device.
 //                    // If it's a battery device, it needs to be awake, or we queue the frame until it is.
-//                    if (lastSentMessage.getMessageClass() == SerialMessage.SerialMessageClass.SendData) {
+//                    if (lastSentMessage.getControllerMessageType() == SerialMessage.SerialMessageClass.SendData) {
 //                        ZWaveNode node = getNode(lastSentMessage.getMessageNode());
 //
 //                        if (node != null && !node.isListening() && !node.isFrequentlyListening() && lastSentMessage.getPriority() != SerialMessage.SerialMessagePriority.Low) {
@@ -108,7 +108,7 @@ public class SenderThread extends Thread implements EventListener<ZWaveMessage> 
 //            // Now wait for the response...
 //            try {
 //                if (!barrier.tryAcquire(1, zWaveResponseTimeout, TimeUnit.MILLISECONDS)) {
-//                    if (lastSentMessage.getMessageClass() == SerialMessage.SerialMessageClass.SendData) {
+//                    if (lastSentMessage.getControllerMessageType() == SerialMessage.SerialMessageClass.SendData) {
 //
 //                        buffer = new SerialMessage(SerialMessage.SerialMessageClass.SendDataAbort, SerialMessage.SerialMessageType.Request, SerialMessage.SerialMessageClass.SendData, SerialMessage.SerialMessagePriority.High).getMessageBuffer();
 //                        LOG.debug("Sending Message = " + SerialMessage.bb2hex(buffer));
@@ -125,7 +125,7 @@ public class SenderThread extends Thread implements EventListener<ZWaveMessage> 
 //
 //                    if (--lastSentMessage.attempts >= 0) {
 //                        LOG.error("NODE {}: Timeout while sending message. Requeueing", lastSentMessage.getMessageNode());
-//                        if (lastSentMessage.getMessageClass() == SerialMessage.SerialMessageClass.SendData)
+//                        if (lastSentMessage.getControllerMessageType() == SerialMessage.SerialMessageClass.SendData)
 //                            handleFailedSendDataRequest(lastSentMessage);
 //                        else
 //                            enqueue(lastSentMessage);

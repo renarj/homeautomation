@@ -143,6 +143,7 @@ public class ReceiverThread extends Thread {
             }
         }
         LOG.debug("Stopped Z-Wave receive thread");
+
     }
 }
 

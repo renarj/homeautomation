@@ -21,6 +21,11 @@ public class SwitchAction implements ZWaveAction {
         this.desiredState = desiredState;
     }
 
+    @Override
+    public int getNodeId() {
+        return device.getNodeId();
+    }
+
     public STATE getDesiredState() {
         return desiredState;
     }

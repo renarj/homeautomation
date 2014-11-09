@@ -1,4 +1,4 @@
-package com.oberasoftware.home.zwave.converter.controller;
+package com.oberasoftware.home.zwave.messages;
 
 /**
  * The enum was copied from the openhab zwave addon as it was functionally mostly complete

@@ -6,4 +6,5 @@ import com.oberasoftware.home.zwave.messages.ZWaveMessage;
  * @author renarj
  */
 public interface ZWaveAction extends ZWaveMessage {
+    int getNodeId();
 }

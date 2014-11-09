@@ -8,8 +8,8 @@
  */
 package com.oberasoftware.home.zwave.messages;
 
-import com.oberasoftware.home.zwave.converter.controller.ControllerMessageType;
-import com.oberasoftware.home.zwave.converter.controller.ControllerMessageUtil;
+import com.oberasoftware.home.zwave.messages.ControllerMessageType;
+import com.oberasoftware.home.zwave.messages.ControllerMessageUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -46,9 +44,9 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	private long sequenceNumber;
 	private byte[] messagePayload;
 	private int messageLength = 0;
-	private SerialMessageType messageType;
+	private MessageType messageType;
 	private ControllerMessageType controllerMessageType;
-	private SerialMessageClass expectedReply;
+//	private SerialMessageClass expectedReply;
 
 	private int messageNode = 255;
 	
@@ -83,10 +81,9 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * the send queue earlier than lower priority messages.
 	 * @param messageClass the message class to use
 	 * @param messageType the message type to use
-	 * @param expectedReply the expected Reply for this messaage
 	 */
-	public ZWaveRawMessage(ControllerMessageType messageClass, SerialMessageType messageType, SerialMessageClass expectedReply) {
-		this(255, messageClass, messageType, expectedReply);
+	public ZWaveRawMessage(ControllerMessageType messageClass, MessageType messageType) {
+		this(255, messageClass, messageType);
 	}
 	
 	/**
@@ -98,17 +95,15 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * @param nodeId the node the message is destined for
 	 * @param controllerMessageType the message class to use
 	 * @param messageType the message type to use
-	 * @param expectedReply the expected Reply for this messaage
 	 */
-	public ZWaveRawMessage(int nodeId, ControllerMessageType controllerMessageType, SerialMessageType messageType, SerialMessageClass expectedReply) {
-		logger.debug(String.format("NODE %d: Creating empty message of class = %s (0x%02X), type = %s (0x%02X)", 
+	public ZWaveRawMessage(int nodeId, ControllerMessageType controllerMessageType, MessageType messageType) {
+		logger.debug(String.format("NODE %d: Creating empty message of class = %s (0x%02X), type = %s (0x%02X)",
 				new Object[] { nodeId, controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal()}));
 		this.sequenceNumber = sequence.getAndIncrement();
 		this.controllerMessageType = controllerMessageType;
 		this.messageType = messageType;
 		this.messagePayload = new byte[] {};
 		this.messageNode = nodeId;
-		this.expectedReply = expectedReply;
 	}
 
 	/**
@@ -140,11 +135,11 @@ public class ZWaveRawMessage implements ZWaveMessage {
 			isValid = false;
 			return;
 		}
-		this.messageType = buffer[2] == 0x00 ? SerialMessageType.Request : SerialMessageType.Response;;
+		this.messageType = buffer[2] == 0x00 ? MessageType.Request : MessageType.Response;
 		this.controllerMessageType = ControllerMessageUtil.getMessageClass(buffer[3] & 0xFF);
 		this.messagePayload = ArrayUtils.subarray(buffer, 4, messageLength + 1);
 		this.messageNode = nodeId;
-		logger.trace("NODE {}: Message payload = {}", getMessageNode(), ZWaveRawMessage.bb2hex(messagePayload));
+		logger.trace("NODE {}: Message payload = {}", getNodeId(), ZWaveRawMessage.bb2hex(messagePayload));
 	}
 
     /**
@@ -174,18 +169,29 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		return checkSum;
 	}
 
-	/**
-	 * Returns a string representation of this SerialMessage object.
-	 * The string contains message class, message type and buffer contents.
-	 * {@inheritDoc}
-	 */
+//	/**
+//	 * Returns a string representation of this SerialMessage object.
+//	 * The string contains message class, message type and buffer contents.
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	public String toString() {
+//		return String.format("Message: class = %s (0x%02X), type = %s (0x%02X), payload = %s",
+//				new Object[] { controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal(),
+//				ZWaveRawMessage.bb2hex(this.getMessagePayload()) });
+//	};
+
+
 	@Override
 	public String toString() {
-		return String.format("Message: class = %s (0x%02X), type = %s (0x%02X), payload = %s", 
-				new Object[] { controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal(),
-				ZWaveRawMessage.bb2hex(this.getMessagePayload()) });
-	};
-	
+		return "ZWaveRawMessage{" +
+				"messagePayload=" + bb2hex(this.getMessagePayload()) +
+				", messageType=" + messageType +
+				", controllerMessageType=" + controllerMessageType +
+				", messageNode=" + messageNode +
+				'}';
+	}
+
 	/**
 	 * Gets the SerialMessage as a byte array.
 	 * @return the message
@@ -196,7 +202,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		resultByteBuffer.write((byte)0x01);
 		int messageLength = messagePayload.length + 
 				(this.controllerMessageType == ControllerMessageType.SendData &&
-				this.messageType == SerialMessageType.Request ? 5 : 3); // calculate and set length
+				this.messageType == MessageType.Request ? 5 : 3); // calculate and set length
 		
 		resultByteBuffer.write((byte) messageLength);
 		resultByteBuffer.write((byte) messageType.ordinal());
@@ -209,7 +215,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		}
 
 		// callback ID and transmit options for a Send Data message.
-		if (this.controllerMessageType == ControllerMessageType.SendData && this.messageType == SerialMessageType.Request) {
+		if (this.controllerMessageType == ControllerMessageType.SendData && this.messageType == MessageType.Request) {
 			resultByteBuffer.write(transmitOptions);
 			resultByteBuffer.write(callbackId);
 		}
@@ -222,19 +228,19 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		return result;
 	}
 	
-	/**
-	 * Gets the message type (Request / Response).
-	 * @return the message type
-	 */
-	public SerialMessageType getMessageType() {
-		return messageType;
-	}
+//	/**
+//	 * Gets the message type (Request / Response).
+//	 * @return the message type
+//	 */
+//	public SerialMessageType getMessageType() {
+//		return messageType;
+//	}
 
 	/**
 	 * Gets the message class. This is the function it represents.
 	 * @return
 	 */
-	public ControllerMessageType getMessageClass() {
+	public ControllerMessageType getControllerMessageType() {
 		return controllerMessageType;
 	}
 
@@ -242,7 +248,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * Returns the Node Id for / from this message.
 	 * @return the messageNode
 	 */
-	public int getMessageNode() {
+	public int getNodeId() {
 		return messageNode;
 	}
 
@@ -304,166 +310,31 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		this.callbackId = callbackId;
 	}
 
-	/**
-	 * Gets the expected reply for this message.
-	 * @return the expectedReply
-	 */
-	public SerialMessageClass getExpectedReply() {
-		return expectedReply;
+	public MessageType getMessageType() {
+		return messageType;
 	}
 
-	/**
-	 * Indicates that the transaction for the incoming message is canceled by a command class
-	 * @return the transActionCanceled
-	 */
-	public boolean isTransActionCanceled() {
-		return transActionCanceled;
-	}
+	//	/**
+//	 * Gets the expected reply for this message.
+//	 * @return the expectedReply
+//	 */
+//	public SerialMessageClass getExpectedReply() {
+//		return expectedReply;
+//	}
 
-	/**
-	 * Sets the transaction for the incoming message to canceled.
-	 * @param transActionCanceled the transActionCanceled to set
-	 */
-	public void setTransActionCanceled(boolean transActionCanceled) {
-		this.transActionCanceled = transActionCanceled;
-	}
-
-	/**
-	 * Serial message type enumeration. Indicates whether the message
-	 * is a request or a response.
-	 * @author Jan-Willem Spuij
-	 * @since 1.3.0
-	 */
-	public enum SerialMessageType
-	{
-		Request,																			// 0x00
-		Response																			// 0x01
-	}
-	
-	/**
-	 * Serial message class enumeration. Enumerates the different messages
-	 * that can be exchanged with the controller.
-	 * @author Jan-Willem Spuij
-	 * @since 1.3.0
-	 */
-	public enum SerialMessageClass
-	{
-		SerialApiGetInitData(0x02,"SerialApiGetInitData"),									// Request initial information about devices in network
-		SerialApiApplicationNodeInfo(0x03,"SerialApiApplicationNodeInfo"),					// Set controller node information
-		ApplicationCommandHandler(0x04,"ApplicationCommandHandler"),						// Handle application command
-		GetControllerCapabilities(0x05,"GetControllerCapabilities"),						// Request controller capabilities (primary role, SUC/SIS availability)
-		SerialApiSetTimeouts(0x06,"SerialApiSetTimeouts"),									// Set Serial API timeouts
-		SerialApiGetCapabilities(0x07,"SerialApiGetCapabilities"),							// Request Serial API capabilities
-		SerialApiSoftReset(0x08,"SerialApiSoftReset"),										// Soft reset. Restarts Z-Wave chip
-		RfReceiveMode(0x10,"RfReceiveMode"),												// Power down the RF section of the stick
-		SetSleepMode(0x11,"SetSleepMode"),													// Set the CPU into sleep mode
-		SendNodeInfo(0x12,"SendNodeInfo"),													// Send Node Information Frame of the stick
-		SendData(0x13,"SendData"),															// Send data.
-		SendDataMulti(0x14, "SendDataMulti"),
-		GetVersion(0x15,"GetVersion"),														// Request controller hardware version
-		SendDataAbort(0x16,"SendDataAbort"),												// Abort Send data.
-		RfPowerLevelSet(0x17,"RfPowerLevelSet"),											// Set RF Power level
-		SendDataMeta(0x18, "SendDataMeta"),
-		GetRandom(0x1c,"GetRandom"),														// ???
-		MemoryGetId(0x20,"MemoryGetId"),													// ???
-		MemoryGetByte(0x21,"MemoryGetByte"),												// Get a byte of memory.
-		MemoryPutByte(0x22, "MemoryPutByte"),
-		ReadMemory(0x23,"ReadMemory"),														// Read memory.
-		WriteMemory(0x24, "WriteMemory"),
-		SetLearnNodeState(0x40,"SetLearnNodeState"),    									// ???
-		IdentifyNode(0x41,"IdentifyNode"),    												// Get protocol info (baud rate, listening, etc.) for a given node
-		SetDefault(0x42,"SetDefault"),    													// Reset controller and node info to default (original) values
-		NewController(0x43,"NewController"),												// ???
-		ReplicationCommandComplete(0x44,"ReplicationCommandComplete"),						// Replication send data complete
-		ReplicationSendData(0x45,"ReplicationSendData"),									// Replication send data
-		AssignReturnRoute(0x46,"AssignReturnRoute"),										// Assign a return route from the specified node to the controller
-		DeleteReturnRoute(0x47,"DeleteReturnRoute"),										// Delete all return routes from the specified node
-		RequestNodeNeighborUpdate(0x48,"RequestNodeNeighborUpdate"),						// Ask the specified node to update its neighbors (then read them from the controller)
-		ApplicationUpdate(0x49,"ApplicationUpdate"),										// Get a list of supported (and controller) command classes
-		AddNodeToNetwork(0x4a,"AddNodeToNetwork"),											// Control the addnode (or addcontroller) process...start, stop, etc.
-		RemoveNodeFromNetwork(0x4b,"RemoveNodeFromNetwork"),								// Control the removenode (or removecontroller) process...start, stop, etc.
-		CreateNewPrimary(0x4c,"CreateNewPrimary"),											// Control the createnewprimary process...start, stop, etc.
-		ControllerChange(0x4d,"ControllerChange"),    										// Control the transferprimary process...start, stop, etc.
-		SetLearnMode(0x50,"SetLearnMode"),													// Put a controller into learn mode for replication/ receipt of configuration info
-		AssignSucReturnRoute(0x51,"AssignSucReturnRoute"),									// Assign a return route to the SUC
-		EnableSuc(0x52,"EnableSuc"),														// Make a controller a Static Update Controller
-		RequestNetworkUpdate(0x53,"RequestNetworkUpdate"),									// Network update for a SUC(?)
-		SetSucNodeID(0x54,"SetSucNodeID"),													// Identify a Static Update Controller node id
-		DeleteSUCReturnRoute(0x55,"DeleteSUCReturnRoute"),									// Remove return routes to the SUC
-		GetSucNodeId(0x56,"GetSucNodeId"),													// Try to retrieve a Static Update Controller node id (zero if no SUC present)
-		SendSucId(0x57, "SendSucId"),
-		RequestNodeNeighborUpdateOptions(0x5a,"RequestNodeNeighborUpdateOptions"),   		// Allow options for request node neighbor update
-		RequestNodeInfo(0x60,"RequestNodeInfo"),											// Get info (supported command classes) for the specified node
-		RemoveFailedNodeID(0x61,"RemoveFailedNodeID"),										// Mark a specified node id as failed
-		IsFailedNodeID(0x62,"IsFailedNodeID"),												// Check to see if a specified node has failed
-		ReplaceFailedNode(0x63,"ReplaceFailedNode"),										// Remove a failed node from the controller's list (?)
-		GetRoutingInfo(0x80,"GetRoutingInfo"),												// Get a specified node's neighbor information from the controller
-		LockRoute(0x90, "LockRoute"),
-		SerialApiSlaveNodeInfo(0xA0,"SerialApiSlaveNodeInfo"),								// Set application virtual slave node information
-		ApplicationSlaveCommandHandler(0xA1,"ApplicationSlaveCommandHandler"),				// Slave command handler
-		SendSlaveNodeInfo(0xA2,"ApplicationSlaveCommandHandler"),							// Send a slave node information frame
-		SendSlaveData(0xA3,"SendSlaveData"),												// Send data from slave
-		SetSlaveLearnMode(0xA4,"SetSlaveLearnMode"),										// Enter slave learn mode
-		GetVirtualNodes(0xA5,"GetVirtualNodes"),											// Return all virtual nodes
-		IsVirtualNode(0xA6,"IsVirtualNode"),												// Virtual node test
-		WatchDogEnable(0xB6, "WatchDogEnable"),
-		WatchDogDisable(0xB7, "WatchDogDisable"),
-		WatchDogKick(0xB6, "WatchDogKick"),
-		RfPowerLevelGet(0xBA,"RfPowerLevelSet"),											// Get RF Power level
-		GetLibraryType(0xBD, "GetLibraryType"),												// Gets the type of ZWave library on the stick
-		SendTestFrame(0xBE, "SendTestFrame"),												// Send a test frame to a node
-		GetProtocolStatus(0xBF, "GetProtocolStatus"),
-		SetPromiscuousMode(0xD0,"SetPromiscuousMode"),										// Set controller into promiscuous mode to listen to all frames
-		PromiscuousApplicationCommandHandler(0xD1,"PromiscuousApplicationCommandHandler");
-		
-		/**
-		 * A mapping between the integer code and its corresponding ZWaveMessage
-		 * value to facilitate lookup by code.
-		 */
-		private static Map<Integer, SerialMessageClass> codeToMessageClassMapping;
-
-		private int key;
-		private String label;
-
-		private SerialMessageClass(int key, String label) {
-			this.key = key;
-			this.label = label;
-		}
-
-		private static void initMapping() {
-			codeToMessageClassMapping = new HashMap<Integer, SerialMessageClass>();
-			for (SerialMessageClass s : values()) {
-				codeToMessageClassMapping.put(s.key, s);
-			}
-		}
-
-		/**
-		 * Lookup function based on the generic device class code.
-		 * @param i the code to lookup
-		 * @return enumeration value of the generic device class.
-		 */
-		public static SerialMessageClass getMessageClass(int i) {
-			if (codeToMessageClassMapping == null) {
-				initMapping();
-			}
-			return codeToMessageClassMapping.get(i);
-		}
-		
-		/**
-		 * Returns the enumeration key.
-		 * @return the key
-		 */
-		public int getKey() {
-			return key;
-		}
-
-		/**
-		 * Returns the enumeration label.
-		 * @return the label
-		 */
-		public String getLabel() {
-			return label;
-		}
-	}
-
+//	/**
+//	 * Indicates that the transaction for the incoming message is canceled by a command class
+//	 * @return the transActionCanceled
+//	 */
+//	public boolean isTransActionCanceled() {
+//		return transActionCanceled;
+//	}
+//
+//	/**
+//	 * Sets the transaction for the incoming message to canceled.
+//	 * @param transActionCanceled the transActionCanceled to set
+//	 */
+//	public void setTransActionCanceled(boolean transActionCanceled) {
+//		this.transActionCanceled = transActionCanceled;
+//	}
 }

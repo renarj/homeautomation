@@ -3,8 +3,9 @@ package com.oberasoftware.home.zwave.converter.actions;
 import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.zwave.api.actions.controller.RequestNodeInfoAction;
-import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
+import com.oberasoftware.home.zwave.messages.ControllerMessageType;
+import com.oberasoftware.home.zwave.messages.MessageType;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 
 import java.util.Set;
@@ -12,15 +13,13 @@ import java.util.Set;
 /**
  * @author renarj
  */
-public class RequestNodeInfoConverter implements ZWaveConverter<ZWaveAction, ZWaveRawMessage> {
+public class RequestNodeInfoConverter implements ZWaveConverter<RequestNodeInfoAction, ZWaveRawMessage> {
     @Override
-    public ZWaveRawMessage convert(ZWaveAction source) throws HomeAutomationException {
-        RequestNodeInfoAction nodeInfoAction = (RequestNodeInfoAction) source;
+    public ZWaveRawMessage convert(RequestNodeInfoAction nodeInfoAction) throws HomeAutomationException {
         int nodeId = nodeInfoAction.getNodeId();
 
         ZWaveRawMessage message = new ZWaveRawMessage(nodeId,
-                ZWaveRawMessage.SerialMessageClass.RequestNodeInfo, ZWaveRawMessage.SerialMessageType.Request,
-                ZWaveRawMessage.SerialMessageClass.ApplicationUpdate);
+                ControllerMessageType.RequestNodeInfo, MessageType.Request);
 
         byte[] newPayload = { (byte) nodeId };
         message.setMessagePayload(newPayload);
@@ -32,13 +31,5 @@ public class RequestNodeInfoConverter implements ZWaveConverter<ZWaveAction, ZWa
         return Sets.newHashSet(RequestNodeInfoAction.class.getSimpleName());
     }
 
-    @Override
-    public boolean isGenericConverter(ZWaveAction source) {
-        return false;
-    }
 
-    @Override
-    public boolean isSpecificConverter(ZWaveAction source) {
-        return source instanceof RequestNodeInfoAction;
-    }
 }

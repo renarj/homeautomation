@@ -91,6 +91,14 @@ public class SerialZWaveConnector implements ControllerConnector {
         joinUninterruptibly(senderThread);
         joinUninterruptibly(receiverThread);
 
+        try {
+            serialPort.getInputStream().close();
+            serialPort.getOutputStream().close();
+        } catch (IOException e) {
+            LOG.error("", e);
+        }
+
+
         serialPort.close();
         serialPort = null;
     }

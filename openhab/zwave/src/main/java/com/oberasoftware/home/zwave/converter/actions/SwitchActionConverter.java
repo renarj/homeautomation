@@ -7,6 +7,8 @@ import com.oberasoftware.home.zwave.ZWAVE_CONSTANTS;
 import com.oberasoftware.home.zwave.api.actions.SwitchAction;
 import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
+import com.oberasoftware.home.zwave.messages.ControllerMessageType;
+import com.oberasoftware.home.zwave.messages.MessageType;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 
 import java.util.Set;
@@ -26,8 +28,7 @@ public class SwitchActionConverter implements ZWaveConverter<SwitchAction, ZWave
         int nodeId = switchAction.getDevice().getNodeId();
         int command = switchAction.getDesiredState() == SwitchAction.STATE.ON ? 0xFF : 0x00;
 
-        ZWaveRawMessage message = new ZWaveRawMessage(nodeId, ZWaveRawMessage.SerialMessageClass.SendData,
-                ZWaveRawMessage.SerialMessageType.Request, ZWaveRawMessage.SerialMessageClass.SendData);
+        ZWaveRawMessage message = new ZWaveRawMessage(nodeId, ControllerMessageType.SendData, MessageType.Request);
         byte[] newPayload = { 	(byte) nodeId,
                 3, //message length
                 (byte) SWITCH_BINARY,
