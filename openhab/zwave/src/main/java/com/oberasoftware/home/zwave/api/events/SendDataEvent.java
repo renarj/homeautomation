@@ -22,6 +22,11 @@ public class SendDataEvent extends SendDataStateEvent {
     }
 
     @Override
+    public boolean isTransactionCompleted() {
+        return getState() == SEND_STATE.SUCCESS;
+    }
+
+    @Override
     public String toString() {
         return "SendDataEvent{" +
                 "nodeId=" + nodeId +

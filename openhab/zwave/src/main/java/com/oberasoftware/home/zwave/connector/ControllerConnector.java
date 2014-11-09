@@ -17,5 +17,7 @@ public interface ControllerConnector {
 
     void send(ZWaveRawMessage rawMessage);
 
+    void completeTransaction();
+
     boolean isConnected();
 }

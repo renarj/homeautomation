@@ -3,10 +3,10 @@ package com.oberasoftware.home;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.home.api.EventListener;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
+import com.oberasoftware.home.zwave.ZWaveController;
 import com.oberasoftware.home.zwave.api.actions.SwitchAction;
 import com.oberasoftware.home.zwave.api.events.ZWaveEvent;
 import com.oberasoftware.home.zwave.connector.SerialZWaveConnector;
-import com.oberasoftware.home.zwave.ZWaveController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,8 @@ public class ZWaveTest implements EventListener<ZWaveEvent> {
 
             LOG.info("Wait over, sending message");
             zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
-            Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
+            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.ON));
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 //            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
 
             LOG.info("Waiting another 20 seconds, before putting light off");
@@ -53,6 +54,7 @@ public class ZWaveTest implements EventListener<ZWaveEvent> {
 //            Thread.sleep(3000);
             LOG.info("Wait over, sending Off message");
             zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
+            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.OFF));
 //            Thread.sleep(5000);
 //            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
 

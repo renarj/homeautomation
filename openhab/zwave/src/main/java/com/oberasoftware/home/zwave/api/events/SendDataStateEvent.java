@@ -15,6 +15,11 @@ public class SendDataStateEvent implements ControllerEvent {
     }
 
     @Override
+    public boolean isTransactionCompleted() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "SendDataStateEvent{" +
                 "state=" + state +

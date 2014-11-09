@@ -66,8 +66,7 @@ public class SenderThread extends Thread implements EventListener<ZWaveMessage> 
     @Override
     public void run() {
         LOG.debug("Starting Z-Wave send thread");
-        while (!interrupted()) {
-
+        while (!isInterrupted()) {
             try {
                 LOG.debug("Message queue size: {}", senderTopic.size());
 
@@ -94,7 +93,7 @@ public class SenderThread extends Thread implements EventListener<ZWaveMessage> 
 
 
                 } else {
-                    LOG.debug("Sleep");
+                    LOG.debug("No topics to send, sleeping");
                     sleepUninterruptibly(1, TimeUnit.SECONDS);
                 }
             } catch (NoSuchElementException e1) {
@@ -159,6 +158,11 @@ public class SenderThread extends Thread implements EventListener<ZWaveMessage> 
         }
     }
 
+    public void completeTransaction() {
+        LOG.debug("Completing send transaction");
+        barrier.release();
+    }
+
     @Override
     public void receive(ZWaveMessage message) {
         if(message instanceof ByteMessage) {
@@ -168,6 +172,7 @@ public class SenderThread extends Thread implements EventListener<ZWaveMessage> 
             int receivedByte = byteMessage.getSingleByte();
             switch (receivedByte) {
                 case ACK:
+                    break;
                 case CAN:
                 case NAK:
                     LOG.debug("Got a ACK/CAN/NAK response: {}", receivedByte);

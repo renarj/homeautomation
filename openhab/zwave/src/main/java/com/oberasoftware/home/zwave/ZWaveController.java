@@ -1,7 +1,7 @@
 package com.oberasoftware.home.zwave;
 
-import com.oberasoftware.home.api.Topic;
 import com.oberasoftware.home.api.EventListener;
+import com.oberasoftware.home.api.Topic;
 import com.oberasoftware.home.api.TopicManager;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.core.TopicManagerImpl;
@@ -25,16 +25,18 @@ public class ZWaveController implements Controller, EventListener<ZWaveMessage> 
 
     private ControllerConnector connector;
 
-    private final ConverterHandler<ZWaveAction, ZWaveRawMessage> actionConverter;
-
     private final ConverterHandler<ZWaveRawMessage, ControllerEvent> controllerEventConverter;
 
     private final Topic<ControllerEvent> controllerEventTopic;
     private final Topic<ZWaveEvent> deviceEvents;
 
+    private final TopicManager topicManager = new TopicManagerImpl();
+
+    private TransactionManager transactionManager;
+
     public ZWaveController() {
-        TopicManager topicManager = new TopicManagerImpl();
-        actionConverter = new ConverterHandler<>(v -> v.getClass().getSimpleName());
+
+
         controllerEventConverter = new ConverterHandler<>(v -> v.getControllerMessageType().getLabel());
 
         controllerEventTopic = topicManager.provideTopic(ControllerEvent.class);
@@ -48,6 +50,8 @@ public class ZWaveController implements Controller, EventListener<ZWaveMessage> 
         LOG.info("Connecting to controller with connector: {}", connector);
         connector.connect();
         connector.subscribe(this);
+
+        this.transactionManager = new TransactionManagerImpl(connector);
     }
 
     @Override
@@ -70,9 +74,7 @@ public class ZWaveController implements Controller, EventListener<ZWaveMessage> 
 
     @Override
     public void send(ZWaveAction message) throws HomeAutomationException {
-        ZWaveRawMessage rawMessage = actionConverter.convert(message);
-
-        connector.send(rawMessage);
+        transactionManager.startAction(message);
     }
 
     @Override
@@ -83,8 +85,13 @@ public class ZWaveController implements Controller, EventListener<ZWaveMessage> 
             LOG.debug("Received a raw message from node: {}", ((ZWaveRawMessage) message).getNodeId());
 
             try {
-                ZWaveEvent event = controllerEventConverter.convert((ZWaveRawMessage) message);
+                ControllerEvent event = controllerEventConverter.convert((ZWaveRawMessage) message);
                 LOG.debug("Event received: {}", event);
+
+                if(event != null && event.isTransactionCompleted()) {
+                    transactionManager.completeTransaction(event);
+                }
+
             } catch (HomeAutomationException e) {
                 LOG.error("", e);
             }

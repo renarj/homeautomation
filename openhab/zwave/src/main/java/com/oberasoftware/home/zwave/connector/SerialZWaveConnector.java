@@ -1,15 +1,15 @@
 package com.oberasoftware.home.zwave.connector;
 
-import com.oberasoftware.home.api.Topic;
 import com.oberasoftware.home.api.EventListener;
+import com.oberasoftware.home.api.Topic;
 import com.oberasoftware.home.api.TopicManager;
 import com.oberasoftware.home.core.TopicManagerImpl;
+import com.oberasoftware.home.zwave.exceptions.ZWaveException;
 import com.oberasoftware.home.zwave.messages.ByteMessage;
+import com.oberasoftware.home.zwave.messages.ZWaveMessage;
+import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import com.oberasoftware.home.zwave.threading.ReceiverThread;
 import com.oberasoftware.home.zwave.threading.SenderThread;
-import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
-import com.oberasoftware.home.zwave.exceptions.ZWaveException;
-import com.oberasoftware.home.zwave.messages.ZWaveMessage;
 import gnu.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
-import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.ZWAVE_RECEIVE_TIMEOUT;
-import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.RECEIVER_TOPIC;
-import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.SENDER_TOPIC;
+import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.*;
 
 /**
  * @author renarj
@@ -70,7 +68,6 @@ public class SerialZWaveConnector implements ControllerConnector {
             this.senderThread.start();
 
             this.receiverTopic.subscribe(ByteMessage.class.getSimpleName(), senderThread);
-
             LOG.info("ZWave controller is connected");
         } catch (NoSuchPortException e) {
             throw new ZWaveException(String.format("Serial port %s does not exist", portName), e);
@@ -91,21 +88,20 @@ public class SerialZWaveConnector implements ControllerConnector {
         joinUninterruptibly(senderThread);
         joinUninterruptibly(receiverThread);
 
-        try {
-            serialPort.getInputStream().close();
-            serialPort.getOutputStream().close();
-        } catch (IOException e) {
-            LOG.error("", e);
-        }
-
-
         serialPort.close();
         serialPort = null;
     }
 
+
+
     @Override
     public void send(ZWaveRawMessage rawMessage) {
         this.senderTopic.push(rawMessage);
+    }
+
+    @Override
+    public void completeTransaction() {
+        senderThread.completeTransaction();
     }
 
     @Override
