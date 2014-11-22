@@ -6,30 +6,28 @@ import com.oberasoftware.home.zwave.api.events.ControllerEvent;
 import com.oberasoftware.home.zwave.connector.ControllerConnector;
 import com.oberasoftware.home.zwave.converter.ConverterHandler;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author renarj
  */
+@Component
 public class TransactionManagerImpl implements TransactionManager {
 
-    private final ControllerConnector connector;
+    @Autowired
+    private ControllerConnector connector;
+
+    @Autowired
+    private ConverterHandler<ZWaveAction, ZWaveRawMessage> converterHandler;
 
     private AtomicInteger callbackGenerator = new AtomicInteger(1);
 
-    private final ConverterHandler<ZWaveAction, ZWaveRawMessage> actionConverter;
-
-//    private Map<Integer, List<ZWaveAction>>
-
-    public TransactionManagerImpl(ControllerConnector connector) {
-        this.connector = connector;
-        this.actionConverter = new ConverterHandler<>(v -> v.getClass().getSimpleName());
-    }
-
     @Override
     public void startAction(ZWaveAction action) throws HomeAutomationException {
-        ZWaveRawMessage rawMessage = actionConverter.convert(action);
+        ZWaveRawMessage rawMessage = converterHandler.convert(v -> v.getClass().getSimpleName(), action);
         rawMessage.setCallbackId(getCallbackId());
         rawMessage.setTransmitOptions(0x01 | 0x04 | 0x20);
 
@@ -38,6 +36,11 @@ public class TransactionManagerImpl implements TransactionManager {
 
     @Override
     public void completeTransaction(ControllerEvent controllerEvent) throws HomeAutomationException {
+        connector.completeTransaction();
+    }
+
+    @Override
+    public void cancelTransaction() throws HomeAutomationException {
         connector.completeTransaction();
     }
 

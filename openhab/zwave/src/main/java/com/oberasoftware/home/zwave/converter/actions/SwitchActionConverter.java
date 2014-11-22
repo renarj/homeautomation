@@ -31,7 +31,7 @@ public class SwitchActionConverter implements ZWaveConverter<SwitchAction, ZWave
                 (byte) command
         };
 
-        message.setMessagePayload(newPayload);
+        message.setMessage(newPayload);
 
         return message;
     }

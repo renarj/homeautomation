@@ -1,7 +1,5 @@
 package com.oberasoftware.home.zwave.messages;
 
-import com.google.common.collect.Maps;
-import com.oberasoftware.home.zwave.messages.ControllerMessageType;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -13,15 +11,17 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * @author renarj
  */
-public class ControllerMessageUtil {
-    private static final Logger LOG = getLogger(ControllerMessageUtil.class);
+public class MessageUtil {
+    private static final Logger LOG = getLogger(MessageUtil.class);
 
-    private static final ControllerMessageUtil INSTANCE = new ControllerMessageUtil();
+    private static final MessageUtil INSTANCE = new MessageUtil();
 
     private final Map<Integer, ControllerMessageType> messagesMap = new HashMap<>();
+    private final Map<Integer, CommandClass> commandClassMap = new HashMap<>();
 
-    private ControllerMessageUtil() {
+    private MessageUtil() {
         newArrayList(ControllerMessageType.values()).forEach(m -> messagesMap.put(m.getKey(), m));
+        newArrayList(CommandClass.values()).forEach(m -> commandClassMap.put(m.getClassCode(), m));
     }
 
     /**
@@ -32,5 +32,10 @@ public class ControllerMessageUtil {
     public static ControllerMessageType getMessageClass(int i) {
         LOG.debug("Getting controller message type for device class: {}", Integer.toHexString(i));
         return INSTANCE.messagesMap.get(i);
+    }
+
+    public static CommandClass getCommandClass(int commandClassCode) {
+        LOG.debug("Getting command class for type: {}", commandClassCode);
+        return INSTANCE.commandClassMap.get(commandClassCode);
     }
 }

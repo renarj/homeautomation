@@ -22,7 +22,7 @@ public class RequestNodeInfoConverter implements ZWaveConverter<RequestNodeInfoA
                 ControllerMessageType.RequestNodeInfo, MessageType.Request);
 
         byte[] newPayload = { (byte) nodeId };
-        message.setMessagePayload(newPayload);
+        message.setMessage(newPayload);
         return message;
     }
 

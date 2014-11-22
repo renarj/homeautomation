@@ -1,45 +1,33 @@
 package com.oberasoftware.home.zwave.threading;
 
-import com.oberasoftware.home.api.Topic;
-import com.oberasoftware.home.api.TopicManager;
-import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
+import com.oberasoftware.home.api.events.EventBus;
+import com.oberasoftware.home.zwave.connector.SerialZWaveConnector;
 import com.oberasoftware.home.zwave.messages.ByteMessage;
-import com.oberasoftware.home.zwave.messages.ZWaveMessage;
+import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.NAK;
-import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.ACK;
-import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.SOF;
-import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.CAN;
+import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.*;
 
 /**
  * @author Renze de Vries
  */
+@Component
 public class ReceiverThread extends Thread {
     private static final Logger LOG = LoggerFactory.getLogger(ReceiverThread.class);
 
+    @Autowired
+    private EventBus eventBus;
 
-
-
-    private final InputStream inputStream;
-
-    private Topic<ZWaveMessage> receiverQueue;
-    private Topic<ZWaveMessage> senderQueue;
-
-    private OutputStream outputStream;
-
-    public ReceiverThread(TopicManager topicManager, InputStream inputStream, OutputStream outputStream) {
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
-        receiverQueue = topicManager.provideTopic(ZWaveMessage.class, "receiver");
-        senderQueue = topicManager.provideTopic(ZWaveMessage.class, "sender");
-    }
+    @Autowired
+    private SerialZWaveConnector serialZWaveConnector;
 
     /**
      * Sends 1 byte frame response.
@@ -47,12 +35,9 @@ public class ReceiverThread extends Thread {
      */
     private void sendResponse(int response) {
         try {
-//            senderQueue.push(new ByteMessage(response));
-//
-//            synchronized (serialPort.getOutputStream()) {
+            OutputStream outputStream = serialZWaveConnector.getOutputStream();
             outputStream.write(response);
             outputStream.flush();
-//            }
         } catch (IOException e) {
             LOG.error(e.getMessage());
         }
@@ -72,7 +57,7 @@ public class ReceiverThread extends Thread {
             return;
         }
 
-        receiverQueue.push(serialMessage);
+        eventBus.pushAsync(new MessageReceivedEvent(serialMessage));
     }
 
     /**
@@ -81,6 +66,8 @@ public class ReceiverThread extends Thread {
     @Override
     public void run() {
         LOG.debug("Starting Z-Wave receive thread");
+
+        InputStream inputStream = serialZWaveConnector.getInputStream();
 
         // Send a NAK to resynchronise communications
         sendResponse(NAK);
@@ -134,7 +121,7 @@ public class ReceiverThread extends Thread {
                 case NAK:
                 case CAN:
                     LOG.debug("Received a raw byte message: {}", nextByte);
-                    receiverQueue.push(new ByteMessage(nextByte));
+                    eventBus.pushAsync(new ByteMessage(nextByte));
                     break;
                 default:
                     LOG.warn(String.format("Unexpected message 0x%02X, sending NAK", nextByte));

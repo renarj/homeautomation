@@ -11,4 +11,6 @@ public interface TransactionManager {
     void startAction(ZWaveAction action) throws HomeAutomationException;
 
     void completeTransaction(ControllerEvent controllerEvent) throws HomeAutomationException;
+
+    void cancelTransaction() throws HomeAutomationException;
 }

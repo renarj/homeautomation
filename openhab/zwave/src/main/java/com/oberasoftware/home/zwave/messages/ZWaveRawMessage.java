@@ -8,16 +8,12 @@
  */
 package com.oberasoftware.home.zwave.messages;
 
-import com.oberasoftware.home.zwave.messages.ControllerMessageType;
-import com.oberasoftware.home.zwave.messages.ControllerMessageUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * This class represents a message which is used in serial API 
@@ -37,42 +33,24 @@ import java.util.concurrent.atomic.AtomicLong;
  * @since 1.3.0
  */
 public class ZWaveRawMessage implements ZWaveMessage {
+	private static final Logger LOG = LoggerFactory.getLogger(ZWaveRawMessage.class);
 
-	private static final Logger logger = LoggerFactory.getLogger(ZWaveRawMessage.class);
-	private final static AtomicLong sequence = new AtomicLong();
-
-	private long sequenceNumber;
-	private byte[] messagePayload;
-	private int messageLength = 0;
+	private byte[] message;
 	private MessageType messageType;
 	private ControllerMessageType controllerMessageType;
-//	private SerialMessageClass expectedReply;
 
 	private int messageNode = 255;
 	
 	private int transmitOptions = 0;
 	private int callbackId = 0;
-	
-	private boolean transActionCanceled = false;
+
+	private byte[] original;
 
 	/**
 	 * Indicates whether the serial message is valid.
 	 */
 	public boolean isValid = false;
-	
-	/**
-	 * Indicates the number of retry attempts left
-	 */
-	public int attempts = 3;
 
-	/**
-	 * Constructor. Creates a new instance of the SerialMessage class.
-	 */
-	public ZWaveRawMessage() {
-		logger.trace("Creating empty message");
-		messagePayload = new byte[] {};
-	}
-	
 	/**
 	 * Constructor. Creates a new instance of the SerialMessage class using the 
 	 * specified message class and message type. An expected reply can be given
@@ -97,12 +75,11 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * @param messageType the message type to use
 	 */
 	public ZWaveRawMessage(int nodeId, ControllerMessageType controllerMessageType, MessageType messageType) {
-		logger.debug(String.format("NODE %d: Creating empty message of class = %s (0x%02X), type = %s (0x%02X)",
-				new Object[] { nodeId, controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal()}));
-		this.sequenceNumber = sequence.getAndIncrement();
+		LOG.debug(String.format("NODE %d: Creating empty message of class = %s (0x%02X), type = %s (0x%02X)",
+				nodeId, controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal()));
 		this.controllerMessageType = controllerMessageType;
 		this.messageType = messageType;
-		this.messagePayload = new byte[] {};
+		this.message = new byte[] {};
 		this.messageNode = nodeId;
 	}
 
@@ -122,35 +99,40 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * @param buffer the buffer to create the SerialMessage from.
 	 */
 	public ZWaveRawMessage(int nodeId, byte[] buffer) {
-		logger.trace("NODE {}: Creating new SerialMessage from buffer = {}", nodeId, ZWaveRawMessage.bb2hex(buffer));
-		messageLength = buffer.length - 2; // buffer[1];
+		this.original = buffer;
+		LOG.trace("NODE {}: Creating new SerialMessage from buffer = {}", nodeId, ZWaveRawMessage.bb2hex(buffer));
+		int messageLength = buffer.length - 2; // buffer[1];
 		byte messageCheckSumm = calculateChecksum(buffer);
 		byte messageCheckSummReceived = buffer[messageLength+1];
-		logger.trace(String.format("NODE %d: Message checksum calculated = 0x%02X, received = 0x%02X", nodeId, messageCheckSumm, messageCheckSummReceived));
+		LOG.trace(String.format("NODE %d: Message checksum calculated = 0x%02X, received = 0x%02X", nodeId, messageCheckSumm, messageCheckSummReceived));
 		if (messageCheckSumm == messageCheckSummReceived) {
-			logger.trace("NODE {}: Checksum matched", nodeId);
+			LOG.trace("NODE {}: Checksum matched", nodeId);
 			isValid = true;
 		} else {
-			logger.trace("NODE {}: Checksum error", nodeId);
+			LOG.trace("NODE {}: Checksum error", nodeId);
 			isValid = false;
 			return;
 		}
 		this.messageType = buffer[2] == 0x00 ? MessageType.Request : MessageType.Response;
-		this.controllerMessageType = ControllerMessageUtil.getMessageClass(buffer[3] & 0xFF);
-		this.messagePayload = ArrayUtils.subarray(buffer, 4, messageLength + 1);
+		this.controllerMessageType = MessageUtil.getMessageClass(buffer[3] & 0xFF);
+		this.message = ArrayUtils.subarray(buffer, 4, messageLength + 1);
 		this.messageNode = nodeId;
-		logger.trace("NODE {}: Message payload = {}", getNodeId(), ZWaveRawMessage.bb2hex(messagePayload));
+		LOG.trace("NODE {}: Message payload = {}", getNodeId(), ZWaveRawMessage.bb2hex(message));
 	}
 
-    /**
+	public byte[] getOriginal() {
+		return original;
+	}
+
+	/**
      * Converts a byte array to a hexadecimal string representation    
-     * @param bb the byte array to convert
+     * @param buffer the byte array to convert
      * @return string the string representation
      */
-    static public String bb2hex(byte[] bb) {
+    static public String bb2hex(byte[] buffer) {
 		String result = "";
-		for (int i=0; i<bb.length; i++) {
-			result = result + String.format("%02X ", bb[i]);
+		for (byte b : buffer) {
+			result = result + String.format("%02X ", b);
 		}
 		return result;
 	}
@@ -165,31 +147,8 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		for (int i=1; i<buffer.length-1; i++) {
 			checkSum = (byte) (checkSum ^ buffer[i]);
 		}
-		logger.trace(String.format("Calculated checksum = 0x%02X", checkSum));
+		LOG.trace(String.format("Calculated checksum = 0x%02X", checkSum));
 		return checkSum;
-	}
-
-//	/**
-//	 * Returns a string representation of this SerialMessage object.
-//	 * The string contains message class, message type and buffer contents.
-//	 * {@inheritDoc}
-//	 */
-//	@Override
-//	public String toString() {
-//		return String.format("Message: class = %s (0x%02X), type = %s (0x%02X), payload = %s",
-//				new Object[] { controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal(),
-//				ZWaveRawMessage.bb2hex(this.getMessagePayload()) });
-//	};
-
-
-	@Override
-	public String toString() {
-		return "ZWaveRawMessage{" +
-				"messagePayload=" + bb2hex(this.getMessagePayload()) +
-				", messageType=" + messageType +
-				", controllerMessageType=" + controllerMessageType +
-				", messageNode=" + messageNode +
-				'}';
 	}
 
 	/**
@@ -200,7 +159,7 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		ByteArrayOutputStream resultByteBuffer = new ByteArrayOutputStream();
 		byte[] result;
 		resultByteBuffer.write((byte)0x01);
-		int messageLength = messagePayload.length + 
+		int messageLength = message.length +
 				(this.controllerMessageType == ControllerMessageType.SendData &&
 				this.messageType == MessageType.Request ? 5 : 3); // calculate and set length
 		
@@ -209,9 +168,9 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		resultByteBuffer.write((byte) controllerMessageType.getKey());
 		
 		try {
-			resultByteBuffer.write(messagePayload);
+			resultByteBuffer.write(message);
 		} catch (IOException e) {
-			
+			LOG.error("", e);
 		}
 
 		// callback ID and transmit options for a Send Data message.
@@ -224,21 +183,13 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		result = resultByteBuffer.toByteArray();
 		result[result.length - 1] = 0x01;
 		result[result.length - 1] = calculateChecksum(result);
-		logger.debug("Assembled message buffer = " + ZWaveRawMessage.bb2hex(result));
+		LOG.debug("Assembled message buffer = " + ZWaveRawMessage.bb2hex(result));
 		return result;
 	}
 	
-//	/**
-//	 * Gets the message type (Request / Response).
-//	 * @return the message type
-//	 */
-//	public SerialMessageType getMessageType() {
-//		return messageType;
-//	}
-
 	/**
 	 * Gets the message class. This is the function it represents.
-	 * @return
+	 * @return The type of controller message
 	 */
 	public ControllerMessageType getControllerMessageType() {
 		return controllerMessageType;
@@ -256,8 +207,8 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * Gets the message payload.
 	 * @return the message payload
 	 */
-	public byte[] getMessagePayload() {
-		return messagePayload;
+	public byte[] getMessage() {
+		return message;
 	}
 	
 	/**
@@ -266,16 +217,16 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * @param index the index of the byte to return.
 	 * @return an integer between 0x00 (0) and 0xFF (255).
 	 */
-	public int getMessagePayloadByte(int index) {
-		return messagePayload[index] & 0xFF;
+	public int getMessageByte(int index) {
+		return message[index] & 0xFF;
 	}
 	
 	/**
 	 * Sets the message payload.
-	 * @param messagePayload
+	 * @param message The byte message
 	 */
-	public void setMessagePayload(byte[] messagePayload) {
-		this.messagePayload = messagePayload;
+	public void setMessage(byte[] message) {
+		this.message = message;
 	}
 
 	/**
@@ -314,27 +265,13 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		return messageType;
 	}
 
-	//	/**
-//	 * Gets the expected reply for this message.
-//	 * @return the expectedReply
-//	 */
-//	public SerialMessageClass getExpectedReply() {
-//		return expectedReply;
-//	}
-
-//	/**
-//	 * Indicates that the transaction for the incoming message is canceled by a command class
-//	 * @return the transActionCanceled
-//	 */
-//	public boolean isTransActionCanceled() {
-//		return transActionCanceled;
-//	}
-//
-//	/**
-//	 * Sets the transaction for the incoming message to canceled.
-//	 * @param transActionCanceled the transActionCanceled to set
-//	 */
-//	public void setTransActionCanceled(boolean transActionCanceled) {
-//		this.transActionCanceled = transActionCanceled;
-//	}
+	@Override
+	public String toString() {
+		return "ZWaveRawMessage{" +
+				"message=" + bb2hex(this.getMessage()) +
+				", messageType=" + messageType +
+				", controllerMessageType=" + controllerMessageType +
+				", messageNode=" + messageNode +
+				'}';
+	}
 }

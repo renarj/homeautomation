@@ -1,6 +1,7 @@
 package com.oberasoftware.home.zwave.converter;
 
 import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -9,6 +10,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * @author renarj
  */
+@Component
 public class ConverterFactoryImpl implements ConverterFactory {
     private static final Logger LOG = getLogger(ConverterFactoryImpl.class);
 

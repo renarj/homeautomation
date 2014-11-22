@@ -1,6 +1,7 @@
 package com.oberasoftware.home.zwave.converter;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * @author renarj

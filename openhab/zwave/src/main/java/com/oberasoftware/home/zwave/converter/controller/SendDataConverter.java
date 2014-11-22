@@ -34,13 +34,13 @@ public class SendDataConverter implements ZWaveConverter<ZWaveRawMessage, SendDa
     public SendDataStateEvent convert(ZWaveRawMessage source) throws HomeAutomationException {
         switch(source.getMessageType()) {
             case Response:
-                SEND_STATE state = source.getMessagePayloadByte(0) != 0x00 ? SUCCESS : FAILED;
+                SEND_STATE state = source.getMessageByte(0) != 0x00 ? SUCCESS : FAILED;
 
                 LOG.debug("Received a response message with status: {}", state);
                 return new SendDataStateEvent(state);
             case Request:
-                int callbackId = source.getMessagePayloadByte(0);
-                TransmissionState transmissionState = TransmissionState.getTransmissionState(source.getMessagePayloadByte(1));
+                int callbackId = source.getMessageByte(0);
+                TransmissionState transmissionState = TransmissionState.getTransmissionState(source.getMessageByte(1));
 
                 LOG.debug("Received a request message for callback: ", callbackId);
                 return new SendDataEvent(source.getNodeId(), callbackId, transmissionState == TransmissionState.COMPLETE_OK ? SUCCESS : FAILED);

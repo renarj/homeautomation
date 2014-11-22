@@ -1,29 +1,23 @@
 package com.oberasoftware.home.zwave.converter;
 
-import com.oberasoftware.home.api.MessageConverter;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
  * @author renarj
  */
-public class ConverterHandler<S, T> implements MessageConverter<S, T> {
+@Component
+public class ConverterHandler<S, T> {
     private static final Logger LOG = LoggerFactory.getLogger(ConverterHandler.class);
 
     private static final ConverterFactory converterFactory = new ConverterFactoryImpl();
 
-    private Function<S, String> sourceTypeselector;
-
-    public ConverterHandler(Function<S, String> sourceTypeSelector) {
-        this.sourceTypeselector = sourceTypeSelector;
-    }
-
-    @Override
-    public T convert(S source) throws HomeAutomationException {
+    public T convert(Function<S, String> sourceTypeselector, S source) throws HomeAutomationException {
         String sourceConverterType = sourceTypeselector.apply(source);
         Optional<ZWaveConverter<S, T>> converter = converterFactory.createConverter(sourceConverterType);
 
