@@ -1,6 +1,6 @@
 package com.oberasoftware.home.zwave.converter.commandclass;
 
-import com.oberasoftware.home.zwave.api.events.ApplicationCommandEvent;
+import com.oberasoftware.home.zwave.api.events.controller.ApplicationCommandEvent;
 import com.oberasoftware.home.zwave.handlers.ApplicationCommandHandler;
 import com.oberasoftware.home.zwave.messages.CommandClass;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class MultiLevelSensorConverterTest {
      * ApplicationCommandEvent{nodeId=4, endpointId=1, commandClass=SENSOR_MULTILEVEL, payload=05 04 22 00 03 }
      */
     public void converterSensorReport() {
-        ApplicationCommandEvent event = new ApplicationCommandEvent(null, 4, 1, CommandClass.SENSOR_MULTILEVEL, new byte[] {0x05, 0x04, 0x22, 0x00, 0x6B});
+        ApplicationCommandEvent event = new ApplicationCommandEvent(4, 1, CommandClass.SENSOR_MULTILEVEL, new byte[] {0x05, 0x04, 0x22, 0x00, 0x6B});
         LOG.debug("Event: {}", event);
 
         new ApplicationCommandHandler().receive(event);

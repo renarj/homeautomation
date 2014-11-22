@@ -11,7 +11,7 @@ public enum ControllerMessageType {
     ApplicationCommandHandler(0x04,"ApplicationCommandHandler"),						// Handle application command
     GetControllerCapabilities(0x05,"GetControllerCapabilities"),						// Request controller capabilities (primary role, SUC/SIS availability)
     SerialApiSetTimeouts(0x06,"SerialApiSetTimeouts"),									// Set Serial API timeouts
-    SerialApiGetCapabilities(0x07,"SerialApiGetCapabilities"),							// Request Serial API capabilities
+    GetCapabilities(0x07,"GetCapabilities"),							                // Request Serial API capabilities from the controller
     SerialApiSoftReset(0x08,"SerialApiSoftReset"),										// Soft reset. Restarts Z-Wave chip
     RfReceiveMode(0x10,"RfReceiveMode"),												// Power down the RF section of the stick
     SetSleepMode(0x11,"SetSleepMode"),													// Set the CPU into sleep mode

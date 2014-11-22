@@ -1,5 +1,6 @@
-package com.oberasoftware.home.zwave.api.events;
+package com.oberasoftware.home.zwave.api.events.controller;
 
+import com.oberasoftware.home.zwave.api.events.ControllerEvent;
 import com.oberasoftware.home.zwave.messages.CommandClass;
 
 import static com.oberasoftware.home.zwave.messages.ZWaveRawMessage.bb2hex;
@@ -15,10 +16,7 @@ public class ApplicationCommandEvent implements ControllerEvent {
 
     private byte[] payload;
 
-    private byte[] original;
-
-    public ApplicationCommandEvent(byte[] original, int nodeId, int endpointId, CommandClass commandClass, byte[] payload) {
-        this.original = original;
+    public ApplicationCommandEvent(int nodeId, int endpointId, CommandClass commandClass, byte[] payload) {
         this.nodeId = nodeId;
         this.endpointId = endpointId;
         this.commandClass = commandClass;
@@ -49,7 +47,6 @@ public class ApplicationCommandEvent implements ControllerEvent {
     @Override
     public String toString() {
         return "ApplicationCommandEvent{" +
-                "original=" + bb2hex(original) +
                 "nodeId=" + nodeId +
                 ", endpointId=" + endpointId +
                 ", commandClass=" + commandClass.getLabel() +

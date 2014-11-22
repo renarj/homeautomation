@@ -44,8 +44,6 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	private int transmitOptions = 0;
 	private int callbackId = 0;
 
-	private byte[] original;
-
 	/**
 	 * Indicates whether the serial message is valid.
 	 */
@@ -99,7 +97,6 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * @param buffer the buffer to create the SerialMessage from.
 	 */
 	public ZWaveRawMessage(int nodeId, byte[] buffer) {
-		this.original = buffer;
 		LOG.trace("NODE {}: Creating new SerialMessage from buffer = {}", nodeId, ZWaveRawMessage.bb2hex(buffer));
 		int messageLength = buffer.length - 2; // buffer[1];
 		byte messageCheckSumm = calculateChecksum(buffer);
@@ -118,10 +115,6 @@ public class ZWaveRawMessage implements ZWaveMessage {
 		this.message = ArrayUtils.subarray(buffer, 4, messageLength + 1);
 		this.messageNode = nodeId;
 		LOG.trace("NODE {}: Message payload = {}", getNodeId(), ZWaveRawMessage.bb2hex(message));
-	}
-
-	public byte[] getOriginal() {
-		return original;
 	}
 
 	/**

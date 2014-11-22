@@ -1,5 +1,9 @@
 com.oberasoftware.home.zwave.converter.actions.SwitchActionConverter
-com.oberasoftware.home.zwave.converter.actions.RequestNodeInfoConverter
+com.oberasoftware.home.zwave.converter.actions.controller.RequestNodeInfoConverter
+com.oberasoftware.home.zwave.converter.actions.controller.ControllerCapabilitiesActionConverter
+com.oberasoftware.home.zwave.converter.actions.controller.ControllerInitialDataActionConverter
 com.oberasoftware.home.zwave.converter.controller.SendDataConverter
 com.oberasoftware.home.zwave.converter.controller.ApplicationCommandConverter
 com.oberasoftware.home.zwave.converter.commandclass.MultiLevelSensorConverter
+com.oberasoftware.home.zwave.converter.controller.ControllerInformationConverter
+com.oberasoftware.home.zwave.converter.controller.ControllerInitialDataConverter

@@ -17,4 +17,11 @@ public class MessageReceivedEvent implements ZWaveEvent {
     public ZWaveRawMessage getReceivedMessage() {
         return receivedMessage;
     }
+
+    @Override
+    public String toString() {
+        return "MessageReceivedEvent{" +
+                "receivedMessage=" + receivedMessage +
+                '}';
+    }
 }

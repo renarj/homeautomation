@@ -1,12 +1,12 @@
 package com.oberasoftware.home.zwave.api.actions;
 
-import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.api.ZWaveDevice;
+import com.oberasoftware.home.zwave.api.ZWaveDeviceAction;
 
 /**
  * @author renarj
  */
-public class SwitchAction implements ZWaveAction {
+public class SwitchAction implements ZWaveDeviceAction {
 
     public enum STATE {
         ON,

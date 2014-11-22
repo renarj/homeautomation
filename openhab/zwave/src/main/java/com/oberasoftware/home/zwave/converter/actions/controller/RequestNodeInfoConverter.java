@@ -1,4 +1,4 @@
-package com.oberasoftware.home.zwave.converter.actions;
+package com.oberasoftware.home.zwave.converter.actions.controller;
 
 import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;

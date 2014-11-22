@@ -2,7 +2,7 @@ package com.oberasoftware.home.zwave.converter.commandclass;
 
 import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
-import com.oberasoftware.home.zwave.api.events.ApplicationCommandEvent;
+import com.oberasoftware.home.zwave.api.events.controller.ApplicationCommandEvent;
 import com.oberasoftware.home.zwave.api.events.DeviceEvent;
 import com.oberasoftware.home.zwave.api.events.DeviceSensorEvent;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;

@@ -3,7 +3,7 @@ package com.oberasoftware.home.zwave.converter.controller;
 import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.zwave.messages.CommandClass;
-import com.oberasoftware.home.zwave.api.events.ApplicationCommandEvent;
+import com.oberasoftware.home.zwave.api.events.controller.ApplicationCommandEvent;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
 import com.oberasoftware.home.zwave.messages.ControllerMessageType;
 import com.oberasoftware.home.zwave.messages.MessageUtil;
@@ -35,6 +35,6 @@ public class ApplicationCommandConverter implements ZWaveConverter<ZWaveRawMessa
 
         byte[] message = source.getMessage();
 
-        return new ApplicationCommandEvent(source.getOriginal(), nodeId, DEFAULT_ENDPOINT_ID, commandClass, Arrays.copyOfRange(message, MESSAGE_OFFSET, message.length));
+        return new ApplicationCommandEvent(nodeId, DEFAULT_ENDPOINT_ID, commandClass, Arrays.copyOfRange(message, MESSAGE_OFFSET, message.length));
     }
 }

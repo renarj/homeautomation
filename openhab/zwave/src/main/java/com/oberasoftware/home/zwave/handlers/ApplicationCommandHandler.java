@@ -3,7 +3,7 @@ package com.oberasoftware.home.zwave.handlers;
 import com.oberasoftware.home.api.EventListener;
 import com.oberasoftware.home.api.events.Subscribe;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
-import com.oberasoftware.home.zwave.api.events.ApplicationCommandEvent;
+import com.oberasoftware.home.zwave.api.events.controller.ApplicationCommandEvent;
 import com.oberasoftware.home.zwave.api.events.DeviceEvent;
 import com.oberasoftware.home.zwave.api.events.SendDataEvent;
 import com.oberasoftware.home.zwave.converter.ConverterFactory;

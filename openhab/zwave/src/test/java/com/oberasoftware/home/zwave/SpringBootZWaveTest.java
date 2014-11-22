@@ -2,7 +2,8 @@ package com.oberasoftware.home.zwave;
 
 import com.oberasoftware.home.api.EventListener;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
-import com.oberasoftware.home.zwave.api.actions.SwitchAction;
+import com.oberasoftware.home.zwave.api.actions.controller.ControllerCapabilitiesAction;
+import com.oberasoftware.home.zwave.api.actions.controller.ControllerInitialDataAction;
 import com.oberasoftware.home.zwave.api.events.ZWaveEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,15 +56,17 @@ public class SpringBootZWaveTest implements EventListener<ZWaveEvent> {
 //            this.zWaveController.send(new RequestNodeInfoAction(4));
 
             LOG.info("Wait over, sending message");
-            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
-            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.ON));
+            zWaveController.send(new ControllerCapabilitiesAction());
+            zWaveController.send(new ControllerInitialDataAction());
+//            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
+//            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.ON));
 
             LOG.info("Waiting a bit to switch off so we can see some visual effect");
             sleepUninterruptibly(5, TimeUnit.SECONDS);
 
             LOG.info("Wait over, sending Off message");
-            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
-            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.OFF));
+//            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
+//            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.OFF));
 
 
             LOG.info("Light off, preparing for shutdown in a bit");
