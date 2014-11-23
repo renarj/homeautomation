@@ -52,8 +52,7 @@
 
     <modules>
         <module>data_monitors/youless</module>
-        <!--<module>openhab/org.openhab.binding.zwave</module>-->
-        <module>openhab/zwave</module>
+        <module>home_zwave</module>
     </modules>
 
     <build>
