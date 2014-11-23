@@ -4,8 +4,8 @@ import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.zwave.api.events.controller.ControllerInitialDataEvent;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
-import com.oberasoftware.home.zwave.messages.ControllerMessageType;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
+import com.oberasoftware.home.zwave.messages.types.ControllerMessageType;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ControllerInitialDataConverter implements ZWaveConverter<ZWaveRawMessage, ControllerInitialDataEvent> {
     private static final Logger LOG = getLogger(ControllerInitialDataConverter.class);
 
-    private static final int NODE_BYTES = 29; // 29 bytes = 232 bits, one for each supported node by Z-Wave;
+    private static final int NODE_BYTES_REQUIRED_LENGTH = 29; // 29 bytes = 232 bits, one for each supported node by Z-Wave;
 
     @Override
     public Set<String> getSupportedTypeNames() {
@@ -30,14 +30,14 @@ public class ControllerInitialDataConverter implements ZWaveConverter<ZWaveRawMe
     @Override
     public ControllerInitialDataEvent convert(ZWaveRawMessage message) throws HomeAutomationException {
         LOG.debug("Got MessageSerialApiGetInitData response: {}", message);
-        int nodeBytes = message.getMessageByte(2);
+        int nodeByteLenght = message.getMessageByte(2);
 
-        if (nodeBytes == NODE_BYTES) {
+        if (nodeByteLenght == NODE_BYTES_REQUIRED_LENGTH) {
             int nodeId = 1;
 
             List<Integer> nodeIds = new ArrayList<>();
             // loop bytes
-            for (int i = 3; i < 3 + nodeBytes;i++) {
+            for (int i = 3; i < 3 + nodeByteLenght;i++) {
                 int incomingByte = message.getMessageByte(i);
                 // loop bits in byte
                 for (int j=0;j<8;j++) {
@@ -58,7 +58,7 @@ public class ControllerInitialDataConverter implements ZWaveConverter<ZWaveRawMe
 
             return new ControllerInitialDataEvent(controllerMode, controllerType, nodeIds);
         } else {
-            LOG.error("Invalid number of node bytes: {}", nodeBytes);
+            LOG.error("Invalid number of node bytes: {}", nodeByteLenght);
             return null;
         }
 

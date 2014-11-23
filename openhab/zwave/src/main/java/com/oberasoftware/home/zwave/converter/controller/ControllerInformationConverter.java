@@ -4,9 +4,9 @@ import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.zwave.api.events.controller.ControllerInformationEvent;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
-import com.oberasoftware.home.zwave.messages.CommandClass;
-import com.oberasoftware.home.zwave.messages.ControllerMessageType;
-import com.oberasoftware.home.zwave.messages.MessageUtil;
+import com.oberasoftware.home.zwave.messages.types.CommandClass;
+import com.oberasoftware.home.zwave.messages.types.ControllerMessageType;
+import com.oberasoftware.home.zwave.core.utils.MessageUtil;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import org.slf4j.Logger;
 

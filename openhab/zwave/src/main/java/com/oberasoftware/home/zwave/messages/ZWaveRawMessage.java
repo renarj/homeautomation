@@ -8,12 +8,17 @@
  */
 package com.oberasoftware.home.zwave.messages;
 
+import com.oberasoftware.home.zwave.core.utils.MessageUtil;
+import com.oberasoftware.home.zwave.messages.types.ControllerMessageType;
+import com.oberasoftware.home.zwave.messages.types.MessageType;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static java.lang.Integer.toHexString;
 
 /**
  * This class represents a message which is used in serial API 
@@ -73,12 +78,17 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 * @param messageType the message type to use
 	 */
 	public ZWaveRawMessage(int nodeId, ControllerMessageType controllerMessageType, MessageType messageType) {
-		LOG.debug(String.format("NODE %d: Creating empty message of class = %s (0x%02X), type = %s (0x%02X)",
-				nodeId, controllerMessageType, controllerMessageType.getKey(), messageType, messageType.ordinal()));
+		this(nodeId, controllerMessageType, messageType, new byte[] {});
+	}
+
+	public ZWaveRawMessage(int nodeId, ControllerMessageType controllerMessageType, MessageType messageType, byte[] message) {
+		LOG.debug("Node Message: {} Creating message type: {} {}, type = {}",
+				nodeId, controllerMessageType, toHexString(controllerMessageType.getKey()), messageType);
 		this.controllerMessageType = controllerMessageType;
 		this.messageType = messageType;
-		this.message = new byte[] {};
+		this.message = message;
 		this.messageNode = nodeId;
+
 	}
 
 	/**

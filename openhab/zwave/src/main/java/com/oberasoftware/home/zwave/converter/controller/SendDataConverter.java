@@ -7,8 +7,8 @@ import com.oberasoftware.home.zwave.api.events.SendDataEvent;
 import com.oberasoftware.home.zwave.api.events.SendDataStateEvent;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
 import com.oberasoftware.home.zwave.exceptions.ZWaveConverterException;
-import com.oberasoftware.home.zwave.messages.ControllerMessageType;
-import com.oberasoftware.home.zwave.messages.TransmissionState;
+import com.oberasoftware.home.zwave.messages.types.ControllerMessageType;
+import com.oberasoftware.home.zwave.messages.types.TransmissionState;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import org.slf4j.Logger;
 

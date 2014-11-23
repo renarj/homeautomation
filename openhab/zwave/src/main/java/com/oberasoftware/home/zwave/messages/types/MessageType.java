@@ -1,4 +1,4 @@
-package com.oberasoftware.home.zwave.messages;
+package com.oberasoftware.home.zwave.messages.types;
 
 /**
  * @author renarj

@@ -5,6 +5,7 @@ import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerCapabilitiesAction;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerInitialDataAction;
 import com.oberasoftware.home.zwave.api.events.ZWaveEvent;
+import com.oberasoftware.home.zwave.core.NodeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class SpringBootZWaveTest implements EventListener<ZWaveEvent> {
 
     @Autowired
     private ZWaveController zWaveController;
+
+    @Autowired
+    private NodeManager nodeManager;
 
     @Autowired
     private ApplicationContext context;
@@ -71,6 +75,8 @@ public class SpringBootZWaveTest implements EventListener<ZWaveEvent> {
 
             LOG.info("Light off, preparing for shutdown in a bit");
             sleepUninterruptibly(3, TimeUnit.SECONDS);
+
+            nodeManager.getNodes().forEach(n -> LOG.debug("We have a node: {}", n.getNodeId()));
 
 //            zWaveController.disconnect();
         } catch (HomeAutomationException e) {

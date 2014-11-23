@@ -1,9 +1,10 @@
-package com.oberasoftware.home.zwave.core;
+package com.oberasoftware.home.zwave.core.impl;
 
 import com.oberasoftware.home.api.EventListener;
 import com.oberasoftware.home.api.events.EventBus;
 import com.oberasoftware.home.api.events.Subscribe;
 import com.oberasoftware.home.api.exceptions.EventException;
+import com.oberasoftware.home.zwave.core.HandlerEntry;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

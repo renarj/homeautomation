@@ -6,10 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package com.oberasoftware.home.zwave.messages;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.oberasoftware.home.zwave.messages.types;
 
 /**
  * Transmission state enumeration. Indicates the transmission state of the message to the node.

@@ -6,7 +6,7 @@ import com.oberasoftware.home.zwave.api.events.controller.ApplicationCommandEven
 import com.oberasoftware.home.zwave.api.events.DeviceEvent;
 import com.oberasoftware.home.zwave.api.events.DeviceSensorEvent;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
-import com.oberasoftware.home.zwave.messages.CommandClass;
+import com.oberasoftware.home.zwave.messages.types.CommandClass;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;

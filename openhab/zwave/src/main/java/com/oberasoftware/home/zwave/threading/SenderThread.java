@@ -96,7 +96,7 @@ public class SenderThread extends Thread {
                 LOG.debug("Sleep no queue elements");
                 sleepUninterruptibly(1, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                LOG.error("", e);
+                LOG.error("Thread was interrupted, stopping");
             }
         }
         LOG.debug("Stopped Z-Wave send thread");

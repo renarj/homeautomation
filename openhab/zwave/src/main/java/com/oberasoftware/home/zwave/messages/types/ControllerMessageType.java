@@ -1,4 +1,4 @@
-package com.oberasoftware.home.zwave.messages;
+package com.oberasoftware.home.zwave.messages.types;
 
 /**
  * The enum was copied from the openhab zwave addon as it was functionally mostly complete

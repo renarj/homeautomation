@@ -1,7 +1,7 @@
 package com.oberasoftware.home.zwave.connector;
 
 import com.oberasoftware.home.api.exceptions.RuntimeAutomationException;
-import com.oberasoftware.home.utils.IOSupplier;
+import com.oberasoftware.home.zwave.core.utils.IOSupplier;
 import com.oberasoftware.home.zwave.exceptions.ZWaveException;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import com.oberasoftware.home.zwave.threading.ReceiverThread;

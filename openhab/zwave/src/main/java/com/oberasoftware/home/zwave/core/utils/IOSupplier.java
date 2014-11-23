@@ -1,4 +1,4 @@
-package com.oberasoftware.home.utils;
+package com.oberasoftware.home.zwave.core.utils;
 
 import java.io.IOException;
 

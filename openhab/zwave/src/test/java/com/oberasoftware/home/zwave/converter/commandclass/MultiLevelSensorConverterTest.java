@@ -2,7 +2,7 @@ package com.oberasoftware.home.zwave.converter.commandclass;
 
 import com.oberasoftware.home.zwave.api.events.controller.ApplicationCommandEvent;
 import com.oberasoftware.home.zwave.handlers.ApplicationCommandHandler;
-import com.oberasoftware.home.zwave.messages.CommandClass;
+import com.oberasoftware.home.zwave.messages.types.CommandClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 

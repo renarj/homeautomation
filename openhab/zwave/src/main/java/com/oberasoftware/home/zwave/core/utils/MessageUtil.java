@@ -1,5 +1,7 @@
-package com.oberasoftware.home.zwave.messages;
+package com.oberasoftware.home.zwave.core.utils;
 
+import com.oberasoftware.home.zwave.messages.types.CommandClass;
+import com.oberasoftware.home.zwave.messages.types.ControllerMessageType;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
