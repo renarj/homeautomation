@@ -9,7 +9,9 @@
     </appender>
 
 
-    <logger name="com.oberasoftware" level="debug"/>
+    <logger name="com.oberasoftware" level="info"/>
+    <logger name="com.oberasoftware.home.zwave.SpringBootZWaveTest" level="debug"/>
+    <logger name="com.oberasoftware.home.zwave.rules" level="debug"/>
     <logger name="com.oberasoftware.home.zwave.threading" level="error"/>
     <logger name="com.oberasoftware.home.zwave.core.utils" level="error"/>
     <logger name="com.oberasoftware.home.zwave.converter" level="error"/>

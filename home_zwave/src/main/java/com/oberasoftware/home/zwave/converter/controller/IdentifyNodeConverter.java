@@ -27,26 +27,13 @@ public class IdentifyNodeConverter implements ZWaveConverter<ZWaveRawMessage, No
     public NodeInformationEvent convert(ZWaveRawMessage source) throws HomeAutomationException {
         LOG.debug("Handling incoming node information event: {}", source);
 
-//        int nodeId = lastSentMessage.getMessagePayloadByte(0);
-//        LOG.debug("NODE {}: ProtocolInfo", nodeId);
-//
-//        ZWaveNode node = zController.getNode(nodeId);
-//
-//        boolean listening = (incomingMessage.getMessagePayloadByte(0) & 0x80)!=0 ? true : false;
-//        boolean routing = (incomingMessage.getMessagePayloadByte(0) & 0x40)!=0 ? true : false;
-//        int version = (incomingMessage.getMessagePayloadByte(0) & 0x07) + 1;
-//        boolean frequentlyListening = (incomingMessage.getMessagePayloadByte(1) & 0x60)!= 0 ? true : false;
-//
-//        LOG.debug("NODE {}: Listening = {}", nodeId, listening);
-//        LOG.debug("NODE {}: Routing = {}", nodeId, routing);
-//        LOG.debug("NODE {}: Version = {}", nodeId, version);
-//        LOG.debug("NODE {}: fLIRS = {}", nodeId, frequentlyListening);
-//
-//        node.setListening(listening);
-//        node.setRouting(routing);
-//        node.setVersion(version);
-//        node.setFrequentlyListening(frequentlyListening);
-//
+        byte[] message = source.getMessage();
+
+        boolean listening = (message[0] & 0x80) != 0;
+        boolean routing = (message[0] & 0x40) != 0;
+        int version = (message[0] & 0x07) + 1;
+        boolean frequentlyListening = (message[1] & 0x60) != 0;
+
 //        ZWaveDeviceClass.Basic basic = ZWaveDeviceClass.Basic.getBasic(incomingMessage.getMessagePayloadByte(3));
 //        if (basic == null) {
 //            LOG.error(String.format("NODE %d: Basic device class 0x%02x not found", nodeId, incomingMessage.getMessagePayloadByte(3)));
@@ -76,6 +63,6 @@ public class IdentifyNodeConverter implements ZWaveConverter<ZWaveRawMessage, No
 //        // advance node stage of the current node.
 //        node.advanceNodeStage(NodeStage.PING);
 
-        return new NodeInformationEvent();
+        return new NodeInformationEvent(listening, frequentlyListening, routing, version);
     }
 }

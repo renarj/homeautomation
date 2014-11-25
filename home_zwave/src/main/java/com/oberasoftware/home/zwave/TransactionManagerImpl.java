@@ -5,6 +5,7 @@ import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.api.events.ControllerEvent;
 import com.oberasoftware.home.zwave.connector.ControllerConnector;
 import com.oberasoftware.home.zwave.converter.ConverterHandler;
+import com.oberasoftware.home.zwave.core.NodeManager;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ public class TransactionManagerImpl implements TransactionManager {
 
     @Autowired
     private ControllerConnector connector;
+
+    @Autowired
+    private NodeManager nodeManager;
 
     @Autowired
     private ConverterHandler<ZWaveAction, ZWaveRawMessage> converterHandler;

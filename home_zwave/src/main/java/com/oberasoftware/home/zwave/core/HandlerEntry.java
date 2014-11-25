@@ -30,4 +30,12 @@ public class HandlerEntry {
             throw new RuntimeEventException("Unable to execute event listener", e);
         }
     }
+
+    public Method getEventMethod() {
+        return eventMethod;
+    }
+
+    public Object getListenerInstance() {
+        return listenerInstance;
+    }
 }

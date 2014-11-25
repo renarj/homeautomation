@@ -1,5 +1,6 @@
 package com.oberasoftware.home.zwave.core.impl;
 
+import com.google.common.reflect.TypeToken;
 import com.oberasoftware.home.api.EventListener;
 import com.oberasoftware.home.api.events.EventBus;
 import com.oberasoftware.home.api.events.Subscribe;
@@ -11,9 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,8 +60,18 @@ public class EventBusImpl implements EventBus {
     }
 
     private void notifyEventListeners(Object event) {
-        List<HandlerEntry> handlers = eventHandlers.getOrDefault(event.getClass(), new ArrayList<>());
-        handlers.forEach(h -> h.executeHandler(event));
+        Set<String> handlersExecuted = new HashSet<>();
+        TypeToken.of(event.getClass()).getTypes().forEach(o -> {
+            List<HandlerEntry> handlers = eventHandlers.getOrDefault(o.getRawType(), new ArrayList<>());
+            handlers.forEach(h -> {
+                String handlerClass = h.getListenerInstance().getClass().getName();
+
+                if(!handlersExecuted.contains(handlerClass)) {
+                    handlersExecuted.add(handlerClass);
+                    h.executeHandler(event);
+                }
+            });
+        });
     }
 
     @Override
@@ -75,14 +84,6 @@ public class EventBusImpl implements EventBus {
         stream(eventListenerClass.getMethods())
                 .filter(m -> m.getName().equals("receive") || m.getDeclaredAnnotation(Subscribe.class) != null)
                 .forEach(m -> addEventHandler(listenerInstance, m));
-
-//        for(Method method : eventListenerClass.getMethods()) {
-//            if(method.getName().equals("receive") && !method.isBridge()) {
-//                addEventHandler(method);
-//            } else if(method.getDeclaredAnnotation(Subscribe.class) != null) {
-//                addEventHandler(method);
-//            }
-//        }
     }
 
     private void addEventHandler(Object listenerInstance, Method method) {

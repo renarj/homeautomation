@@ -7,8 +7,10 @@ com.oberasoftware.home.zwave.converter.actions.controller.ControllerCapabilities
 com.oberasoftware.home.zwave.converter.actions.controller.ControllerInitialDataActionConverter
 com.oberasoftware.home.zwave.converter.actions.controller.IdentifyNodeActionConverter
 
+
 #Sensor converters
 com.oberasoftware.home.zwave.converter.commandclass.MultiLevelSensorConverter
+com.oberasoftware.home.zwave.converter.commandclass.BinarySensorConverter
 
 #Controller converters
 com.oberasoftware.home.zwave.converter.controller.SendDataConverter

@@ -4,7 +4,6 @@ import com.oberasoftware.home.api.events.EventBus;
 import com.oberasoftware.home.zwave.connector.SerialZWaveConnector;
 import com.oberasoftware.home.zwave.messages.ByteMessage;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
-import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static com.oberasoftware.home.zwave.ZWAVE_CONSTANTS.*;
+import static com.oberasoftware.home.zwave.messages.ZWaveRawMessage.bb2hex;
 
 /**
  * @author Renze de Vries
@@ -114,7 +114,7 @@ public class ReceiverThread extends Thread {
                     }
 
                     LOG.trace("Reading message finished");
-                    LOG.debug("Receive Message = {}", SerialMessage.bb2hex(buffer));
+                    LOG.debug("Receive Message = {}", bb2hex(buffer));
                     processIncomingMessage(buffer);
                     break;
                 case ACK:
