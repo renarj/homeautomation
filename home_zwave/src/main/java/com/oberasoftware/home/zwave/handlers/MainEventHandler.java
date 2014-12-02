@@ -33,7 +33,7 @@ public class MainEventHandler implements EventListener<MessageReceivedEvent> {
     @Override
     public void receive(MessageReceivedEvent receivedMessage) {
         ZWaveRawMessage zWaveRawMessage = receivedMessage.getReceivedMessage();
-        LOG.debug("Received a raw message from node: {}", zWaveRawMessage.getNodeId());
+        LOG.debug("Received a raw message: {}", zWaveRawMessage);
 
         try {
             ControllerEvent event = converterHandler.convert(r -> r.getControllerMessageType().getLabel(), zWaveRawMessage);

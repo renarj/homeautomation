@@ -83,6 +83,7 @@ public class EventBusImpl implements EventBus {
         Class<?> eventListenerClass = listenerInstance.getClass();
         stream(eventListenerClass.getMethods())
                 .filter(m -> m.getName().equals("receive") || m.getDeclaredAnnotation(Subscribe.class) != null)
+                .filter(m -> !m.isBridge())
                 .forEach(m -> addEventHandler(listenerInstance, m));
     }
 

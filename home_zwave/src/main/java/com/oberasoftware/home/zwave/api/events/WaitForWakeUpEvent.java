@@ -16,4 +16,15 @@ public class WaitForWakeUpEvent implements ZWaveAction {
     public ZWaveDeviceAction getDeviceAction() {
         return deviceAction;
     }
+
+    public int getNodeId() {
+        return deviceAction.getNodeId();
+    }
+
+    @Override
+    public String toString() {
+        return "WaitForWakeUpEvent{" +
+                "deviceAction=" + deviceAction +
+                '}';
+    }
 }

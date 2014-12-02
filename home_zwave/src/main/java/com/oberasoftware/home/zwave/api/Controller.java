@@ -7,7 +7,11 @@ import com.oberasoftware.home.api.exceptions.HomeAutomationException;
  * @author renarj
  */
 public interface Controller {
+    int getControllerId();
+
     <T> void subscribe(EventListener<T> topicListener);
 
-    void send(ZWaveAction message) throws HomeAutomationException;
+    int send(ZWaveAction message) throws HomeAutomationException;
+
+    boolean isNetworkReady();
 }

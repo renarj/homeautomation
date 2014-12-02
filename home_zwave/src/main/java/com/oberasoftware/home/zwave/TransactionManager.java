@@ -8,7 +8,7 @@ import com.oberasoftware.home.zwave.api.events.ControllerEvent;
  * @author renarj
  */
 public interface TransactionManager {
-    void startAction(ZWaveAction action) throws HomeAutomationException;
+    int startAction(ZWaveAction action) throws HomeAutomationException;
 
     void completeTransaction(ControllerEvent controllerEvent) throws HomeAutomationException;
 

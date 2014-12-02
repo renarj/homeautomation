@@ -16,4 +16,8 @@ public interface ZWaveNode {
     default NodeInformationEvent getNodeInformation() {
         throw new NotImplementedException("No node information is known");
     }
+
+    default ZWaveNode setStatus(NodeStatus status) {
+        throw new NotImplementedException("Can not set status on unidentified device status");
+    }
 }

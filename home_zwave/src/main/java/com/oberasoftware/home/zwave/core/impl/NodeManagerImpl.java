@@ -29,13 +29,30 @@ public class NodeManagerImpl implements NodeManager {
     }
 
     @Override
+    public void registerNode(ZWaveNode node) {
+        nodeMap.putIfAbsent(node.getNodeId(), node);
+    }
+
+    @Override
     public void markDead(int nodeId) {
 
     }
 
     @Override
+    public boolean haveNodeMinimalStatus(NodeStatus nodeStatus) {
+        return nodeMap.values().stream().allMatch(v -> v.getNodeStatus().hasMinimalStatus(nodeStatus));
+    }
+
+    @Override
     public NodeStatus getNodeStatus(int nodeId) {
-        return null;
+        return getNode(nodeId).getNodeStatus();
+    }
+
+    @Override
+    public ZWaveNode setNodeStatus(int nodeId, NodeStatus nodeStatus) {
+        ZWaveNode node = getNode(nodeId);
+
+        return replaceOrSetNode(node.setStatus(nodeStatus));
     }
 
     @Override
@@ -45,11 +62,13 @@ public class NodeManagerImpl implements NodeManager {
 
     @Override
     public void setNodeInformation(int nodeId, NodeInformationEvent nodeInformationEvent) {
-        nodeMap.putIfAbsent(nodeId, new BasicNode(nodeId));
-        if(nodeMap.get(nodeId) instanceof BasicNode) {
-            LOG.debug("Upgrading node: {} to identified node with information: {}", nodeId, nodeInformationEvent);
-            nodeMap.replace(nodeId, new IdentifiedNode(nodeId, nodeInformationEvent));
-        }
+        replaceOrSetNode(new IdentifiedNode(nodeId, nodeInformationEvent));
+    }
+
+    private ZWaveNode replaceOrSetNode(ZWaveNode node) {
+        int nodeId = node.getNodeId();
+        nodeMap.put(nodeId, node);
+        return node;
     }
 
     @Override

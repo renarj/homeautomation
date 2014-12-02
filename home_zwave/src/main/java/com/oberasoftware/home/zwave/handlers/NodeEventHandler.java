@@ -7,7 +7,7 @@ import com.oberasoftware.home.zwave.ZWaveController;
 import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.api.actions.controller.IdentifyNodeAction;
 import com.oberasoftware.home.zwave.api.actions.controller.NodeNoOpAction;
-import com.oberasoftware.home.zwave.api.events.WaitForWakeUpEvent;
+import com.oberasoftware.home.zwave.api.events.SendDataEvent;
 import com.oberasoftware.home.zwave.api.events.controller.ControllerInitialDataEvent;
 import com.oberasoftware.home.zwave.api.events.controller.NodeInformationEvent;
 import com.oberasoftware.home.zwave.core.NodeManager;
@@ -16,8 +16,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static com.oberasoftware.home.zwave.core.NodeStatus.ACTIVE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -34,6 +37,8 @@ public class NodeEventHandler implements EventListener<ControllerInitialDataEven
     private ZWaveController zWaveController;
 
     private ConcurrentLinkedQueue<Integer> nodeInformationRequests = new ConcurrentLinkedQueue<>();
+
+    private Map<Integer, Integer> outstandingNodeActions = new ConcurrentHashMap<>();
 
     @Override
     public void receive(ControllerInitialDataEvent event) throws Exception {
@@ -59,20 +64,39 @@ public class NodeEventHandler implements EventListener<ControllerInitialDataEven
             nodeManager.setNodeInformation(nodeId, nodeInformationEvent);
             LOG.debug("Received identity information for node: {}", nodeId);
 
-            send(() -> new NodeNoOpAction(nodeId));
+            if(nodeId != zWaveController.getControllerId()) {
+                int callbackId = send(() -> new NodeNoOpAction(nodeId));
+
+                outstandingNodeActions.put(callbackId, nodeId);
+            } else {
+                LOG.debug("Received information for Controller: {}, advancding stage to: {}", nodeId, ACTIVE);
+                nodeManager.setNodeStatus(nodeId, ACTIVE);
+            }
         }
     }
 
     @Subscribe
-    public void handleWaitForWakeUp(WaitForWakeUpEvent waitForWakeUpEvent) {
+    public void receivePing(SendDataEvent sendDataEvent) {
+        if(outstandingNodeActions.containsKey(sendDataEvent.getCallbackId())) {
+            int nodeId = outstandingNodeActions.remove(sendDataEvent.getCallbackId());
 
+            LOG.debug("Received a callback from node: {} for callback: {}", nodeId, sendDataEvent.getCallbackId());
+
+            if (!nodeManager.getNodeStatus(nodeId).hasMinimalStatus(ACTIVE)) {
+                //the status has not reached this far yet, lets set this
+                LOG.debug("Setting node: {} status to: {}", nodeId, ACTIVE);
+                nodeManager.setNodeStatus(nodeId, ACTIVE);
+            }
+        }
     }
 
-    private void send(EventSupplier<ZWaveAction> delegate) {
+    private int send(EventSupplier<ZWaveAction> delegate) {
         try {
-            zWaveController.send(delegate.get());
+            return zWaveController.send(delegate.get());
         } catch(HomeAutomationException e) {
             LOG.error("Could not submit ZWaveController event", e);
         }
+
+        return -1;
     }
 }

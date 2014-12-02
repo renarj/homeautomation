@@ -28,7 +28,7 @@ public class ConverterHandler<S, T> {
             LOG.debug("Message converted to message: {}", convertedMessage.get());
             return convertedMessage.get();
         } else {
-            LOG.debug("There is no specific converter for action: {} finding a generic converter", source);
+            LOG.error("There is no specific converter for action: {} finding a generic converter", source);
             //TODO: implement basic converter
             return null;
         }

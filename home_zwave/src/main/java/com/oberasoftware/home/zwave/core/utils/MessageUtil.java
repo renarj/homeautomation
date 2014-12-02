@@ -32,12 +32,12 @@ public class MessageUtil {
      * @return enumeration value of the generic device class.
      */
     public static ControllerMessageType getMessageClass(int i) {
-        LOG.debug("Getting controller message type for device class: {}", Integer.toHexString(i));
+        LOG.trace("Getting controller message type for device class: {}", Integer.toHexString(i));
         return INSTANCE.messagesMap.get(i);
     }
 
     public static CommandClass getCommandClass(int commandClassCode) {
-        LOG.debug("Getting command class for type: {}", commandClassCode);
+        LOG.trace("Getting command class for type: {}", commandClassCode);
         return INSTANCE.commandClassMap.get(commandClassCode);
     }
 }

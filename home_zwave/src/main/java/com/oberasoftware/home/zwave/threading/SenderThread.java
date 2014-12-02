@@ -32,36 +32,8 @@ public class SenderThread extends Thread {
 
     private Queue<ZWaveRawMessage> sendQueue = new ConcurrentLinkedQueue<>();
 
-//    private OutputStream outputStream;
-
     @Autowired
     private SerialZWaveConnector serialZWaveConnector;
-
-    public SenderThread() {
-
-    }
-
-//    public SenderThread(OutputStream outputStream) {
-//        this.outputStream = outputStream;
-//    }
-
-//                    // If this message is a data packet to a node
-//                    // then make sure the node is not a battery device.
-//                    // If it's a battery device, it needs to be awake, or we queue the frame until it is.
-//                    if (lastSentMessage.getControllerMessageType() == SerialMessage.SerialMessageClass.SendData) {
-//                        ZWaveNode node = getNode(lastSentMessage.getMessageNode());
-//
-//                        if (node != null && !node.isListening() && !node.isFrequentlyListening() && lastSentMessage.getPriority() != SerialMessage.SerialMessagePriority.Low) {
-//                            ZWaveWakeUpCommandClass wakeUpCommandClass = (ZWaveWakeUpCommandClass)node.getCommandClass(ZWaveCommandClass.CommandClass.WAKE_UP);
-//
-//                            // If it's a battery operated device, check if it's awake or place in wake-up queue.
-//                            if (wakeUpCommandClass != null && !wakeUpCommandClass.processOutgoingWakeupMessage(lastSentMessage)) {
-//                                continue;
-//                            }
-//                        }
-//                    }
-
-
 
     /**
      * Run method. Runs the actual sending process.
@@ -86,7 +58,8 @@ public class SenderThread extends Thread {
                         long responseTime = System.currentTimeMillis() - messageTimeStart;
                         LOG.debug("Response processed after {} ms.", responseTime);
                     } else {
-                        LOG.error("NODE {}: Timeout while sending message. Requeueing");
+                        LOG.error("Unable to send message: {}, re-adding to queue", sendMessage);
+                        sendQueue.add(sendMessage);
                     }
                 } else {
                     LOG.debug("No topics to send, sleeping");

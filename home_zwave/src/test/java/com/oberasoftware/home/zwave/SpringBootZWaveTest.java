@@ -7,6 +7,7 @@ import com.oberasoftware.home.experiment.TriggerService;
 import com.oberasoftware.home.zwave.api.actions.SwitchAction;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerCapabilitiesAction;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerInitialDataAction;
+import com.oberasoftware.home.zwave.api.actions.controller.GetControllerIdAction;
 import com.oberasoftware.home.zwave.api.events.devices.BinarySensorEvent;
 import com.oberasoftware.home.zwave.api.events.devices.DeviceEvent;
 import com.oberasoftware.home.zwave.core.NodeManager;
@@ -20,6 +21,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
@@ -44,6 +47,8 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
     @Autowired
     private TriggerService triggerService;
 
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+
     public static void main(String[] args) {
         LOG.info("Starting ZWAVE App");
 
@@ -57,16 +62,24 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
      */
     public void initialise()  {
         try {
-            zWaveController.subscribe(this);
+//            zWaveController.subscribe(this);
 
             LOG.info("Wait for a bit before doing anything");
             sleepUninterruptibly(3, TimeUnit.SECONDS);
 
 //            this.zWaveController.send(new RequestNodeInfoAction(4));
 
-            LOG.info("Wait over, sending message");
+            LOG.info("Wait over, sending initial controller messages");
             zWaveController.send(new ControllerCapabilitiesAction());
             zWaveController.send(new ControllerInitialDataAction());
+            zWaveController.send(new GetControllerIdAction());
+
+            while(!zWaveController.isNetworkReady()) {
+                LOG.info("Network not ready yet, sleeping");
+                sleepUninterruptibly(1, TimeUnit.SECONDS);
+            }
+
+            LOG.info("Network is ready, sending initial action");
             zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
 //            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.ON));
 //            zWaveController.send(new SwitchAction(() -> 3, SwitchAction.STATE.OFF));
@@ -78,27 +91,22 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
             zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
 //            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.OFF));
 
+            scheduleNodeChecker();
 
-            nodeManager.getNodes().forEach(n -> LOG.debug("We have a node: {}", n.getNodeId()));
-            nodeManager.getNodes().forEach(n -> {
-                if(n instanceof IdentifiedNode) {
-                    LOG.debug("We have a identified node: {} with info: {}", n.getNodeId(), n.getNodeInformation());
-                } else {
-                    LOG.debug("We have a basic node: {}", n.getNodeId());
-                }
-            });
+            int triggerDeviceId = 2;
+            int switchDeviceId = 4;
 
-            ruleEngine.add(when(d -> d.getNodeId() == 2)
+            ruleEngine.add(when(d -> d.getNodeId() == triggerDeviceId)
                     .alsoWhen(DeviceEvent::containsValue)
                     .alsoWhen(DeviceEvent::isTriggered)
-                    .alsoWhen(() -> triggerService.getTriggerCount(2), c -> c == 2)
-                    .thenDo(new SwitchAction(() -> 4, SwitchAction.STATE.ON)));
+                    .alsoWhen(() -> triggerService.getTriggerCount(triggerDeviceId), triggered -> triggered == 2)
+                    .thenDo(new SwitchAction(() -> switchDeviceId, SwitchAction.STATE.ON)));
 
-            ruleEngine.add(when(d -> d.getNodeId() == 2)
+            ruleEngine.add(when(d -> d.getNodeId() == triggerDeviceId)
                     .alsoWhen(DeviceEvent::containsValue)
                     .alsoWhen(DeviceEvent::isTriggered)
-                    .alsoWhen(() -> triggerService.getTriggerCount(2), c -> c == 3)
-                    .thenDo(new SwitchAction(() -> 4, SwitchAction.STATE.OFF)));
+                    .alsoWhen(() -> triggerService.getTriggerCount(triggerDeviceId), triggered -> triggered == 3)
+                    .thenDo(new SwitchAction(() -> switchDeviceId, SwitchAction.STATE.OFF)));
 
 
 
@@ -110,6 +118,24 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
         } catch (HomeAutomationException e) {
             LOG.error("", e);
         }
+    }
+
+    private void scheduleNodeChecker() {
+        executorService.submit(() -> {
+            while(!Thread.currentThread().isInterrupted()) {
+                LOG.info("Nodes report");
+                nodeManager.getNodes().forEach(n -> {
+                    if (n instanceof IdentifiedNode) {
+                        LOG.debug("We have an identified node: {}", n);
+                    } else {
+                        LOG.debug("We have a basic node: {}", n.getNodeId());
+                    }
+
+                });
+
+                sleepUninterruptibly(3, TimeUnit.SECONDS);
+            }
+        });
     }
 
     @Override

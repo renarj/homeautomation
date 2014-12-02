@@ -3,11 +3,10 @@ package com.oberasoftware.home.zwave.api.events.devices;
 /**
  * @author renarj
  */
-public abstract class WakeUpEvent implements DeviceEvent {
-
+public class PingEvent implements DeviceEvent {
     private final int nodeId;
 
-    public WakeUpEvent(int nodeId) {
+    public PingEvent(int nodeId) {
         this.nodeId = nodeId;
     }
 
@@ -18,7 +17,7 @@ public abstract class WakeUpEvent implements DeviceEvent {
 
     @Override
     public String toString() {
-        return "WakeUpEvent{" +
+        return "PingEvent{" +
                 "nodeId=" + nodeId +
                 '}';
     }

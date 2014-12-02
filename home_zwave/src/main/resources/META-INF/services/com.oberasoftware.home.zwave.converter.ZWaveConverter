@@ -6,11 +6,14 @@ com.oberasoftware.home.zwave.converter.actions.controller.RequestNodeInfoConvert
 com.oberasoftware.home.zwave.converter.actions.controller.ControllerCapabilitiesActionConverter
 com.oberasoftware.home.zwave.converter.actions.controller.ControllerInitialDataActionConverter
 com.oberasoftware.home.zwave.converter.actions.controller.IdentifyNodeActionConverter
-
+com.oberasoftware.home.zwave.converter.actions.NoOpActionConverter
+com.oberasoftware.home.zwave.converter.actions.controller.GetControllerIdActionConverter
 
 #Sensor converters
 com.oberasoftware.home.zwave.converter.commandclass.MultiLevelSensorConverter
 com.oberasoftware.home.zwave.converter.commandclass.BinarySensorConverter
+com.oberasoftware.home.zwave.converter.commandclass.WakeUpConverter
+com.oberasoftware.home.zwave.converter.commandclass.NoOpConverter
 
 #Controller converters
 com.oberasoftware.home.zwave.converter.controller.SendDataConverter
@@ -18,3 +21,4 @@ com.oberasoftware.home.zwave.converter.controller.ApplicationCommandConverter
 com.oberasoftware.home.zwave.converter.controller.ControllerInformationConverter
 com.oberasoftware.home.zwave.converter.controller.ControllerInitialDataConverter
 com.oberasoftware.home.zwave.converter.controller.IdentifyNodeConverter
+com.oberasoftware.home.zwave.converter.controller.ControllerIdConverter

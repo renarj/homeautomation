@@ -5,12 +5,10 @@ import com.oberasoftware.home.api.events.EventBus;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.zwave.api.Controller;
 import com.oberasoftware.home.zwave.api.ZWaveAction;
-import com.oberasoftware.home.zwave.api.ZWaveDeviceAction;
-import com.oberasoftware.home.zwave.api.events.WaitForWakeUpEvent;
+import com.oberasoftware.home.zwave.api.events.controller.ControllerIdEvent;
 import com.oberasoftware.home.zwave.connector.ControllerConnector;
 import com.oberasoftware.home.zwave.core.NodeManager;
 import com.oberasoftware.home.zwave.core.NodeStatus;
-import com.oberasoftware.home.zwave.core.ZWaveNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ import javax.annotation.PreDestroy;
  * @author renarj
  */
 @Component
-public class ZWaveController implements Controller {
+public class ZWaveController implements Controller, EventListener<ControllerIdEvent> {
     private static final Logger LOG = LoggerFactory.getLogger(ZWaveController.class);
 
     @Autowired
@@ -36,6 +34,8 @@ public class ZWaveController implements Controller {
 
     @Autowired
     private TransactionManager transactionManager;
+
+    private ControllerIdEvent controllerIdEvent;
 
     @PreDestroy
     public void disconnect() throws HomeAutomationException {
@@ -51,30 +51,24 @@ public class ZWaveController implements Controller {
     }
 
     @Override
-    public void send(ZWaveAction message) throws HomeAutomationException {
-        if(message instanceof ZWaveDeviceAction) {
-            handleDeviceMessage((ZWaveDeviceAction)message);
-        } else {
-            transactionManager.startAction(message);
-        }
+    public int send(ZWaveAction message) throws HomeAutomationException {
+        return transactionManager.startAction(message);
     }
 
-    private void handleDeviceMessage(ZWaveDeviceAction deviceAction) throws HomeAutomationException {
-        int nodeId = deviceAction.getNodeId();
+    @Override
+    public boolean isNetworkReady() {
+        return controllerIdEvent != null && !nodeManager.getNodes().isEmpty() && nodeManager.haveNodeMinimalStatus(NodeStatus.INITIALIZING);
+    }
 
-        ZWaveNode node = nodeManager.getNode(nodeId);
-        if(node != null && node.getNodeStatus() != NodeStatus.INITIALIZING) {
-            if(node.getNodeInformation().isListening()) {
-                LOG.debug("Node: {} is a battery device, waiting for wakeup");
-                eventBus.push(new WaitForWakeUpEvent(deviceAction));
-            } else {
-                //This is most likely an offline node or a battery device
-                LOG.debug("Node: {} is listening sending action: {}", deviceAction);
-                transactionManager.startAction(deviceAction);
-            }
-        } else {
-            LOG.info("Unknown status of node, firing of event: {} hoping node: {} is online", deviceAction, nodeId);
-            transactionManager.startAction(deviceAction);
-        }
+    @Override
+    public int getControllerId() {
+        return controllerIdEvent != null ? controllerIdEvent.getControllerId() : -1;
+    }
+
+    @Override
+    public void receive(ControllerIdEvent event) throws Exception {
+        LOG.info("Received controller information: {}", event);
+
+        this.controllerIdEvent = event;
     }
 }
