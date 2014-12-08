@@ -39,15 +39,6 @@ public class BinarySensorConverter implements ZWaveConverter<ApplicationCommandE
                 LOG.trace("Process Sensor Binary Report");
                 int value = payload[1];
 
-//                if(this.getVersion() > 1 && serialMessage.getMessagePayload().length > offset + 2) {
-//                    logger.debug("Processing Sensor Type {}", serialMessage.getMessagePayloadByte(offset + 2));
-//                    // For V2, we have the sensor type after the value
-//                    Optional<SensorType> sensorType = SensorType.getSensorType(serialMessage.getMessagePayloadByte(offset + 2));
-//                    logger.debug("Sensor Type is {}", sensorType);
-//                    if(sensorType == null)
-//                        sensorType = SensorType.UNKNOWN;
-//                }
-
                 LOG.debug("Node: {} got a binary sensor report: {}", source.getNodeId(), value);
 
                 return new BinarySensorEvent(source.getNodeId(), value != 0x00);

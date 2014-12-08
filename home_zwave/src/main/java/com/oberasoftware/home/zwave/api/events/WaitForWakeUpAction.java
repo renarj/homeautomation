@@ -1,20 +1,25 @@
 package com.oberasoftware.home.zwave.api.events;
 
-import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.api.ZWaveDeviceAction;
 
 /**
  * @author renarj
  */
-public class WaitForWakeUpEvent implements ZWaveAction {
+public class WaitForWakeUpAction implements ZWaveDeviceAction {
     private final ZWaveDeviceAction deviceAction;
+    private final int callbackId;
 
-    public WaitForWakeUpEvent(ZWaveDeviceAction deviceAction) {
+    public WaitForWakeUpAction(ZWaveDeviceAction deviceAction, int callbackId) {
         this.deviceAction = deviceAction;
+        this.callbackId = callbackId;
     }
 
     public ZWaveDeviceAction getDeviceAction() {
         return deviceAction;
+    }
+
+    public int getCallbackId() {
+        return callbackId;
     }
 
     public int getNodeId() {

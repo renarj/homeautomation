@@ -29,7 +29,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.influxdb</groupId>
+            <artifactId>influxdb-java</artifactId>
+            <version>1.3</version>
+        </dependency>
         <dependency>
             <groupId>serial</groupId>
             <artifactId>serial</artifactId>

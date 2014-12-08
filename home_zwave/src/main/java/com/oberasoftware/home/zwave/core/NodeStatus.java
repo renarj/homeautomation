@@ -4,12 +4,11 @@ package com.oberasoftware.home.zwave.core;
  * @author renarj
  */
 public enum NodeStatus {
+    UNKNOWN(-1),
     INITIALIZING(0),
     IDENTIFIED(1),
-    SLEEPING(2),
-    AWAKE(2),
-    ACTIVE(3),
-    FULLY_OPERATIONAL(4);
+    ACTIVE(2),
+    INITIALIZED(3);
 
     private final int sequence;
 

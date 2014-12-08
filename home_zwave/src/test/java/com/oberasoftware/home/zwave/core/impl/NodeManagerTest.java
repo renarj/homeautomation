@@ -1,8 +1,11 @@
 package com.oberasoftware.home.zwave.core.impl;
 
+import com.oberasoftware.home.zwave.core.NodeAvailability;
 import com.oberasoftware.home.zwave.core.NodeManager;
 import com.oberasoftware.home.zwave.core.NodeStatus;
 import org.junit.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -14,17 +17,16 @@ public class NodeManagerTest {
     @Test
     public void testMinimalStatus() {
         NodeManager nodeManager = new NodeManagerImpl();
-        nodeManager.registerNode(new BasicNode(1, NodeStatus.IDENTIFIED));
-        nodeManager.registerNode(new BasicNode(2, NodeStatus.IDENTIFIED));
-        nodeManager.registerNode(new BasicNode(3, NodeStatus.IDENTIFIED));
+        nodeManager.registerNode(new ZWaveNodeImpl(1, NodeStatus.IDENTIFIED, NodeAvailability.AVAILABLE, Optional.empty(), Optional.empty()));
+        nodeManager.registerNode(new ZWaveNodeImpl(2, NodeStatus.IDENTIFIED, NodeAvailability.AVAILABLE, Optional.empty(), Optional.empty()));
+        nodeManager.registerNode(new ZWaveNodeImpl(3, NodeStatus.IDENTIFIED, NodeAvailability.AVAILABLE, Optional.empty(), Optional.empty()));
 
         assertThat(nodeManager.haveNodeMinimalStatus(NodeStatus.IDENTIFIED), is(true));
 
-        nodeManager.registerNode(new BasicNode(4, NodeStatus.INITIALIZING));
+        nodeManager.registerNode(new ZWaveNodeImpl(4, NodeStatus.INITIALIZING, NodeAvailability.AVAILABLE, Optional.empty(), Optional.empty()));
         assertThat(nodeManager.haveNodeMinimalStatus(NodeStatus.IDENTIFIED), is(false));
 
-        assertThat(nodeManager.haveNodeMinimalStatus(NodeStatus.AWAKE), is(false));
         assertThat(nodeManager.haveNodeMinimalStatus(NodeStatus.ACTIVE), is(false));
-        assertThat(nodeManager.haveNodeMinimalStatus(NodeStatus.FULLY_OPERATIONAL), is(false));
+        assertThat(nodeManager.haveNodeMinimalStatus(NodeStatus.IDENTIFIED), is(false));
     }
 }

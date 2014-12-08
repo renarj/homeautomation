@@ -1,8 +1,8 @@
-package com.oberasoftware.home.zwave.converter.actions;
+package com.oberasoftware.home.zwave.converter.actions.devices;
 
 import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
-import com.oberasoftware.home.zwave.api.actions.controller.NodeNoOpAction;
+import com.oberasoftware.home.zwave.api.actions.devices.NodeNoOpAction;
 import com.oberasoftware.home.zwave.converter.ZWaveConverter;
 import com.oberasoftware.home.zwave.messages.ZWaveRawMessage;
 import com.oberasoftware.home.zwave.messages.types.CommandClass;

@@ -5,7 +5,7 @@ import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.zwave.api.ZWaveAction;
 import com.oberasoftware.home.zwave.api.ZWaveDeviceAction;
 import com.oberasoftware.home.zwave.api.events.ControllerEvent;
-import com.oberasoftware.home.zwave.api.events.WaitForWakeUpEvent;
+import com.oberasoftware.home.zwave.api.events.WaitForWakeUpAction;
 import com.oberasoftware.home.zwave.connector.ControllerConnector;
 import com.oberasoftware.home.zwave.converter.ConverterHandler;
 import com.oberasoftware.home.zwave.core.NodeManager;
@@ -17,8 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.oberasoftware.home.zwave.core.NodeStatus.AWAKE;
-import static com.oberasoftware.home.zwave.core.NodeStatus.IDENTIFIED;
+import static com.oberasoftware.home.zwave.core.NodeAvailability.AWAKE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -44,25 +43,38 @@ public class TransactionManagerImpl implements TransactionManager {
 
     @Override
     public int startAction(ZWaveAction action) throws HomeAutomationException {
-        int callbackId = getCallbackId();
+        if (action instanceof WaitForWakeUpAction) {
+            WaitForWakeUpAction wakeUpEventAction = (WaitForWakeUpAction) action;
+            LOG.debug("Starting a parked wake up event action: {} with callback: {}", action, wakeUpEventAction.getCallbackId());
 
-        if(isDeviceReady(action)) {
-            LOG.debug("Starting device action: {}", action);
-            ZWaveRawMessage rawMessage = converterHandler.convert(v -> v.getClass().getSimpleName(), action);
-            if(rawMessage != null) {
-                rawMessage.setCallbackId(callbackId);
-                rawMessage.setTransmitOptions(0x01 | 0x04 | 0x20);
+            convertAndSendMessage(wakeUpEventAction.getDeviceAction(), wakeUpEventAction.getCallbackId());
 
-                connector.send(rawMessage);
-            } else {
-                LOG.error("Message could not be converted, cannot send action: {}", action);
-            }
+            return wakeUpEventAction.getCallbackId();
         } else {
-            LOG.debug("Starting action on battery device: {} that could be asleep", action);
-            eventBus.pushAsync(new WaitForWakeUpEvent((ZWaveDeviceAction) action));
-        }
+            int callbackId = getCallbackId();
 
-        return callbackId;
+            if (isDeviceReady(action)) {
+                convertAndSendMessage(action, callbackId);
+            } else {
+                LOG.debug("Starting action on battery device: {} that could be asleep", action);
+                eventBus.pushAsync(new WaitForWakeUpAction((ZWaveDeviceAction) action, callbackId));
+            }
+
+            return callbackId;
+        }
+    }
+
+    private void convertAndSendMessage(ZWaveAction action, int callbackId) throws HomeAutomationException {
+        LOG.debug("Starting device action: {}", action);
+        ZWaveRawMessage rawMessage = converterHandler.convert(v -> v.getClass().getSimpleName(), action);
+        if (rawMessage != null) {
+            rawMessage.setCallbackId(callbackId);
+            rawMessage.setTransmitOptions(0x01 | 0x04 | 0x20);
+
+            connector.send(rawMessage);
+        } else {
+            LOG.error("Message could not be converted, cannot send action: {}", action);
+        }
     }
 
     private boolean isDeviceReady(ZWaveAction action) {
@@ -70,10 +82,12 @@ public class TransactionManagerImpl implements TransactionManager {
             ZWaveNode node = nodeManager.getNode(((ZWaveDeviceAction) action).getNodeId());
 
             if(node != null) {
-                boolean batteryDevice = isBatteryDevice(node);
+                boolean batteryDevice = nodeManager.isBatteryDevice(node.getNodeId());
+
+                LOG.debug("This device: {} is a battery device: {}", ((ZWaveDeviceAction) action).getNodeId(), batteryDevice);
 
                 //we can send if the device is a battery device that is awake, or if not a battery device at all
-                return (batteryDevice && node.getNodeStatus() == AWAKE) || !batteryDevice;
+                return (batteryDevice && node.getAvailability() == AWAKE) || !batteryDevice;
             } else {
                 LOG.warn("We have no node information for node: {} device is not ready", ((ZWaveDeviceAction) action).getNodeId());
                 return false;
@@ -81,10 +95,6 @@ public class TransactionManagerImpl implements TransactionManager {
         }
 
         return true;
-    }
-
-    private boolean isBatteryDevice(ZWaveNode node) {
-        return node.getNodeStatus().hasMinimalStatus(IDENTIFIED) && !node.getNodeInformation().isListening();
     }
 
     @Override

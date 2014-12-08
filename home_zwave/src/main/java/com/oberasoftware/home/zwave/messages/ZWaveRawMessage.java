@@ -49,6 +49,8 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	private int transmitOptions = 0;
 	private int callbackId = 0;
 
+	private int retries = 0;
+
 	/**
 	 * Indicates whether the serial message is valid.
 	 */
@@ -246,6 +248,14 @@ public class ZWaveRawMessage implements ZWaveMessage {
 	 */
 	public void setTransmitOptions(int transmitOptions) {
 		this.transmitOptions = transmitOptions;
+	}
+
+	public int getRetries() {
+		return retries;
+	}
+
+	public void incrementRetry() {
+		retries++;
 	}
 
 	/**

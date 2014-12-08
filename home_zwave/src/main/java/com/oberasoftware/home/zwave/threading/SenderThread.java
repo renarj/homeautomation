@@ -58,8 +58,14 @@ public class SenderThread extends Thread {
                         long responseTime = System.currentTimeMillis() - messageTimeStart;
                         LOG.debug("Response processed after {} ms.", responseTime);
                     } else {
-                        LOG.error("Unable to send message: {}, re-adding to queue", sendMessage);
-                        sendQueue.add(sendMessage);
+                        if(sendMessage.getRetries() == 0) {
+                            sendMessage.incrementRetry();
+
+                            LOG.error("Unable to send message: {}, re-adding to queue", sendMessage);
+                            sendQueue.add(sendMessage);
+                        } else {
+                            LOG.error("Could not send messages, exceeded retry attempt");
+                        }
                     }
                 } else {
                     LOG.debug("No topics to send, sleeping");

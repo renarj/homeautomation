@@ -12,17 +12,17 @@ import java.util.Map;
  * @author renarj
  */
 @RestController
-public class TriggerCountRestService {
+public class SensorDataService {
 
     @Autowired
-    private TriggerService triggerService;
+    private SensorService sensorService;
 
     @RequestMapping("/sensors")
     public List<SensorInformation> sensorData() {
-        Map<Integer, Integer> sensorTriggerCount = triggerService.getSensorTriggerCount();
+        Map<Integer, SensorInformation> sensorData = sensorService.getSensorInformation();
 
         List<SensorInformation> sensorInformations = new ArrayList<>();
-        sensorTriggerCount.forEach((k, v) -> sensorInformations.add(new SensorInformation(k, v)));
+        sensorData.forEach((k, v) -> sensorInformations.add(v));
 
         return sensorInformations;
     }

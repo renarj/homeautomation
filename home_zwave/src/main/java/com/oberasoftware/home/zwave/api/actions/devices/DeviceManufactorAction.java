@@ -1,14 +1,14 @@
-package com.oberasoftware.home.zwave.api.actions.controller;
+package com.oberasoftware.home.zwave.api.actions.devices;
 
 import com.oberasoftware.home.zwave.api.ZWaveDeviceAction;
 
 /**
  * @author renarj
  */
-public class NodeNoOpAction implements ZWaveDeviceAction {
-    private int nodeId;
+public class DeviceManufactorAction implements ZWaveDeviceAction {
+    private final int nodeId;
 
-    public NodeNoOpAction(int nodeId) {
+    public DeviceManufactorAction(int nodeId) {
         this.nodeId = nodeId;
     }
 
@@ -19,7 +19,7 @@ public class NodeNoOpAction implements ZWaveDeviceAction {
 
     @Override
     public String toString() {
-        return "NodeNoOpAction{" +
+        return "DeviceManufactorInformationAction{" +
                 "nodeId=" + nodeId +
                 '}';
     }

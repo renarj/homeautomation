@@ -1,4 +1,4 @@
-package com.oberasoftware.home.zwave.api.actions.controller;
+package com.oberasoftware.home.zwave.api.actions.devices;
 
 import com.oberasoftware.home.zwave.api.ZWaveAction;
 

@@ -3,15 +3,13 @@ package com.oberasoftware.home.zwave;
 import com.oberasoftware.home.api.EventListener;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.experiment.ExperimentConfiguration;
-import com.oberasoftware.home.experiment.TriggerService;
-import com.oberasoftware.home.zwave.api.actions.SwitchAction;
+import com.oberasoftware.home.experiment.SensorService;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerCapabilitiesAction;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerInitialDataAction;
 import com.oberasoftware.home.zwave.api.actions.controller.GetControllerIdAction;
+import com.oberasoftware.home.zwave.api.actions.devices.BatteryGetAction;
 import com.oberasoftware.home.zwave.api.events.devices.BinarySensorEvent;
-import com.oberasoftware.home.zwave.api.events.devices.DeviceEvent;
 import com.oberasoftware.home.zwave.core.NodeManager;
-import com.oberasoftware.home.zwave.core.impl.IdentifiedNode;
 import com.oberasoftware.home.zwave.rules.RuleEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static com.oberasoftware.home.zwave.rules.ConditionBuilder.when;
 
 
 @EnableAutoConfiguration
@@ -45,9 +42,9 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
     private RuleEngine ruleEngine;
 
     @Autowired
-    private TriggerService triggerService;
+    private SensorService sensorService;
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     public static void main(String[] args) {
         LOG.info("Starting ZWAVE App");
@@ -80,33 +77,35 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
             }
 
             LOG.info("Network is ready, sending initial action");
-            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
-//            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.ON));
+//            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
+//            zWaveController.send(new SwitchAction(() -> 7, 100));
+//            zWaveController.send(new SwitchAction(() -> 8, 99));
 //            zWaveController.send(new SwitchAction(() -> 3, SwitchAction.STATE.OFF));
 
             LOG.info("Waiting a bit to switch off so we can see some visual effect");
             sleepUninterruptibly(5, TimeUnit.SECONDS);
 
             LOG.info("Wait over, sending Off message");
-            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.OFF));
+//            zWaveController.send(new SwitchAction(() -> 8, SwitchAction.STATE.ON));
 //            zWaveController.send(new SwitchAction(() -> 7, SwitchAction.STATE.OFF));
 
             scheduleNodeChecker();
+            scheduleBatteryCheck();
 
-            int triggerDeviceId = 2;
+            int movementSensorId = 2;
             int switchDeviceId = 4;
 
-            ruleEngine.add(when(d -> d.getNodeId() == triggerDeviceId)
-                    .alsoWhen(DeviceEvent::containsValue)
-                    .alsoWhen(DeviceEvent::isTriggered)
-                    .alsoWhen(() -> triggerService.getTriggerCount(triggerDeviceId), triggered -> triggered == 2)
-                    .thenDo(new SwitchAction(() -> switchDeviceId, SwitchAction.STATE.ON)));
-
-            ruleEngine.add(when(d -> d.getNodeId() == triggerDeviceId)
-                    .alsoWhen(DeviceEvent::containsValue)
-                    .alsoWhen(DeviceEvent::isTriggered)
-                    .alsoWhen(() -> triggerService.getTriggerCount(triggerDeviceId), triggered -> triggered == 3)
-                    .thenDo(new SwitchAction(() -> switchDeviceId, SwitchAction.STATE.OFF)));
+//            ruleEngine.add(when(d -> d.getNodeId() == movementSensorId)
+//                    .alsoWhen(DeviceEvent::containsValue)
+//                    .alsoWhen(DeviceEvent::isTriggered)
+//                    .alsoWhen(() -> sensorService.getCount(movementSensorId), movements -> movements == 2)
+//                    .thenDo(new SwitchAction(() -> switchDeviceId, SwitchAction.STATE.ON)));
+//
+//            ruleEngine.add(when(d -> d.getNodeId() == movementSensorId)
+//                    .alsoWhen(DeviceEvent::containsValue)
+//                    .alsoWhen(DeviceEvent::isTriggered)
+//                    .alsoWhen(() -> sensorService.getCount(movementSensorId), movements -> movements == 3)
+//                    .thenDo(new SwitchAction(() -> switchDeviceId, SwitchAction.STATE.OFF)));
 
 
 
@@ -120,20 +119,34 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
         }
     }
 
+    private void scheduleBatteryCheck() {
+        executorService.submit(() -> {
+            while(!Thread.currentThread().isInterrupted()) {
+                LOG.debug("Retrieving battery information");
+
+                nodeManager.getNodes().stream()
+                        .filter(n -> nodeManager.isBatteryDevice(n.getNodeId()))
+                        .forEach(n -> {
+                            LOG.debug("Getting battery information for node: {}", n.getNodeId());
+                            try {
+                                zWaveController.send(new BatteryGetAction(n.getNodeId()));
+                            } catch (HomeAutomationException e) {
+                                LOG.error("", e);
+                            }
+                        });
+
+                sleepUninterruptibly(5, TimeUnit.MINUTES);
+            }
+        });
+    }
+
     private void scheduleNodeChecker() {
         executorService.submit(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 LOG.info("Nodes report");
-                nodeManager.getNodes().forEach(n -> {
-                    if (n instanceof IdentifiedNode) {
-                        LOG.debug("We have an identified node: {}", n);
-                    } else {
-                        LOG.debug("We have a basic node: {}", n.getNodeId());
-                    }
+                nodeManager.getNodes().forEach(n -> LOG.debug("We have a node: {}", n));
 
-                });
-
-                sleepUninterruptibly(3, TimeUnit.SECONDS);
+                sleepUninterruptibly(30, TimeUnit.SECONDS);
             }
         });
     }

@@ -1,7 +1,9 @@
 package com.oberasoftware.home.zwave.core;
 
 import com.oberasoftware.home.zwave.api.events.controller.NodeInformationEvent;
-import org.apache.commons.lang.NotImplementedException;
+import com.oberasoftware.home.zwave.api.events.devices.ManufactorInfoEvent;
+
+import java.util.Optional;
 
 /**
  * @author renarj
@@ -13,11 +15,11 @@ public interface ZWaveNode {
         return NodeStatus.INITIALIZING;
     }
 
-    default NodeInformationEvent getNodeInformation() {
-        throw new NotImplementedException("No node information is known");
+    default NodeAvailability getAvailability() {
+        return NodeAvailability.UNKNOWN;
     }
 
-    default ZWaveNode setStatus(NodeStatus status) {
-        throw new NotImplementedException("Can not set status on unidentified device status");
-    }
+    Optional<NodeInformationEvent> getNodeInformation();
+
+    Optional<ManufactorInfoEvent> getManufactorInfoEvent();
 }

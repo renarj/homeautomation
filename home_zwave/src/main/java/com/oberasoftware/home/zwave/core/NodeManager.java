@@ -2,6 +2,7 @@ package com.oberasoftware.home.zwave.core;
 
 
 import com.oberasoftware.home.zwave.api.events.controller.NodeInformationEvent;
+import com.oberasoftware.home.zwave.api.events.devices.ManufactorInfoEvent;
 
 import java.util.List;
 
@@ -13,8 +14,6 @@ public interface NodeManager {
 
     void registerNode(ZWaveNode node);
 
-    void markDead(int nodeId);
-
     /**
      * This indicates if all nodes in the network have reached the minimal status specified
      * @param nodeStatus The minimal status that all nodes should have achieved
@@ -22,13 +21,17 @@ public interface NodeManager {
      */
     boolean haveNodeMinimalStatus(NodeStatus nodeStatus);
 
-    NodeStatus getNodeStatus(int nodeId);
-
     ZWaveNode setNodeStatus(int nodeId, NodeStatus nodeStatus);
+
+    ZWaveNode setNodeAvailability(int nodeId, NodeAvailability availability);
+
+    boolean isBatteryDevice(int nodeId);
 
     ZWaveNode getNode(int nodeId);
 
     void setNodeInformation(int nodeId, NodeInformationEvent nodeInformationEvent);
+
+    void setNodeInformation(int nodeId, ManufactorInfoEvent manufactorInfoEvent);
 
     List<ZWaveNode> getNodes();
 }
