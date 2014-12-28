@@ -30,6 +30,17 @@
             <version>1.3</version>
         </dependency>
         <dependency>
+            <groupId>net.sf.bluecove</groupId>
+            <artifactId>bluecove</artifactId>
+            <version>2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.oberasoftware</groupId>
             <artifactId>obera_zwave</artifactId>
             <version>1.0-SNAPSHOT</version>

@@ -53,6 +53,8 @@
     <modules>
         <module>data_monitors/youless</module>
         <module>home_zwave</module>
+        <module>home_api</module>
+        <module>home_core</module>
     </modules>
 
     <build>
@@ -68,4 +70,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

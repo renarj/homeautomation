@@ -1,15 +1,19 @@
 package com.oberasoftware.home.zwave;
 
-import com.oberasoftware.home.zwave.experiment.ExperimentConfiguration;
-import com.oberasoftware.home.zwave.experiment.SensorService;
+import com.oberasoftware.home.email.EmailAction;
+import com.oberasoftware.home.email.EmailConfiguration;
+import com.oberasoftware.home.zwave.api.actions.SwitchAction;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerCapabilitiesAction;
 import com.oberasoftware.home.zwave.api.actions.controller.ControllerInitialDataAction;
 import com.oberasoftware.home.zwave.api.actions.controller.GetControllerIdAction;
 import com.oberasoftware.home.zwave.api.actions.devices.BatteryGetAction;
 import com.oberasoftware.home.zwave.api.events.EventListener;
 import com.oberasoftware.home.zwave.api.events.devices.BinarySensorEvent;
+import com.oberasoftware.home.zwave.api.events.devices.DeviceEvent;
 import com.oberasoftware.home.zwave.core.NodeManager;
 import com.oberasoftware.home.zwave.exceptions.HomeAutomationException;
+import com.oberasoftware.home.zwave.experiment.ExperimentConfiguration;
+import com.oberasoftware.home.zwave.experiment.SensorService;
 import com.oberasoftware.home.zwave.rules.RuleEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +28,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static com.oberasoftware.home.zwave.api.actions.SwitchAction.STATE.ON;
+import static com.oberasoftware.home.zwave.rules.ConditionBuilder.when;
 
 
 @EnableAutoConfiguration
-@Import({ZWaveConfiguration.class, ExperimentConfiguration.class})
+@Import({ZWaveConfiguration.class, ExperimentConfiguration.class, EmailConfiguration.class})
 @Component
 public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
     private static final Logger LOG = LoggerFactory.getLogger(SpringBootZWaveTest.class);
@@ -59,12 +65,8 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
      */
     public void initialise()  {
         try {
-//            zWaveController.subscribe(this);
-
             LOG.info("Wait for a bit before doing anything");
             sleepUninterruptibly(3, TimeUnit.SECONDS);
-
-//            this.zWaveController.send(new RequestNodeInfoAction(4));
 
             LOG.info("Wait over, sending initial controller messages");
             zWaveController.send(new ControllerCapabilitiesAction());
@@ -77,7 +79,7 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
             }
 
             LOG.info("Network is ready, sending initial action");
-//            zWaveController.send(new SwitchAction(() -> 4, SwitchAction.STATE.ON));
+            zWaveController.send(new SwitchAction(() -> 4, ON));
 //            zWaveController.send(new SwitchAction(() -> 7, 100));
 //            zWaveController.send(new SwitchAction(() -> 8, 99));
 //            zWaveController.send(new SwitchAction(() -> 3, SwitchAction.STATE.OFF));
@@ -92,15 +94,20 @@ public class SpringBootZWaveTest implements EventListener<BinarySensorEvent> {
             scheduleNodeChecker();
             scheduleBatteryCheck();
 
-            int movementSensorId = 2;
-            int switchDeviceId = 4;
+            final int movementSensorId = 2;
+            final int switchDeviceId = 4;
 
-//            ruleEngine.add(when(d -> d.getNodeId() == movementSensorId)
-//                    .alsoWhen(DeviceEvent::containsValue)
-//                    .alsoWhen(DeviceEvent::isTriggered)
-//                    .alsoWhen(() -> sensorService.getCount(movementSensorId), movements -> movements == 2)
-//                    .thenDo(new SwitchAction(() -> switchDeviceId, SwitchAction.STATE.ON)));
+//            ruleEngine.add(when(d -> d.getNodeId() == switchDeviceId)
+//                    .and(DeviceEvent::containsValue)
+//                    .and(d -> d.valueAsInt() < 10)
+//                    .thenDo(new SwitchAction(() -> switchDeviceId, OFF)));
 //
+            ruleEngine.add(when(d -> d.getNodeId() == movementSensorId)
+                    .and(DeviceEvent::containsValue)
+                    .and(DeviceEvent::isTriggered)
+//                    .and(() -> sensorService.getCount(movementSensorId), m -> m == 2)
+                    .thenDo(new EmailAction(movementSensorId, "renze@renarj.nl", "We have detected movement")));
+
 //            ruleEngine.add(when(d -> d.getNodeId() == movementSensorId)
 //                    .alsoWhen(DeviceEvent::containsValue)
 //                    .alsoWhen(DeviceEvent::isTriggered)
