@@ -1,6 +1,5 @@
 package com.oberasoftware.home.core.events.local;
 
-import com.oberasoftware.home.zwave.exceptions.RuntimeEventException;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
@@ -27,7 +26,7 @@ public class HandlerEntry {
             eventMethod.invoke(listenerInstance, event);
         } catch (Throwable e) {
             LOG.error("Unable to execute listener instance", e);
-            throw new RuntimeEventException("Unable to execute event listener", e);
+//            throw new RuntimeEventException("Unable to execute event listener", e);
         }
     }
 

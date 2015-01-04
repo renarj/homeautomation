@@ -8,4 +8,6 @@ import com.oberasoftware.home.api.events.Event;
  */
 public interface AutomationBus {
     Result publish(Event event);
+
+    String getControllerId();
 }

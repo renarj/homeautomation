@@ -8,5 +8,8 @@ import java.util.List;
  * @author renarj
  */
 public interface DeviceExtension extends AutomationExtension {
+
+    boolean isDeviceReady();
+
     List<Device> getDevices();
 }

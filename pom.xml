@@ -55,6 +55,7 @@
         <module>home_zwave</module>
         <module>home_api</module>
         <module>home_core</module>
+        <module>home_storage</module>
     </modules>
 
     <build>

@@ -4,13 +4,17 @@ import com.google.common.reflect.TypeToken;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.Result;
 import com.oberasoftware.home.api.events.Event;
+import com.oberasoftware.home.api.events.EventListener;
 import com.oberasoftware.home.api.events.EventSubscribe;
+import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -36,11 +40,21 @@ public class LocalAutomationBus implements AutomationBus {
 
     @PostConstruct
     public void loadListeners() {
+        if(eventListeners != null) {
+            LOG.debug("Post processing all event listeners: {}", eventListeners.size());
+            for (EventListener eventListener : eventListeners) {
+                LOG.debug("Processing event listener: {}", eventListener);
+                processEventListener(eventListener);
+            }
+        }
+    }
 
-        LOG.debug("Post processing all event listeners: {}", eventListeners.size());
-        for(EventListener eventListener : eventListeners) {
-            LOG.debug("Processing event listener: {}", eventListener);
-            processEventListener(eventListener);
+    @Override
+    public String getControllerId() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            throw new RuntimeHomeAutomationException("Could not determine hostname, cannot start home automation system", e);
         }
     }
 
