@@ -24,4 +24,14 @@ public class DeviceRegistryImpl implements DeviceRegistry {
 
         return nodes.stream().map(ZWaveDevice::new).collect(Collectors.toList());
     }
+
+    @Override
+    public String getZwaveId() {
+        return "zwave";
+    }
+
+    @Override
+    public String getZwaveName() {
+        return "ZWave provider";
+    }
 }

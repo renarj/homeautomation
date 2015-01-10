@@ -6,11 +6,14 @@ import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
 import com.oberasoftware.home.api.extensions.AutomationExtension;
 import com.oberasoftware.home.api.extensions.ExtensionManager;
 import com.oberasoftware.home.api.extensions.SpringExtension;
+import com.oberasoftware.home.rest.RestConfiguration;
+import com.oberasoftware.home.storage.jasdb.JasDBConfiguration;
 import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +23,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * @author renarj
  */
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude = {
+        org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
+@Import({RestConfiguration.class, JasDBConfiguration.class})
 @ComponentScan
 public class HomeAutomation {
     private static final Logger LOG = getLogger(HomeAutomation.class);

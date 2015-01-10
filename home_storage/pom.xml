@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_localservice</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
             <!--<exclusions>-->
                 <!--<exclusion>-->
                     <!--<groupId>org.springframework</groupId>-->
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_restconnector</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>

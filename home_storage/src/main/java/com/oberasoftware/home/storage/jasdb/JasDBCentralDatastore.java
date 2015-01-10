@@ -1,4 +1,4 @@
-package com.oberasoftware.home.core.storage.jasdb;
+package com.oberasoftware.home.storage.jasdb;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -12,11 +12,15 @@ import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.api.query.QueryBuilder;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.index.keys.types.StringKeyType;
+import nl.renarj.jasdb.index.search.CompositeIndexField;
+import nl.renarj.jasdb.index.search.IndexField;
 import nl.renarj.jasdb.rest.client.ResourceNotFoundException;
 import nl.renarj.jasdb.rest.client.RestDBSession;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,6 +32,23 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component
 public class JasDBCentralDatastore implements CentralDatastore {
     private static final Logger LOG = getLogger(JasDBCentralDatastore.class);
+
+    @PostConstruct
+    public void createIndexOnStartup() {
+        LOG.debug("Creating a composite index");
+
+        try {
+            createSession().createOrGetBag("items").ensureIndex(
+                    new CompositeIndexField(
+                            new IndexField("controllerId", new StringKeyType()),
+                            new IndexField("pluginId", new StringKeyType()),
+                            new IndexField("deviceId", new StringKeyType()),
+                            new IndexField("type", new StringKeyType())
+                    ), false);
+        } catch (JasDBStorageException e) {
+            LOG.error("", e);
+        }
+    }
 
     @Override
     public <T extends Item> T store(Item entity) throws DataStoreException {
@@ -47,12 +68,21 @@ public class JasDBCentralDatastore implements CentralDatastore {
             DBSession session = createSession();
             EntityBag bag = session.createOrGetBag(bagName);
 
-            try {
-                bag.getEntity(entity.getInternalId());
+            boolean exists = false;
 
+            try {
+                SimpleEntity e = bag.getEntity(entity.getInternalId());
+                if(e != null) {
+                    exists = true;
+                }
+            } catch(ResourceNotFoundException e) {
+
+            }
+
+            if(exists) {
                 LOG.debug("Entity already exists, updating: {}", entity);
                 bag.updateEntity(entity);
-            } catch(ResourceNotFoundException e) {
+            } else {
                 LOG.debug("Entity does not yet exist, creating: {}", entity);
                 bag.addEntity(entity);
             }
@@ -89,9 +119,10 @@ public class JasDBCentralDatastore implements CentralDatastore {
 
     @Override
     public Optional<DevicePlugin> findPlugin(String controllerId, String pluginId) {
-        Map<String, String> properties = Maps.newHashMap();
+        Map<String, String> properties = Maps.newLinkedHashMap();
         properties.put("controllerId", controllerId);
         properties.put("pluginId", pluginId);
+        properties.put("type", "plugin");
 
         return findItem(properties);
     }
@@ -99,10 +130,11 @@ public class JasDBCentralDatastore implements CentralDatastore {
 
     @Override
     public Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId) {
-        Map<String, String> properties = Maps.newHashMap();
+        Map<String, String> properties = Maps.newLinkedHashMap();
         properties.put("controllerId", controllerId);
         properties.put("pluginId", pluginId);
         properties.put("deviceId", deviceId);
+        properties.put("type", "device");
 
         return findItem(properties);
     }
@@ -117,9 +149,10 @@ public class JasDBCentralDatastore implements CentralDatastore {
             properties.forEach((k, v) -> queryBuilder.field(k).value(v));
 
             QueryResult result = bag.find(queryBuilder).execute();
+            LOG.debug("Query: {} results: {}", queryBuilder, result.size());
             if(result.size() != 0) {
                 SimpleEntity entity = Iterables.getFirst(result, null);
-                LOG.debug("Found an item: {}", entity);
+                LOG.debug("Found an item: {} of type: {}", entity, entity != null ? entity.getValue("type").toString() : "unknown");
 
                 return Optional.of(new EntityMapperFactory().mapTo(entity));
             }
@@ -133,6 +166,7 @@ public class JasDBCentralDatastore implements CentralDatastore {
     private DBSession createSession() {
         try {
             return new RestDBSession("default", "localhost", 7050);
+//            return new LocalDBSession();
         } catch (JasDBStorageException e) {
             throw new RuntimeHomeAutomationException("", e);
         }

@@ -1,6 +1,7 @@
 package com.oberasoftware.home.zwave;
 
 import com.google.common.collect.Lists;
+import com.oberasoftware.home.api.extensions.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
@@ -37,13 +38,19 @@ public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
     @Override
     public String getId() {
         assertContext();
-        return "zwave";
+        return context.getBean(DeviceRegistry.class).getZwaveId();
     }
 
     @Override
     public String getName() {
         assertContext();
-        return "ZWave Provider";
+        return context.getBean(DeviceRegistry.class).getZwaveName();
+    }
+
+    @Override
+    public CommandHandler getCommandHandler() {
+        assertContext();
+        return context.getBean(ZWaveCommandHandler.class);
     }
 
     @Override

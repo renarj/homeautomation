@@ -72,4 +72,16 @@ public class ZWaveDevice implements Device {
 
         return deviceProperties;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ZWaveDevice{");
+        builder.append("id=").append(getId());
+        builder.append(",name=").append(getName());
+        builder.append(",status=").append(getStatus().toString());
+        builder.append("}");
+
+        return builder.toString();
+    }
 }

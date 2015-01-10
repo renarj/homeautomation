@@ -10,4 +10,8 @@ import java.util.List;
 public interface DeviceRegistry {
 
     List<Device> getDevices();
+
+    String getZwaveId();
+
+    String getZwaveName();
 }

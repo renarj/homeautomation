@@ -56,6 +56,7 @@
         <module>home_api</module>
         <module>home_core</module>
         <module>home_storage</module>
+        <module>home_rest</module>
     </modules>
 
     <build>

@@ -11,16 +11,14 @@ import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
 import com.oberasoftware.home.api.storage.model.DevicePlugin;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -31,7 +29,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ExtensionManagerImpl implements ExtensionManager {
     private static final Logger LOG = getLogger(ExtensionManagerImpl.class);
 
-    private List<AutomationExtension> extensions = new ArrayList<>();
+    private ConcurrentMap<String, AutomationExtension> extensions = new ConcurrentHashMap<>();
 
     @Autowired
     private DeviceManager deviceManager;
@@ -44,7 +42,12 @@ public class ExtensionManagerImpl implements ExtensionManager {
 
     @Override
     public List<AutomationExtension> getExtensions() {
-        return extensions;
+        return new ArrayList<>(extensions.values());
+    }
+
+    @Override
+    public Optional<AutomationExtension> getExtension(String extensionId) {
+        return Optional.ofNullable(extensions.get(extensionId));
     }
 
     @Override
@@ -53,16 +56,18 @@ public class ExtensionManagerImpl implements ExtensionManager {
             LOG.debug("Initial startup, new controller detected registering in central datastore");
             centralDatastore.store(new ControllerItem(generateId(), controllerId));
         } else {
-            LOG.debug("Controller: {} was already registered");
+            LOG.debug("Controller: {} was already registered", controllerId);
         }
     }
 
     @Override
     public void registerExtension(AutomationExtension extension) throws HomeAutomationException {
+        extensions.putIfAbsent(extension.getId(), extension);
+
         LOG.info("Registering extension: {}", extension);
 
         if(extension instanceof DeviceExtension) {
-            registerDeviceExtension((DeviceExtension)extension);
+            registerDeviceExtension((DeviceExtension) extension);
         }
     }
 
@@ -79,24 +84,27 @@ public class ExtensionManagerImpl implements ExtensionManager {
             centralDatastore.store(controllerItem.get());
         }
 
+        registerDevices(deviceExtension);
+    }
+
+    private void registerDevices(DeviceExtension deviceExtension) {
+        Optional<DevicePlugin> plugin = centralDatastore.findPlugin(automationBus.getControllerId(), deviceExtension.getId());
+
         List<Device> devices = deviceExtension.getDevices();
         devices.forEach(d -> {
             try {
-                registerDevice(deviceExtension, d);
+                deviceManager.registerDevice(deviceExtension.getId(), d);
                 plugin.get().addDevice(d.getId());
             } catch (DataStoreException e) {
                 throw new RuntimeHomeAutomationException("Unable to store plugin devices", e);
             }
         });
-    }
 
-    private void registerDevice(DeviceExtension deviceExtension, Device device) throws DataStoreException {
-        Optional<DevicePlugin> plugin = centralDatastore.findPlugin(automationBus.getControllerId(), deviceExtension.getId());
 
-        Optional<DeviceItem> deviceItem = centralDatastore.findDevice(automationBus.getControllerId(), plugin.get().getPluginId(), device.getId());
-
-        if(!deviceItem.isPresent()) {
-            centralDatastore.store(new DeviceItem(generateId(), plugin.get().getPluginId(), device.getId(), device.getName(), device.getProperties()));
+        try {
+            centralDatastore.store(plugin.get());
+        } catch (DataStoreException e) {
+            LOG.error("", e);
         }
     }
 

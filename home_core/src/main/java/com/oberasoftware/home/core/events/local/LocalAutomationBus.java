@@ -2,9 +2,9 @@ package com.oberasoftware.home.core.events.local;
 
 import com.google.common.reflect.TypeToken;
 import com.oberasoftware.home.api.AutomationBus;
+import com.oberasoftware.home.api.Message;
 import com.oberasoftware.home.api.commands.Result;
-import com.oberasoftware.home.api.events.Event;
-import com.oberasoftware.home.api.events.EventListener;
+import com.oberasoftware.home.api.events.EventHandler;
 import com.oberasoftware.home.api.events.EventSubscribe;
 import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
 import org.slf4j.Logger;
@@ -31,20 +31,20 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class LocalAutomationBus implements AutomationBus {
     private static final Logger LOG = getLogger(LocalAutomationBus.class);
 
-    private Map<Class<?>, List<HandlerEntry>> eventHandlers = new ConcurrentHashMap<>();
+    private Map<Class<?>, List<HandlerEntry>> handlerEntries = new ConcurrentHashMap<>();
 
     @Autowired(required = false)
-    private List<EventListener> eventListeners;
+    private List<EventHandler> eventHandlers;
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @PostConstruct
     public void loadListeners() {
-        if(eventListeners != null) {
-            LOG.debug("Post processing all event listeners: {}", eventListeners.size());
-            for (EventListener eventListener : eventListeners) {
-                LOG.debug("Processing event listener: {}", eventListener);
-                processEventListener(eventListener);
+        if(eventHandlers != null) {
+            LOG.debug("Post processing all event listeners: {}", eventHandlers.size());
+            for (EventHandler eventHandler : eventHandlers) {
+                LOG.debug("Processing event listener: {}", eventHandler);
+                processEventListener(eventHandler);
             }
         }
     }
@@ -59,7 +59,7 @@ public class LocalAutomationBus implements AutomationBus {
     }
 
     @Override
-    public Result publish(Event event) {
+    public Result publish(Message event) {
         Future<?> f = executorService.submit(() -> {
             LOG.debug("Firing off an Async event: {}", event);
             notifyEventListeners(event);
@@ -72,7 +72,7 @@ public class LocalAutomationBus implements AutomationBus {
     private void notifyEventListeners(Object event) {
         Set<String> handlersExecuted = new HashSet<>();
         TypeToken.of(event.getClass()).getTypes().forEach(o -> {
-            List<HandlerEntry> handlers = eventHandlers.getOrDefault(o.getRawType(), new ArrayList<>());
+            List<HandlerEntry> handlers = handlerEntries.getOrDefault(o.getRawType(), new ArrayList<>());
             handlers.forEach(h -> {
                 String handlerClass = h.getListenerInstance().getClass().getName();
 
@@ -99,8 +99,8 @@ public class LocalAutomationBus implements AutomationBus {
             LOG.debug("Interested in message type: {}", parameterTypes[0].getSimpleName());
             Class<?> parameterType = parameterTypes[0];
 
-            eventHandlers.computeIfAbsent(parameterType, v -> new ArrayList<>());
-            eventHandlers.get(parameterType).add(new HandlerEntry(listenerInstance, method));
+            handlerEntries.computeIfAbsent(parameterType, v -> new ArrayList<>());
+            handlerEntries.get(parameterType).add(new HandlerEntry(listenerInstance, method));
         }
     }
 }

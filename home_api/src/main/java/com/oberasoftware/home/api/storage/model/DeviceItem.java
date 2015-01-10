@@ -10,10 +10,12 @@ public class DeviceItem implements Item {
     private final String pluginId;
     private final String deviceId;
     private final String name;
+    private final String controllerId;
 
     private final Map<String, String> properties;
 
-    public DeviceItem(String id, String pluginId, String deviceId, String name, Map<String, String> properties) {
+    public DeviceItem(String id, String controllerId, String pluginId, String deviceId, String name, Map<String, String> properties) {
+        this.controllerId = controllerId;
         this.pluginId = pluginId;
         this.id = id;
         this.name = name;
@@ -31,6 +33,10 @@ public class DeviceItem implements Item {
 
     public String getName() {
         return name;
+    }
+
+    public String getControllerId() {
+        return controllerId;
     }
 
     public Map<String, String> getProperties() {

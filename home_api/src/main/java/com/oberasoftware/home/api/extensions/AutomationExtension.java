@@ -7,4 +7,6 @@ public interface AutomationExtension {
     String getId();
 
     String getName();
+
+    CommandHandler getCommandHandler();
 }
