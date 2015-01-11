@@ -1,4 +1,4 @@
-package com.oberasoftware.home.core.events;
+package com.oberasoftware.home.service.events;
 
 import com.oberasoftware.home.api.commands.DeviceCommand;
 import com.oberasoftware.home.api.events.DeviceCommandEvent;

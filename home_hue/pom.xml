@@ -9,13 +9,25 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>home_core</artifactId>
+    <artifactId>home_hue</artifactId>
 
     <dependencies>
         <dependency>
+            <groupId>com.philips</groupId>
+            <artifactId>huesdk</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.philips</groupId>
+            <artifactId>hueresource</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>home_api</artifactId>
+            <artifactId>home_core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 </project>

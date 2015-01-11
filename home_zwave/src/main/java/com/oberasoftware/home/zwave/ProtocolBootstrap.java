@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -22,7 +20,6 @@ public class ProtocolBootstrap {
     @Autowired
     private ZWaveController zWaveController;
 
-    @PostConstruct
     public void startInitialization() {
         LOG.info("Initializing ZWave Network by doing network discovery");
         try {

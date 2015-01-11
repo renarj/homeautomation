@@ -1,4 +1,4 @@
-package com.oberasoftware.home.core.events.local;
+package com.oberasoftware.home.core.events;
 
 import org.slf4j.Logger;
 

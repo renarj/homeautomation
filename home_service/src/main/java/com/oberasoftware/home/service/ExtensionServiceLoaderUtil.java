@@ -1,4 +1,4 @@
-package com.oberasoftware.home.core;
+package com.oberasoftware.home.service;
 
 import com.oberasoftware.home.api.extensions.AutomationExtension;
 import org.slf4j.Logger;

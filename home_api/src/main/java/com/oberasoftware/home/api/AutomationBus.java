@@ -1,12 +1,10 @@
 package com.oberasoftware.home.api;
 
-import com.oberasoftware.home.api.commands.Result;
+import com.oberasoftware.home.api.events.EventBus;
 
 /**
  * @author renarj
  */
-public interface AutomationBus {
-    Result publish(Message event);
-
+public interface AutomationBus extends EventBus {
     String getControllerId();
 }

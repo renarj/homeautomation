@@ -1,4 +1,4 @@
-package com.oberasoftware.home.core.commands;
+package com.oberasoftware.home.service.commands;
 
 import com.oberasoftware.home.api.commands.BasicCommand;
 import com.oberasoftware.home.api.commands.SwitchCommand;

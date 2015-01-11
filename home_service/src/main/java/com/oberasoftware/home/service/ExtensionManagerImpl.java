@@ -1,4 +1,4 @@
-package com.oberasoftware.home.core;
+package com.oberasoftware.home.service;
 
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.exceptions.DataStoreException;
@@ -79,7 +79,7 @@ public class ExtensionManagerImpl implements ExtensionManager {
             String pluginId = generateId();
 
             centralDatastore.store(new DevicePlugin(pluginId, controllerItem.get().getControllerId(),
-                    deviceExtension.getId(), deviceExtension.getName()));
+                    deviceExtension.getId(), deviceExtension.getName(), new HashMap<>()));
             controllerItem.get().addPluginId(pluginId);
             centralDatastore.store(controllerItem.get());
         }

@@ -1,20 +1,17 @@
-package com.oberasoftware.home.core.events.local;
+package com.oberasoftware.home.core.events;
 
 import com.google.common.reflect.TypeToken;
-import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.Message;
 import com.oberasoftware.home.api.commands.Result;
+import com.oberasoftware.home.api.events.EventBus;
 import com.oberasoftware.home.api.events.EventHandler;
 import com.oberasoftware.home.api.events.EventSubscribe;
-import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -28,8 +25,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class LocalAutomationBus implements AutomationBus {
-    private static final Logger LOG = getLogger(LocalAutomationBus.class);
+public class LocalEventBus implements EventBus {
+    private static final Logger LOG = getLogger(LocalEventBus.class);
 
     private Map<Class<?>, List<HandlerEntry>> handlerEntries = new ConcurrentHashMap<>();
 
@@ -50,15 +47,6 @@ public class LocalAutomationBus implements AutomationBus {
     }
 
     @Override
-    public String getControllerId() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            throw new RuntimeHomeAutomationException("Could not determine hostname, cannot start home automation system", e);
-        }
-    }
-
-    @Override
     public Result publish(Message event) {
         Future<?> f = executorService.submit(() -> {
             LOG.debug("Firing off an Async event: {}", event);
@@ -67,6 +55,12 @@ public class LocalAutomationBus implements AutomationBus {
 
 
         return null;
+    }
+
+    @Override
+    public void registerHandler(EventHandler handler) {
+        LOG.debug("Registering handler: {}", handler);
+        processEventListener(handler);
     }
 
     private void notifyEventListeners(Object event) {

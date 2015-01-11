@@ -1,4 +1,4 @@
-package com.oberasoftware.home.core;
+package com.oberasoftware.home.service;
 
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
