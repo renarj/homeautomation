@@ -1,15 +1,11 @@
 package com.oberasoftware.home.api.storage.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @author renarj
  */
-public class DevicePlugin implements Item {
-    private final List<String> deviceIds = new ArrayList<>();
-
+public class PluginItem implements Item {
     private final String controllerId;
     private final String pluginId;
 
@@ -18,7 +14,7 @@ public class DevicePlugin implements Item {
 
     private final Map<String, String> properties;
 
-    public DevicePlugin(String id, String controllerId, String pluginId, String name, Map<String, String> properties) {
+    public PluginItem(String id, String controllerId, String pluginId, String name, Map<String, String> properties) {
         this.controllerId = controllerId;
         this.pluginId = pluginId;
         this.id = id;
@@ -33,14 +29,6 @@ public class DevicePlugin implements Item {
 
     public String getName() {
         return name;
-    }
-
-    public void addDevice(String deviceId) {
-        deviceIds.add(deviceId);
-    }
-
-    public List<String> getDeviceIds() {
-        return deviceIds;
     }
 
     public String getControllerId() {
@@ -58,7 +46,6 @@ public class DevicePlugin implements Item {
     @Override
     public String toString() {
         return "DevicePlugin{" +
-                "deviceIds=" + deviceIds +
                 ", controllerId='" + controllerId + '\'' +
                 ", pluginId='" + pluginId + '\'' +
                 ", id='" + id + '\'' +

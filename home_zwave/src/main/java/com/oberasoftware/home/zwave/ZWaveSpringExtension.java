@@ -1,17 +1,19 @@
 package com.oberasoftware.home.zwave;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.oberasoftware.home.api.extensions.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
-import com.oberasoftware.home.api.storage.model.DevicePlugin;
+import com.oberasoftware.home.api.storage.model.PluginItem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,7 +29,7 @@ public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
     private ApplicationContext context;
 
     @Override
-    public boolean isDeviceReady() {
+    public boolean isReady() {
         assertContext();
         return context.getBean(ZWaveController.class).isNetworkReady();
     }
@@ -39,7 +41,7 @@ public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
     }
 
     @Override
-    public void activate(Optional<DevicePlugin> pluginItem) {
+    public void activate(Optional<PluginItem> pluginItem) {
         assertContext();
         context.getBean(ProtocolBootstrap.class).startInitialization();
     }
@@ -54,6 +56,11 @@ public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
     public String getName() {
         assertContext();
         return context.getBean(DeviceRegistry.class).getZwaveName();
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return Maps.newHashMap();
     }
 
     @Override

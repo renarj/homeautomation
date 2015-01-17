@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -32,6 +34,20 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component
 public class JasDBCentralDatastore implements CentralDatastore {
     private static final Logger LOG = getLogger(JasDBCentralDatastore.class);
+
+    private Lock lock = new ReentrantLock();
+
+    @Override
+    public void beginTransaction() {
+        LOG.debug("Locking DB access");
+        lock.lock();
+    }
+
+    @Override
+    public void commitTransaction() {
+        LOG.debug("Unlock DB access");
+        lock.unlock();
+    }
 
     @PostConstruct
     public void createIndexOnStartup() {
@@ -118,7 +134,7 @@ public class JasDBCentralDatastore implements CentralDatastore {
     }
 
     @Override
-    public Optional<DevicePlugin> findPlugin(String controllerId, String pluginId) {
+    public Optional<PluginItem> findPlugin(String controllerId, String pluginId) {
         Map<String, String> properties = Maps.newLinkedHashMap();
         properties.put("controllerId", controllerId);
         properties.put("pluginId", pluginId);

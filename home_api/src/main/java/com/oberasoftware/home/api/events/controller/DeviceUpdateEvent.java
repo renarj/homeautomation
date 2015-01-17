@@ -1,4 +1,4 @@
-package com.oberasoftware.home.api.events.devices;
+package com.oberasoftware.home.api.events.controller;
 
 import com.oberasoftware.home.api.events.Event;
 import com.oberasoftware.home.api.model.Device;
@@ -6,26 +6,14 @@ import com.oberasoftware.home.api.model.Device;
 /**
  * @author renarj
  */
-public class DeviceInformationEvent implements Event {
+public class DeviceUpdateEvent implements Event {
 
-    public enum EVENT_TYPE {
-        NEW_DEVICE,
-        UPDATED_DEVICE,
-        REMOVED_DEVICE
-    }
-
-    private final EVENT_TYPE type;
     private final String pluginId;
     private final Device device;
 
-    public DeviceInformationEvent(EVENT_TYPE type, String pluginId, Device device) {
-        this.type = type;
+    public DeviceUpdateEvent(String pluginId, Device device) {
         this.pluginId = pluginId;
         this.device = device;
-    }
-
-    public EVENT_TYPE getType() {
-        return type;
     }
 
     public String getPluginId() {
@@ -41,7 +29,6 @@ public class DeviceInformationEvent implements Event {
         return "DeviceInformationEvent{" +
                 "device=" + device +
                 ", pluginId='" + pluginId + '\'' +
-                ", type=" + type +
                 '}';
     }
 }

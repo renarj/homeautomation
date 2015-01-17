@@ -9,6 +9,10 @@ import java.util.Optional;
  * @author renarj
  */
 public interface CentralDatastore {
+    void beginTransaction();
+
+    void commitTransaction();
+
     <T extends Item> T store(Item entity) throws DataStoreException;
 
     Container store(Container container) throws DataStoreException;
@@ -19,7 +23,7 @@ public interface CentralDatastore {
 
     <T extends Container> Optional<T> findContainer(String id);
 
-    Optional<DevicePlugin> findPlugin(String controllerId, String pluginId);
+    Optional<PluginItem> findPlugin(String controllerId, String pluginId);
 
     Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId);
 }

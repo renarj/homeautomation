@@ -3,7 +3,8 @@ package com.oberasoftware.home.hue;
 import com.oberasoftware.home.api.events.EventBus;
 import com.oberasoftware.home.api.events.EventHandler;
 import com.oberasoftware.home.api.events.EventSubscribe;
-import com.oberasoftware.home.api.storage.model.DevicePlugin;
+import com.oberasoftware.home.api.events.controller.PluginUpdateEvent;
+import com.oberasoftware.home.api.storage.model.PluginItem;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
 import com.philips.lighting.hue.sdk.PHHueSDK;
@@ -12,12 +13,10 @@ import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHHueParsingError;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -32,13 +31,17 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
     private PHHueSDK sdk;
     private PHAccessPoint ap;
 
+    private String bridgeUser;
+    private String bridgeIp;
+
     private AtomicBoolean connected = new AtomicBoolean(false);
 
     @Autowired
+    @Qualifier("localAutomationBus")
     private EventBus automationBus;
 
     @Override
-    public void connect(Optional<DevicePlugin> pluginItem) {
+    public void connect(Optional<PluginItem> pluginItem) {
         LOG.info("Connecting to Philips HUE bridge");
 
         sdk = PHHueSDK.create();
@@ -52,10 +55,10 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
             sm.search(true, true);
         } else {
             Map<String, String> properties = pluginItem.get().getProperties();
-            String bridgeIp = properties.get("bridgeIp");
-            String bridgeUser = properties.get("username");
+            this.bridgeIp = properties.get("bridgeIp");
+            this.bridgeUser = properties.get("username");
 
-            LOG.info("Existing bridge found: {}", bridgeIp);
+            LOG.info("Existing bridge found: {} username: {}", bridgeIp, bridgeUser);
             automationBus.publish(new HueBridgeDiscovered(bridgeIp, bridgeUser));
         }
     }
@@ -73,11 +76,17 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
 
         @Override
         public void onBridgeConnected(PHBridge phBridge) {
-            LOG.info("Bridge connected: {}", phBridge);
+            LOG.info("Bridge connected: {} with user: {}", phBridge, bridgeUser);
             connected.set(true);
 
             sdk.setSelectedBridge(phBridge);
             sdk.enableHeartbeat(phBridge, PHHueSDK.HB_INTERVAL);
+
+            Map<String, String> properties = new HashMap<>();
+            properties.put("bridgeIp", bridgeIp);
+            properties.put("username", bridgeUser);
+
+            automationBus.publish(new PluginUpdateEvent(HueExtension.HUE_ID, HueExtension.HUE_NAME, properties));
         }
 
         @Override
@@ -93,7 +102,10 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
             if(list.size() == 1) {
                 Optional<PHAccessPoint> ap = list.stream().findFirst();
 
-                ap.ifPresent(a -> automationBus.publish(new HueBridgeDiscovered(a.getIpAddress(), UUID.randomUUID().toString())));
+                bridgeUser = UUID.randomUUID().toString();
+                bridgeIp = ap.get().getIpAddress();
+
+                ap.ifPresent(a -> automationBus.publish(new HueBridgeDiscovered(a.getIpAddress(), bridgeUser)));
             } else {
                 LOG.warn("Detected multiple accesspoints");
             }

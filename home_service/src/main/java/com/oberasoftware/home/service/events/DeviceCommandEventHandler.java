@@ -20,8 +20,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class DeviceCommandHandler implements EventHandler {
-    private static final Logger LOG = getLogger(DeviceCommandHandler.class);
+public class DeviceCommandEventHandler implements EventHandler {
+    private static final Logger LOG = getLogger(DeviceCommandEventHandler.class);
 
     @Autowired
     private ExtensionManager extensionManager;

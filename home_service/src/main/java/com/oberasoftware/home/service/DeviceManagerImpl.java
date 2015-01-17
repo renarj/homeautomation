@@ -2,14 +2,12 @@ package com.oberasoftware.home.service;
 
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.events.EventHandler;
-import com.oberasoftware.home.api.events.EventSubscribe;
-import com.oberasoftware.home.api.events.devices.DeviceInformationEvent;
 import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.DevicePlugin;
+import com.oberasoftware.home.api.storage.model.PluginItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +40,7 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
         LOG.debug("Registering device: {} for plugin: {}", device, pluginId);
         String controllerId = automationBus.getControllerId();
 
-        Optional<DevicePlugin> plugin = centralDatastore.findPlugin(controllerId, pluginId);
+        Optional<PluginItem> plugin = centralDatastore.findPlugin(controllerId, pluginId);
 
         lock.lock();
         try {
@@ -70,9 +68,4 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
         return null;
     }
 
-    @EventSubscribe
-    public void receive(DeviceInformationEvent event) throws Exception {
-        LOG.debug("Received a device update for plugin: {} and device: {}", event.getPluginId(), event.getDevice());
-        registerDevice(event.getPluginId(), event.getDevice());
-    }
 }

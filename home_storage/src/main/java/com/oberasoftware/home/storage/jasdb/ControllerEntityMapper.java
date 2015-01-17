@@ -13,19 +13,13 @@ public class ControllerEntityMapper implements EntityMapper<ControllerItem> {
         controllerEntity.addProperty("type", "controller");
         controllerEntity.addProperty("controllerId", controllerItem.getControllerId());
 
-        controllerItem.getPluginIds().forEach(p -> controllerEntity.addProperty("plugins", p));
-
         return controllerEntity;
     }
 
     @Override
     public ControllerItem mapTo(SimpleEntity entity) {
         String controllerId = entity.getValue("controllerId");
-        ControllerItem controllerItem = new ControllerItem(entity.getInternalId(), controllerId);
-        if(entity.hasProperty("plugins")) {
-            entity.getProperty("plugins").getValues().forEach(v -> controllerItem.addPluginId(v.toString()));
-        }
 
-        return controllerItem;
+        return new ControllerItem(entity.getInternalId(), controllerId);
     }
 }

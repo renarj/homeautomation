@@ -8,18 +8,19 @@ import com.oberasoftware.home.api.extensions.AutomationExtension;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.ExtensionManager;
 import com.oberasoftware.home.api.managers.DeviceManager;
+import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.DevicePlugin;
+import com.oberasoftware.home.api.storage.model.PluginItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.*;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -38,7 +39,12 @@ public class ExtensionManagerImpl implements ExtensionManager {
     private CentralDatastore centralDatastore;
 
     @Autowired
+    private ItemManager itemManager;
+
+    @Autowired
     private AutomationBus automationBus;
+
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
     public List<AutomationExtension> getExtensions() {
@@ -51,64 +57,50 @@ public class ExtensionManagerImpl implements ExtensionManager {
     }
 
     @Override
-    public void registerController(String controllerId) throws DataStoreException {
+    public void activateController(String controllerId) throws DataStoreException {
         if(!centralDatastore.findController(controllerId).isPresent()) {
             LOG.debug("Initial startup, new controller detected registering in central datastore");
-            centralDatastore.store(new ControllerItem(generateId(), controllerId));
+            centralDatastore.store(new ControllerItem(UUID.randomUUID().toString(), controllerId));
         } else {
             LOG.debug("Controller: {} was already registered", controllerId);
         }
     }
 
     @Override
-    public void registerExtension(AutomationExtension extension) throws HomeAutomationException {
-        extensions.putIfAbsent(extension.getId(), extension);
+    public void activateExtension(AutomationExtension extension) throws HomeAutomationException {
+        executorService.submit(() -> {
+            Optional<PluginItem> pluginItem = centralDatastore.findPlugin(automationBus.getControllerId(), extension.getId());
+            LOG.info("Activating plugin: {}", pluginItem);
+            extension.activate(pluginItem);
 
-        LOG.info("Registering extension: {}", extension);
+            while (!extension.isReady()) {
+                LOG.debug("Extension: {} is not ready yet", extension.getId());
+                sleepUninterruptibly(1, TimeUnit.SECONDS);
+            }
 
-        if(extension instanceof DeviceExtension) {
-            registerDeviceExtension((DeviceExtension) extension);
-        }
-    }
+            extensions.putIfAbsent(extension.getId(), extension);
 
-    private void registerDeviceExtension(DeviceExtension deviceExtension) throws HomeAutomationException {
-        Optional<DevicePlugin> plugin = centralDatastore.findPlugin(automationBus.getControllerId(), deviceExtension.getId());
-        if(!plugin.isPresent()) {
-            LOG.debug("Plugin does not exist, storing in central datastore: {}", deviceExtension);
-            Optional<ControllerItem> controllerItem = centralDatastore.findController(automationBus.getControllerId());
-            String pluginId = generateId();
+            LOG.info("Registering extension: {}", extension);
+            itemManager.createOrUpdatePlugin(automationBus.getControllerId(), extension.getId(), extension.getName(), extension.getProperties());
 
-            centralDatastore.store(new DevicePlugin(pluginId, controllerItem.get().getControllerId(),
-                    deviceExtension.getId(), deviceExtension.getName(), new HashMap<>()));
-            controllerItem.get().addPluginId(pluginId);
-            centralDatastore.store(controllerItem.get());
-        }
+            if (extension instanceof DeviceExtension) {
+                registerDevices((DeviceExtension) extension);
+            }
 
-        registerDevices(deviceExtension);
+            return null;
+        });
     }
 
     private void registerDevices(DeviceExtension deviceExtension) {
-        Optional<DevicePlugin> plugin = centralDatastore.findPlugin(automationBus.getControllerId(), deviceExtension.getId());
-
         List<Device> devices = deviceExtension.getDevices();
         devices.forEach(d -> {
             try {
                 deviceManager.registerDevice(deviceExtension.getId(), d);
-                plugin.get().addDevice(d.getId());
             } catch (DataStoreException e) {
                 throw new RuntimeHomeAutomationException("Unable to store plugin devices", e);
             }
         });
-
-
-        try {
-            centralDatastore.store(plugin.get());
-        } catch (DataStoreException e) {
-            LOG.error("", e);
-        }
     }
 
-    private String generateId() {
-        return UUID.randomUUID().toString();
-    }
+
 }

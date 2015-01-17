@@ -10,9 +10,9 @@ import java.util.Optional;
  * @author renarj
  */
 public interface ExtensionManager {
-    void registerController(String controllerId) throws DataStoreException;
+    void activateController(String controllerId) throws DataStoreException;
 
-    void registerExtension(AutomationExtension extension) throws HomeAutomationException;
+    void activateExtension(AutomationExtension extension) throws HomeAutomationException;
 
     List<AutomationExtension> getExtensions();
 

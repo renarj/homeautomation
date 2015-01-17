@@ -2,7 +2,7 @@ package com.oberasoftware.home.storage.jasdb;
 
 import com.oberasoftware.home.api.storage.model.ControllerItem;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.DevicePlugin;
+import com.oberasoftware.home.api.storage.model.PluginItem;
 import nl.renarj.jasdb.api.SimpleEntity;
 
 /**
@@ -12,11 +12,11 @@ public class EntityMapperFactory {
 
     private EntityMapper<DeviceItem> deviceItemEntityMapper = new DeviceEntityMapper();
     private EntityMapper<ControllerItem> controllerItemEntityMapper = new ControllerEntityMapper();
-    private EntityMapper<DevicePlugin> pluginEntityMapper = new PluginEntityMapper();
+    private EntityMapper<PluginItem> pluginEntityMapper = new PluginEntityMapper();
 
     public <T> SimpleEntity mapFrom(T input) {
-        if(input instanceof DevicePlugin) {
-            return pluginEntityMapper.mapFrom((DevicePlugin)input);
+        if(input instanceof PluginItem) {
+            return pluginEntityMapper.mapFrom((PluginItem)input);
         } else if(input instanceof ControllerItem) {
             return controllerItemEntityMapper.mapFrom((ControllerItem) input);
         } else if(input instanceof DeviceItem) {

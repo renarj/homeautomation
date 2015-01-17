@@ -50,8 +50,6 @@ public class ZWaveDevice implements Device {
     public Map<String, String> getProperties() {
         Map<String, String> deviceProperties = new HashMap<>();
         deviceProperties.put("nodeId", Integer.toString(node.getNodeId()));
-        deviceProperties.put("status", node.getNodeStatus().toString());
-        deviceProperties.put("availability", node.getAvailability().toString());
 
         Optional<ManufactorInfoEvent> manufactorInfoEventOptional = node.getManufactorInfoEvent();
         Optional<NodeInformationEvent> nodeInformationEventOptional = node.getNodeInformation();
