@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -26,8 +24,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component
 public class DeviceManagerImpl implements DeviceManager, EventHandler {
     private static final Logger LOG = getLogger(DeviceManagerImpl.class);
-
-    private Lock lock = new ReentrantLock();
 
     @Autowired
     private CentralDatastore centralDatastore;
@@ -42,7 +38,7 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
 
         Optional<PluginItem> plugin = centralDatastore.findPlugin(controllerId, pluginId);
 
-        lock.lock();
+        centralDatastore.beginTransaction();
         try {
             Optional<DeviceItem> deviceItem = centralDatastore.findDevice(controllerId, plugin.get().getPluginId(), device.getId());
             String id = generateId();
@@ -55,8 +51,13 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
 
             return centralDatastore.store(new DeviceItem(id, controllerId, plugin.get().getPluginId(), device.getId(), device.getName(), device.getProperties()));
         } finally {
-            lock.unlock();
+            centralDatastore.commitTransaction();
         }
+    }
+
+    @Override
+    public DeviceItem findDeviceItem(String controllerId, String pluginId, String deviceId) {
+        return centralDatastore.findDevice(controllerId, pluginId, deviceId).get();
     }
 
     private String generateId() {
@@ -65,7 +66,7 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
 
     @Override
     public List<DeviceItem> getDevices() {
-        return null;
+        return centralDatastore.findDevices();
     }
 
 }

@@ -1,7 +1,7 @@
 package com.oberasoftware.home.storage.jasdb;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
 import com.oberasoftware.home.api.storage.CentralDatastore;
@@ -21,11 +21,14 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -34,6 +37,16 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component
 public class JasDBCentralDatastore implements CentralDatastore {
     private static final Logger LOG = getLogger(JasDBCentralDatastore.class);
+
+    public static final String DEVICE_TYPE = "device";
+    public static final String PLUGIN_TYPE = "plugin";
+    public static final String CONTROLLER_TYPE = "controller";
+
+    private static final String ITEMS_BAG_NAME = "items";
+
+    private static final EntityMapperFactory MAPPER_FACTORY = new EntityMapperFactory();
+
+
 
     private Lock lock = new ReentrantLock();
 
@@ -54,7 +67,7 @@ public class JasDBCentralDatastore implements CentralDatastore {
         LOG.debug("Creating a composite index");
 
         try {
-            createSession().createOrGetBag("items").ensureIndex(
+            createSession().createOrGetBag(ITEMS_BAG_NAME).ensureIndex(
                     new CompositeIndexField(
                             new IndexField("controllerId", new StringKeyType()),
                             new IndexField("pluginId", new StringKeyType()),
@@ -69,7 +82,7 @@ public class JasDBCentralDatastore implements CentralDatastore {
     @Override
     public <T extends Item> T store(Item entity) throws DataStoreException {
         LOG.debug("Storing entity: {}", entity);
-        createOrUpdate(new EntityMapperFactory().mapFrom(entity), "items");
+        createOrUpdate(new EntityMapperFactory().mapFrom(entity), ITEMS_BAG_NAME);
 
         return (T)entity;
     }
@@ -111,7 +124,7 @@ public class JasDBCentralDatastore implements CentralDatastore {
     public <T extends Item> Optional<T> findItem(String id) {
         try {
             DBSession session = createSession();
-            EntityBag bag = session.createOrGetBag("items");
+            EntityBag bag = session.createOrGetBag(ITEMS_BAG_NAME);
 
             return Optional.of(new EntityMapperFactory().mapTo(bag.getEntity(id)));
         } catch(JasDBStorageException e) {
@@ -127,56 +140,59 @@ public class JasDBCentralDatastore implements CentralDatastore {
 
     @Override
     public Optional<ControllerItem> findController(String controllerId) {
-        Map<String, String> properties = Maps.newHashMap();
-        properties.put("controllerId", controllerId);
-
-        return findItem(properties);
+        return findItem(new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId)
+                .put("type", CONTROLLER_TYPE).build());
     }
 
     @Override
     public Optional<PluginItem> findPlugin(String controllerId, String pluginId) {
-        Map<String, String> properties = Maps.newLinkedHashMap();
-        properties.put("controllerId", controllerId);
-        properties.put("pluginId", pluginId);
-        properties.put("type", "plugin");
-
-        return findItem(properties);
+        return findItem(new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId)
+                .put("pluginId", pluginId)
+                .put("type", PLUGIN_TYPE).build());
     }
 
 
     @Override
     public Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId) {
-        Map<String, String> properties = Maps.newLinkedHashMap();
-        properties.put("controllerId", controllerId);
-        properties.put("pluginId", pluginId);
-        properties.put("deviceId", deviceId);
-        properties.put("type", "device");
+        return findItem(new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId)
+                .put("pluginId", pluginId)
+                .put("deviceId", deviceId)
+                .put("type", DEVICE_TYPE).build());
+    }
 
-        return findItem(properties);
+    @Override
+    public List<DeviceItem> findDevices() {
+        return findItems(new ImmutableMap.Builder<String, String>()
+                .put("type", DEVICE_TYPE).build());
     }
 
     private <T> Optional<T> findItem(Map<String, String> properties) {
+        List<T> items = findItems(properties);
+        return ofNullable(Iterables.getFirst(items, null));
+    }
+
+    private <T> List<T> findItems(Map<String, String> properties) {
+        List<T> results = new ArrayList<>();
+
         try {
             DBSession session = createSession();
 
-            EntityBag bag = session.createOrGetBag("items");
+            EntityBag bag = session.createOrGetBag(ITEMS_BAG_NAME);
 
             QueryBuilder queryBuilder = QueryBuilder.createBuilder();
             properties.forEach((k, v) -> queryBuilder.field(k).value(v));
 
             QueryResult result = bag.find(queryBuilder).execute();
             LOG.debug("Query: {} results: {}", queryBuilder, result.size());
-            if(result.size() != 0) {
-                SimpleEntity entity = Iterables.getFirst(result, null);
-                LOG.debug("Found an item: {} of type: {}", entity, entity != null ? entity.getValue("type").toString() : "unknown");
 
-                return Optional.of(new EntityMapperFactory().mapTo(entity));
-            }
+            result.forEach(r -> results.add(MAPPER_FACTORY.mapTo(r)));
         } catch (JasDBStorageException e) {
-            LOG.error("", e);
+            LOG.error("Unable to query JasDB", e);
         }
-
-        return Optional.empty();
+        return results;
     }
 
     private DBSession createSession() {

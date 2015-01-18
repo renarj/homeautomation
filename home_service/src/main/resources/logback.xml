@@ -11,7 +11,7 @@
 
     <logger name="com.oberasoftware.home" level="debug"/>
 
-    <logger name="com.oberasoftware.home.zwave" level="info"/>
+    <logger name="com.oberasoftware.home.zwave" level="debug"/>
 
     <logger name="org.springframework" level="info"/>
 

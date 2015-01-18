@@ -14,7 +14,7 @@ public class PluginEntityMapper implements EntityMapper<PluginItem> {
     @Override
     public SimpleEntity mapFrom(PluginItem plugin) {
         SimpleEntity pluginEntity = new SimpleEntity(plugin.getId());
-        pluginEntity.addProperty("type", "plugin");
+        pluginEntity.addProperty("type", JasDBCentralDatastore.PLUGIN_TYPE);
         pluginEntity.addProperty("pluginId", plugin.getPluginId());
         pluginEntity.addProperty("name", plugin.getName());
         pluginEntity.addProperty("controllerId", plugin.getControllerId());

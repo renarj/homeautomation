@@ -3,6 +3,7 @@ package com.oberasoftware.home.api.storage;
 import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.storage.model.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,4 +27,6 @@ public interface CentralDatastore {
     Optional<PluginItem> findPlugin(String controllerId, String pluginId);
 
     Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId);
+
+    List<DeviceItem> findDevices();
 }

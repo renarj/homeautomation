@@ -1,6 +1,7 @@
-package com.oberasoftware.home.api.events;
+package com.oberasoftware.home.api.events.devices;
 
 import com.oberasoftware.home.api.commands.DeviceCommand;
+import com.oberasoftware.home.api.events.DeviceEvent;
 
 /**
  * @author renarj

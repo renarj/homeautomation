@@ -13,4 +13,6 @@ public interface DeviceManager {
     DeviceItem registerDevice(String pluginId, Device device) throws DataStoreException;
 
     List<DeviceItem> getDevices();
+
+    DeviceItem findDeviceItem(String controllerId, String pluginId, String deviceId);
 }

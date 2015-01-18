@@ -1,4 +1,4 @@
-package com.oberasoftware.home.service.types;
+package com.oberasoftware.home.core.types;
 
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.api.types.Value;

@@ -19,7 +19,7 @@
 
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>home_api</artifactId>
+            <artifactId>home_core</artifactId>
             <version>${project.version}</version>
         </dependency>
 

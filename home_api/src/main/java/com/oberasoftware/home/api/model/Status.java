@@ -6,5 +6,5 @@ package com.oberasoftware.home.api.model;
 public enum Status {
     UNKNOWN,
     DISCOVERED,
-    READY
+    ACTIVE
 }

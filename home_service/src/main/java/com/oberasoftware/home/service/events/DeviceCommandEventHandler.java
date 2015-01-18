@@ -1,7 +1,7 @@
 package com.oberasoftware.home.service.events;
 
 import com.oberasoftware.home.api.commands.DeviceCommand;
-import com.oberasoftware.home.api.events.DeviceCommandEvent;
+import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
 import com.oberasoftware.home.api.events.EventHandler;
 import com.oberasoftware.home.api.events.EventSubscribe;
 import com.oberasoftware.home.api.extensions.AutomationExtension;

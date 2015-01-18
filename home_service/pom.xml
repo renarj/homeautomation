@@ -33,11 +33,11 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.oberasoftware</groupId>-->
-            <!--<artifactId>home_zwave</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_zwave</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.oberasoftware</groupId>

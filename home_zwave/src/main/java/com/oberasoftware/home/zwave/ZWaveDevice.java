@@ -36,7 +36,7 @@ public class ZWaveDevice implements Device {
         switch(node.getNodeStatus()) {
             case IDENTIFIED:
             case ACTIVE:
-                return Status.READY;
+                return Status.ACTIVE;
             case INITIALIZED:
             case INITIALIZING:
                 return Status.DISCOVERED;

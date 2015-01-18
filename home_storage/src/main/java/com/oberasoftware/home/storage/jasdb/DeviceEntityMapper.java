@@ -15,7 +15,7 @@ public class DeviceEntityMapper implements EntityMapper<DeviceItem> {
     public SimpleEntity mapFrom(DeviceItem item) {
         SimpleEntity deviceEntity = new SimpleEntity(item.getId());
 
-        deviceEntity.addProperty("type", "device");
+        deviceEntity.addProperty("type", JasDBCentralDatastore.DEVICE_TYPE);
         deviceEntity.addProperty("deviceId", item.getDeviceId());
         deviceEntity.addProperty("name", item.getName());
         deviceEntity.addProperty("pluginId", item.getPluginId());

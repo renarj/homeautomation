@@ -10,7 +10,7 @@ public class ControllerEntityMapper implements EntityMapper<ControllerItem> {
     @Override
     public SimpleEntity mapFrom(ControllerItem controllerItem) {
         SimpleEntity controllerEntity = new SimpleEntity(controllerItem.getId());
-        controllerEntity.addProperty("type", "controller");
+        controllerEntity.addProperty("type", JasDBCentralDatastore.CONTROLLER_TYPE);
         controllerEntity.addProperty("controllerId", controllerItem.getControllerId());
 
         return controllerEntity;
