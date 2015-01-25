@@ -46,20 +46,16 @@
                 <artifactId>guava</artifactId>
                 <version>18.0</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>org.springframework.boot</groupId>-->
-                <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-            <!--</dependency>-->
-            <!--<dependency>-->
-                <!--<groupId>org.hsqldb</groupId>-->
-                <!--<artifactId>hsqldb</artifactId>-->
-                <!--<scope>runtime</scope>-->
-            <!--</dependency>-->
+            <dependency>
+                <groupId>org.influxdb</groupId>
+                <artifactId>influxdb-java</artifactId>
+                <version>1.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <module>data_monitors/youless</module>
+        <module>home_youless</module>
         <module>home_zwave</module>
         <module>home_api</module>
         <module>home_service</module>
@@ -67,6 +63,9 @@
         <module>home_rest</module>
         <module>home_hue</module>
         <module>home_core</module>
+        <module>home_nest</module>
+        <module>statestores/home_influxdb</module>
+        <module>home_assembly</module>
     </modules>
 
     <build>

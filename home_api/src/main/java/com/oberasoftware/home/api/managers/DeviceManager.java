@@ -5,6 +5,7 @@ import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author renarj
@@ -14,5 +15,5 @@ public interface DeviceManager {
 
     List<DeviceItem> getDevices();
 
-    DeviceItem findDeviceItem(String controllerId, String pluginId, String deviceId);
+    Optional<DeviceItem> findDeviceItem(String controllerId, String pluginId, String deviceId);
 }

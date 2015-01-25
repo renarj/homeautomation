@@ -54,13 +54,13 @@ public class JasDBCentralDataStoreTest {
 
         String id = UUID.randomUUID().toString();
 
-        centralDatastore.store(new DeviceItem(id, "controller1", "plugin1", "device1", "test device", new HashMap<>()));
+        centralDatastore.store(new DeviceItem(id, "controller1", "plugin1", "device1", "test device", new HashMap<>(), new HashMap<>()));
 
         Optional<DeviceItem> item = centralDatastore.findDevice("controller1", "plugin1", "device1");
         assertThat(item.isPresent(), is(true));
         assertThat(item.get().getName(), is("test device"));
 
-        centralDatastore.store(new DeviceItem(id, "controller1", "plugin1", "device1", "updated name", new HashMap<>()));
+        centralDatastore.store(new DeviceItem(id, "controller1", "plugin1", "device1", "updated name", new HashMap<>(), new HashMap<>()));
 
         assertThat(session.getBag("items").getSize(), is(1l));
 

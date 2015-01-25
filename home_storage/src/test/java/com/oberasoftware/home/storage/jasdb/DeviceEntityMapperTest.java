@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 public class DeviceEntityMapperTest {
     @Test
     public void testMapDeviceToEntity() {
-        DeviceItem item = new DeviceItem(UUID.randomUUID().toString(), "localhost", "zwave", "1", "test", new HashMap<>());
+        DeviceItem item = new DeviceItem(UUID.randomUUID().toString(), "localhost", "zwave", "1", "test", new HashMap<>(), new HashMap<>());
 
         assertThat(new DeviceEntityMapper().mapFrom(item).getProperty("deviceId").getFirstValueObject(), is("1"));
     }

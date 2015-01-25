@@ -118,7 +118,7 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
 
         @Override
         public void onConnectionResumed(PHBridge phBridge) {
-            LOG.debug("Connection resumed");
+            LOG.trace("Connection resumed");
         }
 
         @Override

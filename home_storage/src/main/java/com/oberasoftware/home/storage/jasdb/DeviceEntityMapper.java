@@ -3,9 +3,12 @@ package com.oberasoftware.home.storage.jasdb;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
+import nl.renarj.jasdb.api.properties.Value;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author renarj
@@ -25,6 +28,10 @@ public class DeviceEntityMapper implements EntityMapper<DeviceItem> {
         item.getProperties().forEach(deviceProperties::addProperty);
         deviceEntity.addEntity("deviceProperties", deviceProperties);
 
+        EmbeddedEntity configurationProperties = new EmbeddedEntity();
+        item.getConfiguration().forEach(configurationProperties::addProperty);
+        deviceEntity.addEntity("configuration", configurationProperties);
+
         return deviceEntity;
     }
 
@@ -39,6 +46,12 @@ public class DeviceEntityMapper implements EntityMapper<DeviceItem> {
         SimpleEntity deviceProperties = entity.getEntity("deviceProperties");
         deviceProperties.getProperties().forEach(p -> properties.put(p.getPropertyName(), p.getFirstValueObject()));
 
-        return new DeviceItem(entity.getInternalId(), controllerId, pluginId, deviceId, name, properties);
+        Map<String, List<String>> configuration = new HashMap<>();
+        SimpleEntity configProperties = entity.getEntity("configuration");
+        if(configProperties != null) {
+            configProperties.getProperties().forEach(p -> configuration.put(p.getPropertyName(), p.getValues().stream().map(Value::toString).collect(Collectors.toList())));
+        }
+
+        return new DeviceItem(entity.getInternalId(), controllerId, pluginId, deviceId, name, properties, configuration);
     }
 }

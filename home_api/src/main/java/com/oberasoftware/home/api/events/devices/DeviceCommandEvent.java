@@ -16,7 +16,6 @@ public class DeviceCommandEvent implements DeviceEvent {
         this.command = command;
     }
 
-    @Override
     public String getItemId() {
         return itemId;
     }

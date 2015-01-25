@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,15 +50,16 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
                 LOG.debug("Device: {} does not yet exist, creating new with id: {}", device, id);
             }
 
-            return centralDatastore.store(new DeviceItem(id, controllerId, plugin.get().getPluginId(), device.getId(), device.getName(), device.getProperties()));
+            return centralDatastore.store(new DeviceItem(id, controllerId, plugin.get().getPluginId(), device.getId(),
+                    device.getName(), device.getProperties(), new HashMap<>()));
         } finally {
             centralDatastore.commitTransaction();
         }
     }
 
     @Override
-    public DeviceItem findDeviceItem(String controllerId, String pluginId, String deviceId) {
-        return centralDatastore.findDevice(controllerId, pluginId, deviceId).get();
+    public Optional<DeviceItem> findDeviceItem(String controllerId, String pluginId, String deviceId) {
+        return centralDatastore.findDevice(controllerId, pluginId, deviceId);
     }
 
     private String generateId() {
