@@ -1,4 +1,4 @@
-package com.oberasoftware.home.storage.jasdb;
+package com.oberasoftware.home.storage.jasdb.mapping;
 
 import nl.renarj.jasdb.api.SimpleEntity;
 

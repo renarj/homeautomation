@@ -3,6 +3,7 @@ package com.oberasoftware.home.core.events;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -20,14 +21,15 @@ public class HandlerEntry {
         this.listenerInstance = listenerInstance;
     }
 
-    public void executeHandler(Object event) {
+    public Optional<?> executeHandler(Object event) {
         LOG.debug("Executing event listener: {} method: {} for event: {}", listenerInstance.getClass().getSimpleName(), eventMethod.getName(), event);
         try {
-            eventMethod.invoke(listenerInstance, event);
+            return Optional.ofNullable(eventMethod.invoke(listenerInstance, event));
         } catch (Throwable e) {
             LOG.error("Unable to execute listener instance", e);
-//            throw new RuntimeEventException("Unable to execute event listener", e);
         }
+
+        return Optional.empty();
     }
 
     public Method getEventMethod() {

@@ -1,6 +1,6 @@
 package com.oberasoftware.home.api.managers;
 
-import com.oberasoftware.home.api.exceptions.DataStoreException;
+import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
  * @author renarj
  */
 public interface DeviceManager {
-    DeviceItem registerDevice(String pluginId, Device device) throws DataStoreException;
+    DeviceItem registerDevice(String pluginId, Device device) throws HomeAutomationException;
 
     List<DeviceItem> getDevices();
 

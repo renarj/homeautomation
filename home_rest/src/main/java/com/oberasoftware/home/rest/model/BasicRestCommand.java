@@ -1,4 +1,4 @@
-package com.oberasoftware.home.rest;
+package com.oberasoftware.home.rest.model;
 
 import com.oberasoftware.home.api.commands.BasicCommand;
 

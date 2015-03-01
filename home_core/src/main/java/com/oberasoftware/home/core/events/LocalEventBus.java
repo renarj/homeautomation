@@ -48,13 +48,12 @@ public class LocalEventBus implements EventBus {
 
     @Override
     public Result publish(Message event) {
-        Future<?> f = executorService.submit(() -> {
+        Future<List<?>> f = executorService.submit(() -> {
             LOG.debug("Firing off an Async event: {}", event);
-            notifyEventListeners(event);
+            return notifyEventListeners(event);
         });
 
-
-        return null;
+        return new AsyncResult(f);
     }
 
     @Override
@@ -63,7 +62,8 @@ public class LocalEventBus implements EventBus {
         processEventListener(handler);
     }
 
-    private void notifyEventListeners(Object event) {
+    private List<Object> notifyEventListeners(Object event) {
+        List<Object> results = new ArrayList<>();
         Set<String> handlersExecuted = new HashSet<>();
         TypeToken.of(event.getClass()).getTypes().forEach(o -> {
             List<HandlerEntry> handlers = handlerEntries.getOrDefault(o.getRawType(), new ArrayList<>());
@@ -72,10 +72,15 @@ public class LocalEventBus implements EventBus {
 
                 if (!handlersExecuted.contains(handlerClass)) {
                     handlersExecuted.add(handlerClass);
-                    h.executeHandler(event);
+                    Optional<?> result = h.executeHandler(event);
+                    if(result.isPresent()) {
+                        results.add(result);
+                    }
                 }
             });
         });
+
+        return results;
     }
 
     private void processEventListener(Object listenerInstance) {

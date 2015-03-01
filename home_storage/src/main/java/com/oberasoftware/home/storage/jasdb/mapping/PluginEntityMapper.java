@@ -1,8 +1,10 @@
-package com.oberasoftware.home.storage.jasdb;
+package com.oberasoftware.home.storage.jasdb.mapping;
 
 import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.storage.jasdb.JasDBCentralDatastore;
 import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.Map;
 /**
  * @author renarj
  */
+@Component
 public class PluginEntityMapper implements EntityMapper<PluginItem> {
     @Override
     public SimpleEntity mapFrom(PluginItem plugin) {

@@ -6,15 +6,15 @@ import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.storage.CentralDatastore;
+import com.oberasoftware.home.api.storage.model.ControllerItem;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.storage.model.Item;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -28,6 +28,22 @@ public class ItemManagerImpl implements ItemManager {
     @Autowired
     private CentralDatastore centralDatastore;
 
+    @Override
+    public ControllerItem createOrUpdateController(String controllerId) throws HomeAutomationException {
+        centralDatastore.beginTransaction();
+        try {
+            Optional<ControllerItem> controllerItem = centralDatastore.findController(controllerId);
+            if (!controllerItem.isPresent()) {
+                LOG.debug("Initial startup, new controller detected registering in central datastore");
+                return centralDatastore.store(new ControllerItem(generateId(), controllerId));
+            } else {
+                LOG.debug("Controller: {} was already registered", controllerId);
+                return controllerItem.get();
+            }
+        } finally {
+            centralDatastore.commitTransaction();
+        }
+    }
 
     @Override
     public PluginItem createOrUpdatePlugin(String controllerId, String pluginId, String name, Map<String, String> properties) throws HomeAutomationException {
@@ -41,7 +57,7 @@ public class ItemManagerImpl implements ItemManager {
                 return safelyStorePluginItem(itemId, controllerId, pluginId, name, properties);
             } else {
                 PluginItem currentPlugin = optionalPlugin.get();
-                if(havePropertiesChanged(currentPlugin.getProperties(), properties) && !name.equalsIgnoreCase(currentPlugin.getName())) {
+                if(havePropertiesChanged(currentPlugin.getProperties(), properties) && !name.equals(currentPlugin.getName())) {
                     LOG.debug("Plugin information has changed, storing plugin item: {}", pluginId);
 
                     return safelyStorePluginItem(currentPlugin.getId(), controllerId, pluginId, name, properties);
@@ -68,6 +84,53 @@ public class ItemManagerImpl implements ItemManager {
 
     @Override
     public DeviceItem createOrUpdateDevice(String controllerId, String pluginId, String deviceId, String name, Map<String, String> properties) throws HomeAutomationException {
+        centralDatastore.beginTransaction();
+        try {
+            Optional<DeviceItem> deviceItem = centralDatastore.findDevice(controllerId, pluginId, deviceId);
+            if(deviceItem.isPresent()) {
+                DeviceItem item = deviceItem.get();
+
+                if(havePropertiesChanged(item.getProperties(), properties) || !item.getName().equals(name)) {
+                    LOG.debug("Device: {} already exist, properties have changed, updating device with id: {}", deviceId, item.getId());
+                    return centralDatastore.store(new DeviceItem(item.getId(), controllerId, pluginId, deviceId,
+                            name, properties, new HashMap<>()));
+                } else {
+                    LOG.debug("Device: {} has not changed, not updating item: {}", deviceId, item.getId());
+                    return item;
+                }
+            } else {
+                String id = generateId();
+                LOG.debug("Device: {} does not yet exist, creating new with id: {}", deviceId, id);
+                return centralDatastore.store(new DeviceItem(id, controllerId, pluginId, deviceId,
+                        name, properties, new HashMap<>()));
+            }
+        } finally {
+            centralDatastore.commitTransaction();
+        }
+    }
+
+    @Override
+    public List<ControllerItem> findControllers() {
+        return centralDatastore.findControllers();
+    }
+
+    @Override
+    public List<PluginItem> findPlugins(String controllerId) {
+        return centralDatastore.findPlugins(controllerId);
+    }
+
+    @Override
+    public List<DeviceItem> findDevices(String controllerId, String pluginId) {
+        return centralDatastore.findDevices(controllerId, pluginId);
+    }
+
+    @Override
+    public List<DeviceItem> findDevices() {
+        return centralDatastore.findDevices();
+    }
+
+    @Override
+    public Item findItem(String id) {
         return null;
     }
 

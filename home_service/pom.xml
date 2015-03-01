@@ -33,6 +33,19 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_exampledevice</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
         <!--<dependency>-->
             <!--<groupId>com.oberasoftware</groupId>-->
             <!--<artifactId>home_zwave</artifactId>-->
@@ -45,11 +58,11 @@
             <!--<version>${project.version}</version>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
-            <artifactId>home_influxdb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.oberasoftware</groupId>-->
+            <!--<artifactId>home_influxdb</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <!--<dependency>-->
             <!--<groupId>com.oberasoftware</groupId>-->
             <!--<artifactId>home_nest</artifactId>-->

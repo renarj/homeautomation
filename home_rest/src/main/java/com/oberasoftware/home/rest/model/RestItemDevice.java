@@ -1,4 +1,4 @@
-package com.oberasoftware.home.rest;
+package com.oberasoftware.home.rest.model;
 
 import com.oberasoftware.home.api.model.State;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
@@ -6,11 +6,11 @@ import com.oberasoftware.home.api.storage.model.DeviceItem;
 /**
  * @author renarj
  */
-public class RestDevice {
+public class RestItemDevice {
     private final DeviceItem item;
     private final State state;
 
-    public RestDevice(DeviceItem item, State state) {
+    public RestItemDevice(DeviceItem item, State state) {
         this.item = item;
         this.state = state;
     }

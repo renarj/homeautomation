@@ -1,6 +1,5 @@
 package com.oberasoftware.home.api.extensions;
 
-import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.Optional;
  * @author renarj
  */
 public interface ExtensionManager {
-    void activateController(String controllerId) throws DataStoreException;
+    void activateController(String controllerId) throws HomeAutomationException;
 
     void activateExtension(AutomationExtension extension) throws HomeAutomationException;
 

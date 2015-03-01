@@ -66,6 +66,8 @@
         <module>home_nest</module>
         <module>statestores/home_influxdb</module>
         <module>home_assembly</module>
+        <module>home_exampledevice</module>
+        <module>home_web</module>
     </modules>
 
     <build>

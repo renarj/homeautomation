@@ -8,33 +8,36 @@ import java.util.List;
  */
 public class Container implements HomeEntity {
 
+    private final String id;
     private final String name;
+    private final List<UIItem> items = new ArrayList<>();
 
-    private final List<Item> items = new ArrayList<>();
-    private final List<ControllerItem> controllers = new ArrayList<>();
+    private final String parentContainerId;
 
-    public Container(String name) {
+    public Container(String id, String name, String parentContainerId) {
+        this.id = id;
         this.name = name;
+        this.parentContainerId = parentContainerId;
     }
 
-    public List<ControllerItem> getControllers() {
-        return controllers;
+    public String getParentContainerId() {
+        return parentContainerId;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<Item> getItems() {
+    public List<UIItem> getItems() {
         return items;
     }
 
-    public void addItem(Item item) {
+    public void addItem(UIItem item) {
         this.items.add(item);
     }
 
     @Override
     public String getId() {
-        return null;
+        return id;
     }
 }

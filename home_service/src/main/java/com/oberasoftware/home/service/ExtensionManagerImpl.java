@@ -1,7 +1,6 @@
 package com.oberasoftware.home.service;
 
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
 import com.oberasoftware.home.api.extensions.AutomationExtension;
@@ -11,13 +10,14 @@ import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.CentralDatastore;
-import com.oberasoftware.home.api.storage.model.ControllerItem;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
@@ -57,13 +57,8 @@ public class ExtensionManagerImpl implements ExtensionManager {
     }
 
     @Override
-    public void activateController(String controllerId) throws DataStoreException {
-        if(!centralDatastore.findController(controllerId).isPresent()) {
-            LOG.debug("Initial startup, new controller detected registering in central datastore");
-            centralDatastore.store(new ControllerItem(UUID.randomUUID().toString(), controllerId));
-        } else {
-            LOG.debug("Controller: {} was already registered", controllerId);
-        }
+    public void activateController(String controllerId) throws HomeAutomationException {
+        itemManager.createOrUpdateController(controllerId);
     }
 
     @Override
@@ -96,7 +91,7 @@ public class ExtensionManagerImpl implements ExtensionManager {
         devices.forEach(d -> {
             try {
                 deviceManager.registerDevice(deviceExtension.getId(), d);
-            } catch (DataStoreException e) {
+            } catch (HomeAutomationException e) {
                 throw new RuntimeHomeAutomationException("Unable to store plugin devices", e);
             }
         });

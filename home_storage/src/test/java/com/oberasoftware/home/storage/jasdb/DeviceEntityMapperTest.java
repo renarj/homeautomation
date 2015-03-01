@@ -1,6 +1,7 @@
 package com.oberasoftware.home.storage.jasdb;
 
 import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.storage.jasdb.mapping.DeviceEntityMapper;
 import org.junit.Test;
 
 import java.util.HashMap;

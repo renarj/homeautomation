@@ -1,9 +1,11 @@
-package com.oberasoftware.home.storage.jasdb;
+package com.oberasoftware.home.storage.jasdb.mapping;
 
 import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.storage.jasdb.JasDBCentralDatastore;
 import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.properties.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 /**
  * @author renarj
  */
+@Component
 public class DeviceEntityMapper implements EntityMapper<DeviceItem> {
     @Override
     public SimpleEntity mapFrom(DeviceItem item) {
