@@ -21,6 +21,12 @@
             <name>project</name>
             <url>file:///${project.basedir}/../repo</url>
         </repository>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -51,6 +57,17 @@
                 <artifactId>influxdb-java</artifactId>
                 <version>1.5</version>
             </dependency>
+            <dependency>
+                <groupId>edu.cmu.sphinx</groupId>
+                <artifactId>sphinx4-core</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.cmu.sphinx</groupId>
+                <artifactId>sphinx4-data</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -68,6 +85,7 @@
         <module>home_assembly</module>
         <module>home_exampledevice</module>
         <module>home_web</module>
+        <module>home_voice</module>
     </modules>
 
     <build>
@@ -80,6 +98,17 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>springloaded</artifactId>
+                        <version>1.2.0.RELEASE</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

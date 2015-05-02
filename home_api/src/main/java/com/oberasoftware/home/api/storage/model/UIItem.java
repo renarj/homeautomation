@@ -4,19 +4,53 @@ package com.oberasoftware.home.api.storage.model;
  * @author renarj
  */
 public class UIItem implements Item {
-    private final String id;
-    private final String name;
-    private final String description;
-    private final String uiType;
+    private String id;
+    private String name;
+    private String description;
+    private String uiType;
 
-    private final String deviceId;
+    private String containerId;
 
-    public UIItem(String id, String name, String description, String uiType, String deviceId) {
+    private String deviceId;
+
+    public UIItem(String id, String name, String containerId, String description, String uiType, String deviceId) {
         this.id = id;
         this.name = name;
+        this.containerId = containerId;
         this.description = description;
         this.uiType = uiType;
         this.deviceId = deviceId;
+    }
+
+    public UIItem() {
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setUiType(String uiType) {
+        this.uiType = uiType;
+    }
+
+    public void setContainerId(String containerId) {
+        this.containerId = containerId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getContainerId() {
+        return containerId;
     }
 
     @Override
@@ -38,5 +72,17 @@ public class UIItem implements Item {
 
     public String getDeviceId() {
         return deviceId;
+    }
+
+    @Override
+    public String toString() {
+        return "UIItem{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", uiType='" + uiType + '\'' +
+                ", containerId='" + containerId + '\'' +
+                ", deviceId='" + deviceId + '\'' +
+                '}';
     }
 }

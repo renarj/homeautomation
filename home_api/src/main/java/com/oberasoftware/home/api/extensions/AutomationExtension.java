@@ -1,5 +1,6 @@
 package com.oberasoftware.home.api.extensions;
 
+import com.oberasoftware.home.api.model.ExtensionResource;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 
 import java.util.Map;
@@ -16,6 +17,10 @@ public interface AutomationExtension {
     Map<String, String> getProperties();
 
     CommandHandler getCommandHandler();
+
+    default Optional<ExtensionResource> getIcon() {
+        return Optional.empty();
+    }
 
     boolean isReady();
 

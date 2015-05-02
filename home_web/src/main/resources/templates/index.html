@@ -1,16 +1,68 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:substituteby="includes/header :: header">
+<head th:replace="includes/header :: header">
 </head>
 <body>
+<script th:src="@{/javascript/dashboard.js}" src="/static/javascript/dashboard.js"></script>
+<script id="temperatureTemplate" type="x-tmpl-mustache">
+    <div class="well" id="{{widgetId}}">
+        <label>{{name}}</label>
+        <label>{{value}}</label>
+    </div>
+</script>
 <div class="container">
-    <div th:substituteby="includes/header :: navigation"></div>
+    <div th:replace="includes/header :: navigation"></div>
 
     <div class="row">
-        <h1>Welcome</h1>
-    </div>
+        <div class="modal fade" id="containerModal" tabindex="-1" role="dialog" aria-labelledby="addContainerLabel" aria-hidden="true">
+            <form role="form" id="createContainerForm" action="#" method="post">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="addContainerLabel">Add a Container</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="containerName">Name</label>
+                                <input class="form-control" id="containerName" type="text"/>
+                            </div>
+                            <input type="hidden" value="" id="parentContainerId"/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-    <div th:substituteby="includes/header :: footer"></div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <h3 class="panel-title pull-left">Locations</h3>
+                <div class="btn-group pull-right">
+                    <a href="#" data-toggle="modal" data-target="#containerModal" data-id="" class="btn btn-default btn-sm addContainer" title="Add a Container"><span class="glyphicon glyphicon-plus"></span></a>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="row" th:each="container : ${containers}">
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix">
+                            <h3 class="panel-title pull-left" th:text="${container.name}">Container name</h3>
+                            <div class="btn btn-group pull-right">
+                                <a href="#" data-toggle="modal" data-target="#widgetModal" data-id="" th:attr="data-id=${container.id}" class="btn btn-default btn-sm addWidget" title="Add a Widget"><span class="glyphicon glyphicon-plus"></span></a>
+                            </div>
+                        </div>
+                        <div class="panel-body" th:attr="containerId=${container.id}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="includes/header :: footer"></div>
 </div>
 
 </body>

@@ -5,9 +5,17 @@
 
     <link th:href="@{/images/favicon.ico}" rel="shortcut icon" href="/static/images/favicon.ico" title="Favicon"/>
 
+    <script th:src="@{/javascript/jquery-2.1.0.min.js}" src="/static/javascript/jquery-2.1.0.min.js"></script>
+
     <link th:href="@{/bootstrap/css/bootstrap.min.css}" href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
 
-    <script th:src="@{/ootstrap/js/bootstrap.min.js}" src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}" src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+    <script th:src="@{/bootstrap/js/bootstrap-switch.min.js}" src="/static/bootstrap/js/bootstrap-switch.min.js"></script>
+
+    <link th:href="@{/bootstrap/css/bootstrap-switch.min.css}" href="/static/bootstrap/css/bootstrap-switch.min.css" rel="stylesheet"/>
+
+    <script th:src="@{/javascript/mustache.min.js}" src="/static/javascript/mustache.min.js"></script>
 </head>
 
 
@@ -19,8 +27,8 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a th:href="@{'/data/'}">Data</a></li>
-                    <li><a th:href="@{'/security/'}">Security</a></li>
+                    <li class="active"><a th:href="@{'/web/'}">DashBoard</a></li>
+                    <li><a th:href="@{'/web/configuration/'}">Configuration</a></li>
                 </ul>
                 <form class="navbar-form navbar-left" role="search">
                     <div class="form-group">

@@ -1,12 +1,12 @@
 package com.oberasoftware.home.service.events;
 
 import com.oberasoftware.home.api.commands.DeviceCommand;
-import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
 import com.oberasoftware.home.api.events.EventHandler;
 import com.oberasoftware.home.api.events.EventSubscribe;
+import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
 import com.oberasoftware.home.api.extensions.AutomationExtension;
 import com.oberasoftware.home.api.extensions.ExtensionManager;
-import com.oberasoftware.home.api.storage.CentralDatastore;
+import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class DeviceCommandEventHandler implements EventHandler {
     private ExtensionManager extensionManager;
 
     @Autowired
-    private CentralDatastore centralDatastore;
+    private HomeDAO homeDAO;
 
     @EventSubscribe
     public void receive(DeviceCommandEvent event) {
@@ -36,7 +36,7 @@ public class DeviceCommandEventHandler implements EventHandler {
         DeviceCommand command = event.getCommand();
         LOG.debug("Looking up device details for command: {} and itemId: {}",command, command.getItemId());
 
-        Optional<DeviceItem> deviceData = centralDatastore.findItem(command.getItemId());
+        Optional<DeviceItem> deviceData = homeDAO.findItem(command.getItemId());
         if(deviceData.isPresent()) {
             DeviceItem deviceItem = deviceData.get();
             String pluginId = deviceItem.getPluginId();

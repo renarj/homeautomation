@@ -45,7 +45,7 @@ public class JasDBDAO implements HomeDAO {
         try {
             EntityBag bag = sessionFactory.createSession().createOrGetBag(ITEMS_BAG_NAME);
 
-            return Optional.of(new EntityMapperFactory().mapTo(bag.getEntity(id)));
+            return Optional.of(mapperFactory.mapTo(bag.getEntity(id)));
         } catch(JasDBStorageException e) {
             LOG.error("", e);
         }
@@ -54,7 +54,41 @@ public class JasDBDAO implements HomeDAO {
 
     @Override
     public <T extends Container> Optional<T> findContainer(String id) {
-        return null;
+        try {
+            EntityBag bag = sessionFactory.createSession().createOrGetBag(ITEMS_BAG_NAME);
+
+            return Optional.of(mapperFactory.mapTo(bag.getEntity(id)));
+        } catch(JasDBStorageException e) {
+            LOG.error("", e);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Container> findRootContainers() {
+        return findItems(new ImmutableMap.Builder<String, String>()
+                .put("type", CONTAINER_TYPE)
+                .put("parent", "").build());
+    }
+
+    @Override
+    public List<Container> findContainers() {
+        return findItems(new ImmutableMap.Builder<String, String>()
+                .put("type", CONTAINER_TYPE).build());
+    }
+
+    @Override
+    public List<Container> findContainers(String parentId) {
+        return findItems(new ImmutableMap.Builder<String, String>()
+                .put("type", CONTAINER_TYPE)
+                .put("parent", parentId).build());
+    }
+
+    @Override
+    public List<UIItem> findUIItems(String containerId) {
+        return findItems(new ImmutableMap.Builder<String, String>()
+                .put("type", UI_TYPE)
+                .put("containerId", containerId).build());
     }
 
     @Override
@@ -107,13 +141,6 @@ public class JasDBDAO implements HomeDAO {
         return findItems(new ImmutableMap.Builder<String, String>()
                 .put("type", DEVICE_TYPE).build());
     }
-
-    @Override
-    public List<UIItem> findUIItems() {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("type", UI_TYPE).build());
-    }
-
 
     private <T> Optional<T> findItem(Map<String, String> properties) {
         List<T> items = findItems(properties);

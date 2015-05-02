@@ -38,6 +38,7 @@ public class JasDBCentralDatastore implements CentralDatastore {
     public static final String PLUGIN_TYPE = PluginItem.class.getName();
     public static final String CONTROLLER_TYPE = ControllerItem.class.getName();
     public static final String UI_TYPE = UIItem.class.getName();
+    public static final String CONTAINER_TYPE = Container.class.getName();
 
     public static final String ITEMS_BAG_NAME = "items";
 
@@ -78,6 +79,16 @@ public class JasDBCentralDatastore implements CentralDatastore {
                     ), false);
         } catch (JasDBStorageException e) {
             LOG.error("", e);
+        }
+    }
+
+    @Override
+    public void delete(String id) throws DataStoreException {
+        try {
+            EntityBag bag = jasDBSessionFactory.createSession().createOrGetBag(ITEMS_BAG_NAME);
+            bag.removeEntity(id);
+        } catch (JasDBStorageException e) {
+            throw new DataStoreException("Unable to delete entity: " + id);
         }
     }
 

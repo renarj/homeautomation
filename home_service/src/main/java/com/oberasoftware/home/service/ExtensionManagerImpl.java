@@ -9,7 +9,7 @@ import com.oberasoftware.home.api.extensions.ExtensionManager;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.model.Device;
-import com.oberasoftware.home.api.storage.CentralDatastore;
+import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,11 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -36,7 +40,7 @@ public class ExtensionManagerImpl implements ExtensionManager {
     private DeviceManager deviceManager;
 
     @Autowired
-    private CentralDatastore centralDatastore;
+    private HomeDAO homeDAO;
 
     @Autowired
     private ItemManager itemManager;
@@ -64,7 +68,7 @@ public class ExtensionManagerImpl implements ExtensionManager {
     @Override
     public void activateExtension(AutomationExtension extension) throws HomeAutomationException {
         executorService.submit(() -> {
-            Optional<PluginItem> pluginItem = centralDatastore.findPlugin(automationBus.getControllerId(), extension.getId());
+            Optional<PluginItem> pluginItem = homeDAO.findPlugin(automationBus.getControllerId(), extension.getId());
             LOG.info("Activating plugin: {}", pluginItem);
             extension.activate(pluginItem);
 

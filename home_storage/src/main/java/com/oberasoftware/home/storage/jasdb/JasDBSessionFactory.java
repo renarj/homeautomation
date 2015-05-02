@@ -21,6 +21,9 @@ public class JasDBSessionFactory {
     @Value("${jasdb.mode}")
     private String jasdbMode;
 
+    @Value("${jasdb.wipe.startup:false}")
+    private boolean wipeStartup;
+
     @Value("${jasdb.host:}")
     private String jasdbHost;
 
@@ -32,12 +35,31 @@ public class JasDBSessionFactory {
 
 
     public DBSession createSession() throws JasDBStorageException {
+        DBSession session;
         if(stringNotEmpty(jasdbMode) && jasdbMode.equals("rest")) {
             LOG.info("Creating JasDB REST session to host: {} port: {} instance: {}", jasdbHost, jasdbPort, jasdbInstance);
-            return new RestDBSession(jasdbInstance, jasdbHost, jasdbPort);
+            session = new RestDBSession(jasdbInstance, jasdbHost, jasdbPort);
         } else {
             LOG.info("Creating JasDB Local session to instance: {}", jasdbInstance);
-            return new LocalDBSession(jasdbInstance);
+            session = new LocalDBSession(jasdbInstance);
+        }
+        handleWipeData(session);
+
+        return session;
+    }
+
+    private void handleWipeData(DBSession session) throws JasDBStorageException {
+        if(wipeStartup) {
+//            LOG.debug("Deleting data on startup was enabled");
+//            session.getBags().forEach(b -> {
+//                try {
+//                    String bagName = b.getName();
+//                    LOG.debug("Removing data from bag: {}", bagName);
+//                    session.removeBag(bagName);
+//                } catch (JasDBStorageException e) {
+//                    LOG.error("Unable to remove data from bag: " + b, e);
+//                }
+//            });
         }
     }
 }

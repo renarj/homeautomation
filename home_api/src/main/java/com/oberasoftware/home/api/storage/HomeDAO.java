@@ -22,6 +22,14 @@ public interface HomeDAO {
 
     <T extends Container> Optional<T> findContainer(String id);
 
+    List<Container> findRootContainers();
+
+    List<Container> findContainers();
+
+    List<Container> findContainers(String parentId);
+
+    List<UIItem> findUIItems(String containerId);
+
     Optional<PluginItem> findPlugin(String controllerId, String pluginId);
 
     List<PluginItem> findPlugins(String controllerId);
@@ -31,6 +39,4 @@ public interface HomeDAO {
     Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId);
 
     List<DeviceItem> findDevices();
-
-    List<UIItem> findUIItems();
 }

@@ -7,6 +7,7 @@ import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.CentralDatastore;
+import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import org.slf4j.Logger;
@@ -29,6 +30,9 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
     private CentralDatastore centralDatastore;
 
     @Autowired
+    private HomeDAO homeDAO;
+
+    @Autowired
     private ItemManager itemManager;
 
     @Autowired
@@ -39,19 +43,19 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
         LOG.debug("Registering device: {} for plugin: {}", device, pluginId);
         String controllerId = automationBus.getControllerId();
 
-        Optional<PluginItem> plugin = centralDatastore.findPlugin(controllerId, pluginId);
+        Optional<PluginItem> plugin = homeDAO.findPlugin(controllerId, pluginId);
 
         return itemManager.createOrUpdateDevice(automationBus.getControllerId(), plugin.get().getPluginId(), device.getId(), device.getName(), device.getProperties());
     }
 
     @Override
     public Optional<DeviceItem> findDeviceItem(String controllerId, String pluginId, String deviceId) {
-        return centralDatastore.findDevice(controllerId, pluginId, deviceId);
+        return homeDAO.findDevice(controllerId, pluginId, deviceId);
     }
 
     @Override
     public List<DeviceItem> getDevices() {
-        return centralDatastore.findDevices();
+        return homeDAO.findDevices();
     }
 
 }

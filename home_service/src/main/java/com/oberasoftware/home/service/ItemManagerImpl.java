@@ -6,6 +6,7 @@ import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.storage.CentralDatastore;
+import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.api.storage.model.ControllerItem;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 import com.oberasoftware.home.api.storage.model.Item;
@@ -28,11 +29,14 @@ public class ItemManagerImpl implements ItemManager {
     @Autowired
     private CentralDatastore centralDatastore;
 
+    @Autowired
+    private HomeDAO homeDAO;
+
     @Override
     public ControllerItem createOrUpdateController(String controllerId) throws HomeAutomationException {
         centralDatastore.beginTransaction();
         try {
-            Optional<ControllerItem> controllerItem = centralDatastore.findController(controllerId);
+            Optional<ControllerItem> controllerItem = homeDAO.findController(controllerId);
             if (!controllerItem.isPresent()) {
                 LOG.debug("Initial startup, new controller detected registering in central datastore");
                 return centralDatastore.store(new ControllerItem(generateId(), controllerId));
@@ -49,7 +53,7 @@ public class ItemManagerImpl implements ItemManager {
     public PluginItem createOrUpdatePlugin(String controllerId, String pluginId, String name, Map<String, String> properties) throws HomeAutomationException {
         centralDatastore.beginTransaction();
         try {
-            Optional<PluginItem> optionalPlugin = centralDatastore.findPlugin(controllerId, pluginId);
+            Optional<PluginItem> optionalPlugin = homeDAO.findPlugin(controllerId, pluginId);
             if (!optionalPlugin.isPresent()) {
                 String itemId = generateId();
                 LOG.debug("Plugin does not exist, storing in central datastore: {}", pluginId);
@@ -86,7 +90,7 @@ public class ItemManagerImpl implements ItemManager {
     public DeviceItem createOrUpdateDevice(String controllerId, String pluginId, String deviceId, String name, Map<String, String> properties) throws HomeAutomationException {
         centralDatastore.beginTransaction();
         try {
-            Optional<DeviceItem> deviceItem = centralDatastore.findDevice(controllerId, pluginId, deviceId);
+            Optional<DeviceItem> deviceItem = homeDAO.findDevice(controllerId, pluginId, deviceId);
             if(deviceItem.isPresent()) {
                 DeviceItem item = deviceItem.get();
 
@@ -111,22 +115,22 @@ public class ItemManagerImpl implements ItemManager {
 
     @Override
     public List<ControllerItem> findControllers() {
-        return centralDatastore.findControllers();
+        return homeDAO.findControllers();
     }
 
     @Override
     public List<PluginItem> findPlugins(String controllerId) {
-        return centralDatastore.findPlugins(controllerId);
+        return homeDAO.findPlugins(controllerId);
     }
 
     @Override
     public List<DeviceItem> findDevices(String controllerId, String pluginId) {
-        return centralDatastore.findDevices(controllerId, pluginId);
+        return homeDAO.findDevices(controllerId, pluginId);
     }
 
     @Override
     public List<DeviceItem> findDevices() {
-        return centralDatastore.findDevices();
+        return homeDAO.findDevices();
     }
 
     @Override

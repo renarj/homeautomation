@@ -12,6 +12,8 @@ public interface CentralDatastore {
 
     void commitTransaction();
 
+    void delete(String id) throws DataStoreException;
+
     <T extends Item> T store(Item entity) throws DataStoreException;
 
     Container store(Container container) throws DataStoreException;

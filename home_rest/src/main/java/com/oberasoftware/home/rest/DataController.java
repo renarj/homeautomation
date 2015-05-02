@@ -3,6 +3,7 @@ package com.oberasoftware.home.rest;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.managers.StateManager;
+import com.oberasoftware.home.api.model.State;
 import com.oberasoftware.home.api.storage.model.ControllerItem;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 import com.oberasoftware.home.api.storage.model.Item;
@@ -23,9 +24,9 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @RestController
-@RequestMapping("/")
-public class HomeController {
-    private static final Logger LOG = getLogger(HomeController.class);
+@RequestMapping("/data")
+public class DataController {
+    private static final Logger LOG = getLogger(DataController.class);
 
     @Autowired
     private DeviceManager deviceManager;
@@ -63,6 +64,11 @@ public class HomeController {
     @RequestMapping("/item({id}")
     public Item getItem(@PathVariable String id) {
         return itemManager.findItem(id);
+    }
+
+    @RequestMapping("/state({itemId})")
+    public State getState(@PathVariable String itemId) {
+        return stateManager.getState(itemId);
     }
 
     @RequestMapping("/devices")

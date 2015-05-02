@@ -1,9 +1,10 @@
-package com.oberasoftware.home.service.commands;
+package com.oberasoftware.home.service.commands.converters;
 
 import com.oberasoftware.home.api.commands.BasicCommand;
 import com.oberasoftware.home.api.commands.SwitchCommand;
 import com.oberasoftware.home.api.commands.converters.CommandConverter;
 import com.oberasoftware.home.api.commands.converters.ConverterType;
+import com.oberasoftware.home.service.commands.SwitchCommandImpl;
 import org.springframework.stereotype.Component;
 
 /**
