@@ -4,10 +4,31 @@
 </head>
 <body>
 <script th:src="@{/javascript/dashboard.js}" src="/static/javascript/dashboard.js"></script>
+<script th:src="@{/javascript/widget.js}" src="/static/javascript/widget.js"></script>
 <script id="temperatureTemplate" type="x-tmpl-mustache">
     <div class="well" id="{{widgetId}}">
-        <label>{{name}}</label>
-        <label>{{value}}</label>
+        <div class="row">
+            <div class="col-xs-4">
+                <label>{{name}}</label>
+            </div>
+            <div class="col-xs-4">&nbsp;</div>
+            <div class="col-xs-4">
+                <label deviceId="{{deviceId}}" labelId="{{label}}">{{value}}</label>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="switchTemplate" type="x-tmpl-mustache">
+    <div class="well" id="{{widgetId}}">
+        <div class="row">
+            <div class="col-xs-4">
+                <label>{{name}}</label>
+            </div>
+            <div class="col-xs-4">&nbsp;</div>
+            <div class="col-xs-4">
+                <input type="checkbox" id="{{deviceId}}" labelId="{{label}}" name="{{deviceId}}_switch"/>
+            </div>
+        </div>
     </div>
 </script>
 <div class="container">

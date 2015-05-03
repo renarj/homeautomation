@@ -1,6 +1,8 @@
 package com.oberasoftware.home.service;
 
 import com.google.common.collect.Maps;
+import com.oberasoftware.home.api.AutomationBus;
+import com.oberasoftware.home.api.events.devices.StateUpdateEvent;
 import com.oberasoftware.home.api.managers.StateManager;
 import com.oberasoftware.home.api.managers.StateStore;
 import com.oberasoftware.home.api.model.State;
@@ -32,6 +34,9 @@ public class StateManagerImpl implements StateManager {
     @Autowired(required = false)
     private List<StateStore> stateStores;
 
+    @Autowired
+    private AutomationBus automationBus;
+
     @Override
     public State updateState(DeviceItem item, String label, Value value) {
         String itemId = item.getId();
@@ -42,6 +47,8 @@ public class StateManagerImpl implements StateManager {
         state.addStateItem(label, new StateItemImpl(label, value));
 
         updateStateStores(item, label, value);
+
+        automationBus.publish(new StateUpdateEvent(state));
 
         return state;
     }

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
+import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
 import com.oberasoftware.home.api.extensions.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
@@ -14,6 +15,7 @@ import com.oberasoftware.home.api.storage.model.PluginItem;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.core.model.ExtensionResourceImpl;
 import com.oberasoftware.home.core.types.ValueImpl;
+import com.oberasoftware.home.example.ExampleCommandHandler;
 import com.oberasoftware.home.example.ExampleDevice;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -68,7 +70,7 @@ public class SecondExamplePlugin implements DeviceExtension, SpringExtension {
 
     @Override
     public CommandHandler getCommandHandler() {
-        return null;
+        return new ExampleCommandHandler();
     }
 
     @Override
@@ -105,5 +107,7 @@ public class SecondExamplePlugin implements DeviceExtension, SpringExtension {
                         new DeviceNumericValueEvent(automationBus.getControllerId(), getId(), "2", new ValueImpl(VALUE_TYPE.NUMBER, rnd.nextInt(35)), "temperature")),
                 0l, 1l, TimeUnit.MINUTES);
 
+        SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> automationBus.publish(
+                new OnOffValueEvent(automationBus.getControllerId(), getId(), "1", rnd.nextBoolean())), 0l, 1l, TimeUnit.MINUTES);
     }
 }

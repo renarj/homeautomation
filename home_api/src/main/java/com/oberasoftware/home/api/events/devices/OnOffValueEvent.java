@@ -41,7 +41,7 @@ public class OnOffValueEvent implements DeviceValueEvent {
 
     @Override
     public String getLabel() {
-        return "on/off";
+        return "on-off";
     }
 
     @Override
