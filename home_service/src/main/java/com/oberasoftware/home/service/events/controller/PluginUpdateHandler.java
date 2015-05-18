@@ -1,8 +1,8 @@
 package com.oberasoftware.home.service.events.controller;
 
+import com.oberasoftware.base.event.EventHandler;
+import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.events.EventHandler;
-import com.oberasoftware.home.api.events.EventSubscribe;
 import com.oberasoftware.home.api.events.controller.PluginUpdateEvent;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.ItemManager;

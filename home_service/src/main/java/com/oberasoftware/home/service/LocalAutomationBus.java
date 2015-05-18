@@ -1,11 +1,10 @@
 package com.oberasoftware.home.service;
 
+import com.oberasoftware.base.event.Event;
+import com.oberasoftware.base.event.EventHandler;
+import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.Message;
-import com.oberasoftware.home.api.commands.Result;
-import com.oberasoftware.home.api.events.EventHandler;
 import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
-import com.oberasoftware.home.core.events.LocalEventBus;
 import nl.renarj.core.utilities.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,8 +38,8 @@ public class LocalAutomationBus implements AutomationBus {
     }
 
     @Override
-    public Result publish(Message event) {
-        return eventBus.publish(event);
+    public void publish(Event event) {
+        eventBus.publish(event);
     }
 
     @Override

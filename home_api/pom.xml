@@ -21,6 +21,9 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>obera-base</artifactId>
+        </dependency>
     </dependencies>
 </project>

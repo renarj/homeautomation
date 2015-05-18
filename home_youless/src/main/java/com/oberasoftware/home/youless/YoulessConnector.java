@@ -83,7 +83,7 @@ public class YoulessConnector implements Runnable {
                 long wattage = getWattage(response);
                 LOG.debug("Retrieved wattage from youless: {}", wattage);
 
-                automationBus.publish(new DeviceNumericValueEvent(automationBus.getControllerId(), "youless", youlessIp, new ValueImpl(VALUE_TYPE.NUMBER, wattage), "Wattage"));
+                automationBus.publish(new DeviceNumericValueEvent(automationBus.getControllerId(), "youless", youlessIp, new ValueImpl(VALUE_TYPE.NUMBER, wattage), "power"));
             } else {
                 String errorResponse = getResponseAsString(urlConnection.getErrorStream());
                 LOG.error("Error: {} retrieving data from youless: {}", urlConnection.getResponseCode(), errorResponse);

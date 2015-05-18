@@ -1,5 +1,8 @@
 package com.oberasoftware.home.api.storage.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author renarj
  */
@@ -13,13 +16,16 @@ public class UIItem implements Item {
 
     private String deviceId;
 
-    public UIItem(String id, String name, String containerId, String description, String uiType, String deviceId) {
+    private Map<String, String> properties = new HashMap<>();
+
+    public UIItem(String id, String name, String containerId, String description, String uiType, String deviceId, Map<String, String> properties) {
         this.id = id;
         this.name = name;
         this.containerId = containerId;
         this.description = description;
         this.uiType = uiType;
         this.deviceId = deviceId;
+        this.properties = properties;
     }
 
     public UIItem() {
@@ -72,6 +78,18 @@ public class UIItem implements Item {
 
     public String getDeviceId() {
         return deviceId;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public void addProperty(String property, String value) {
+        this.properties.put(property, value);
     }
 
     @Override

@@ -33,7 +33,13 @@ $(document).ready(function() {
                     //set switch to on and not trigger event
                     iSwitch.bootstrapSwitch("state", true, true);
                 }
-            } else if(label == "temperature") {
+            } else if(label == "value") {
+                //slider value potentially
+                console.log("Setting slider value: " + stateItem.value.value + " for device: " + itemId)
+                var iDimmer = $("input[name=" + itemId + "_slider]");
+                iDimmer.slider('setValue', stateItem.value.value);
+            } else {
+                //most likely a raw value on a label
                 console.log("Checking for label for item: " + itemId + " with label: " + label)
                 var valueLabel = $("label[deviceId=" + itemId + "][labelId=" + label + "]");
 
@@ -66,13 +72,50 @@ $(document).ready(function() {
                 renderSwitch(item, containerId);
                 break;
             case "dimmer":
+                renderDimmer(item, containerId);
                 break;
-            case "temperature":
-                renderTemperature(item, containerId);
+            case "label":
+                renderLabel(item, containerId);
                 break;
             default:
                 console.log("Unsupported widget type: " + widgetType + " for item: " + item.name);
         }
+    }
+
+    function renderDimmer(item, containerId) {
+        console.log("Rendering dimmer for item: " + item.name)
+
+        var data = {
+            "widgetId": item.id,
+            "name": item.name,
+            "deviceId": item.deviceId
+        }
+
+        renderWidgetTemplate("sliderTemplate", data, item.id, containerId);
+
+        var iDimmer = $("input[name=" + item.deviceId + "_slider]");
+        iDimmer.slider();
+        iDimmer.on("slideStop", handleSlideEvent);
+    }
+
+    function handleSlideEvent(slideEvt) {
+        var val = slideEvt.value;
+        console.log("Slide event: " + val);
+
+        var data = {
+            "itemId" : this.getAttribute('deviceId'),
+            "commandType" : "value",
+            "properties" : {
+                "value" : val
+            }
+        }
+        var jsonData = JSON.stringify(data);
+        console.log("Sending command: " + jsonData);
+
+        $.ajax({url: "/command/send", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
+            console.log("Posted Command successfully");
+        }})
+
     }
 
     function renderSwitch(item, containerId) {
@@ -101,7 +144,7 @@ $(document).ready(function() {
             command = "on";
         }
         var data = {
-            "itemId" : this.getAttribute('id'),
+            "itemId" : this.getAttribute('deviceId'),
             "commandType" : "switch",
             "properties" : {
                 "value" : command
@@ -115,18 +158,22 @@ $(document).ready(function() {
         }})
     }
 
-    function renderTemperature(item, containerId) {
-        console.log("Rendering temperature reading for item: " + item.name)
+    function renderLabel(item, containerId) {
+        console.log("Rendering label widget for item: " + item.name)
+
+        var label = item.properties.label;
+        var unit = item.properties.unit;
 
         var data = {
             "widgetId": item.id,
             "name": item.name,
             "value": 0,
             "deviceId": item.deviceId,
-            "label": "temperature"
+            "label": label,
+            "unit": unit
         }
 
-        renderWidgetTemplate("temperatureTemplate", data, item.id, containerId)
+        renderWidgetTemplate("labelTemplate", data, item.id, containerId)
 
         //lets get the initial state for the widget
         forceUpdateDeviceState(item.deviceId);

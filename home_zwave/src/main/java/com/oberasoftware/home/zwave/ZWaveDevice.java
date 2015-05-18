@@ -2,7 +2,7 @@ package com.oberasoftware.home.zwave;
 
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.model.Status;
-import com.oberasoftware.home.zwave.api.events.controller.NodeInformationEvent;
+import com.oberasoftware.home.zwave.api.events.controller.NodeIdentifyEvent;
 import com.oberasoftware.home.zwave.api.events.devices.ManufactorInfoEvent;
 import com.oberasoftware.home.zwave.core.ZWaveNode;
 
@@ -16,14 +16,20 @@ import java.util.Optional;
 public class ZWaveDevice implements Device {
 
     private final ZWaveNode node;
+    private final int endpointId;
 
     public ZWaveDevice(ZWaveNode node) {
+        this(node, 0);
+    }
+
+    public ZWaveDevice(ZWaveNode node, int endpointId) {
         this.node = node;
+        this.endpointId = endpointId;
     }
 
     @Override
     public String getId() {
-        return Integer.toString(node.getNodeId());
+        return node.getNodeId() + ":" + endpointId;
     }
 
     @Override
@@ -50,9 +56,10 @@ public class ZWaveDevice implements Device {
     public Map<String, String> getProperties() {
         Map<String, String> deviceProperties = new HashMap<>();
         deviceProperties.put("nodeId", Integer.toString(node.getNodeId()));
+        deviceProperties.put("endpointId", Integer.toString(endpointId));
 
         Optional<ManufactorInfoEvent> manufactorInfoEventOptional = node.getManufactorInfoEvent();
-        Optional<NodeInformationEvent> nodeInformationEventOptional = node.getNodeInformation();
+        Optional<NodeIdentifyEvent> nodeInformationEventOptional = node.getNodeInformation();
         if(manufactorInfoEventOptional.isPresent()) {
             ManufactorInfoEvent manufactorInfoEvent = manufactorInfoEventOptional.get();
             deviceProperties.put("manufacturerId", Integer.toString(manufactorInfoEvent.getManufactorId()));
@@ -61,7 +68,7 @@ public class ZWaveDevice implements Device {
         }
 
         if(nodeInformationEventOptional.isPresent()) {
-            NodeInformationEvent nodeInformationEvent = nodeInformationEventOptional.get();
+            NodeIdentifyEvent nodeInformationEvent = nodeInformationEventOptional.get();
 
             deviceProperties.put("batteryDevice", Boolean.toString(nodeInformationEvent.isListening()));
             deviceProperties.put("routingDevice", Boolean.toString(nodeInformationEvent.isRouting()));

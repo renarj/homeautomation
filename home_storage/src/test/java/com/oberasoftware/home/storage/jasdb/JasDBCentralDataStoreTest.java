@@ -77,8 +77,8 @@ public class JasDBCentralDataStoreTest {
         String id1 = UUID.randomUUID().toString();
         String id2 = UUID.randomUUID().toString();
 
-        centralDatastore.store(new UIItem(id1, "UI Item 1", "container1","Special item", "switch", "jsdlfjsd"));
-        centralDatastore.store(new UIItem(id2, "UI Item 2", "container1", "Special item", "switch", "jsdlfjsd"));
+        centralDatastore.store(new UIItem(id1, "UI Item 1", "container1","Special item", "switch", "jsdlfjsd", new HashMap<>()));
+        centralDatastore.store(new UIItem(id2, "UI Item 2", "container1", "Special item", "switch", "jsdlfjsd", new HashMap<>()));
 
         assertThat(jasDBDAO.findUIItems("containe1").size(), is(2));
     }

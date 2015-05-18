@@ -7,6 +7,8 @@ import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.zwave.exceptions.ZWaveException;
+import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author renarj
@@ -25,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Import(ZWaveConfiguration.class)
 @ComponentScan
 public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
+    private static final Logger LOG = getLogger(ZWaveSpringExtension.class);
 
     private ApplicationContext context;
 
@@ -43,7 +47,12 @@ public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
     @Override
     public void activate(Optional<PluginItem> pluginItem) {
         assertContext();
-        context.getBean(ProtocolBootstrap.class).startInitialization();
+        try {
+            context.getBean(SerialZWaveConnector.class).connect();
+            context.getBean(ProtocolBootstrap.class).startInitialization();
+        } catch (ZWaveException e) {
+            LOG.error("Unable to initialize zwave plugin", e);
+        }
     }
 
     @Override

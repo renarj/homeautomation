@@ -1,6 +1,7 @@
 package com.oberasoftware.home.hue;
 
-import com.oberasoftware.home.api.events.Event;
+
+import com.oberasoftware.base.event.Event;
 
 /**
  * @author renarj

@@ -1,6 +1,6 @@
 package com.oberasoftware.home.api.events.controller;
 
-import com.oberasoftware.home.api.events.Event;
+import com.oberasoftware.base.event.Event;
 import com.oberasoftware.home.api.model.Device;
 
 /**

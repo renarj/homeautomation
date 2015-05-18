@@ -1,8 +1,8 @@
 package com.oberasoftware.home.hue;
 
-import com.oberasoftware.home.api.events.EventBus;
+import com.oberasoftware.base.event.EventBus;
+import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.home.api.storage.model.PluginItem;
-import com.oberasoftware.home.core.events.LocalEventBus;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;

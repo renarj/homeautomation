@@ -37,10 +37,10 @@ public class JasDBSessionFactory {
     public DBSession createSession() throws JasDBStorageException {
         DBSession session;
         if(stringNotEmpty(jasdbMode) && jasdbMode.equals("rest")) {
-            LOG.info("Creating JasDB REST session to host: {} port: {} instance: {}", jasdbHost, jasdbPort, jasdbInstance);
+            LOG.debug("Creating JasDB REST session to host: {} port: {} instance: {}", jasdbHost, jasdbPort, jasdbInstance);
             session = new RestDBSession(jasdbInstance, jasdbHost, jasdbPort);
         } else {
-            LOG.info("Creating JasDB Local session to instance: {}", jasdbInstance);
+            LOG.debug("Creating JasDB Local session to instance: {}", jasdbInstance);
             session = new LocalDBSession(jasdbInstance);
         }
         handleWipeData(session);

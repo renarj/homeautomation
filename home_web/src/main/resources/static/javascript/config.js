@@ -13,12 +13,6 @@ $(document).ready(function() {
         $(".modal-body #deviceId").val( deviceId );
     });
 
-    $(document).on("click", ".showDocument", function () {
-        var json = $(this).data('content');
-
-        $(".modal-body #dataContent").JSONView(json);
-    });
-
     $("#createUIItemForm").submit(function(event) {
         console.log("Creating UI Item")
         event.preventDefault();

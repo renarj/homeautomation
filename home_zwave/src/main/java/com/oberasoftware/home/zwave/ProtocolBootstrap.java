@@ -1,8 +1,6 @@
 package com.oberasoftware.home.zwave;
 
-import com.oberasoftware.home.zwave.api.actions.controller.ControllerCapabilitiesAction;
-import com.oberasoftware.home.zwave.api.actions.controller.ControllerInitialDataAction;
-import com.oberasoftware.home.zwave.api.actions.controller.GetControllerIdAction;
+import com.oberasoftware.home.zwave.api.ZWaveScheduler;
 import com.oberasoftware.home.zwave.api.actions.devices.BatteryGetAction;
 import com.oberasoftware.home.zwave.core.NodeManager;
 import com.oberasoftware.home.zwave.exceptions.HomeAutomationException;
@@ -28,21 +26,18 @@ public class ProtocolBootstrap {
     private ZWaveController zWaveController;
 
     @Autowired
+    private ZWaveScheduler zWaveScheduler;
+
+    @Autowired
     private NodeManager nodeManager;
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public void startInitialization() {
         LOG.info("Initializing ZWave Network by doing network discovery");
-        try {
-            zWaveController.send(new ControllerCapabilitiesAction());
-            zWaveController.send(new ControllerInitialDataAction());
-            zWaveController.send(new GetControllerIdAction());
+        zWaveController.initializeNetwork();
 
-            scheduleBatteryChecks();
-        } catch (HomeAutomationException e) {
-            LOG.error("Cannot initialize ZWave network", e);
-        }
+        scheduleBatteryChecks();
     }
 
 

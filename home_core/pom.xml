@@ -17,5 +17,9 @@
             <artifactId>home_api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>obera-base</artifactId>
+        </dependency>
     </dependencies>
 </project>

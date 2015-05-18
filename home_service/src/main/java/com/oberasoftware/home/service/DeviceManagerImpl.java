@@ -1,12 +1,10 @@
 package com.oberasoftware.home.service;
 
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.events.EventHandler;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.model.Device;
-import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 import com.oberasoftware.home.api.storage.model.PluginItem;
@@ -23,11 +21,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class DeviceManagerImpl implements DeviceManager, EventHandler {
+public class DeviceManagerImpl implements DeviceManager {
     private static final Logger LOG = getLogger(DeviceManagerImpl.class);
-
-    @Autowired
-    private CentralDatastore centralDatastore;
 
     @Autowired
     private HomeDAO homeDAO;
@@ -44,8 +39,12 @@ public class DeviceManagerImpl implements DeviceManager, EventHandler {
         String controllerId = automationBus.getControllerId();
 
         Optional<PluginItem> plugin = homeDAO.findPlugin(controllerId, pluginId);
-
-        return itemManager.createOrUpdateDevice(automationBus.getControllerId(), plugin.get().getPluginId(), device.getId(), device.getName(), device.getProperties());
+        if(plugin.isPresent()) {
+            return itemManager.createOrUpdateDevice(automationBus.getControllerId(), plugin.get().getPluginId(), device.getId(), device.getName(), device.getProperties());
+        } else {
+            LOG.error("Unable to register device: {} for plugin: {}", device, pluginId);
+            return null;
+        }
     }
 
     @Override

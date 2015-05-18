@@ -1,20 +1,24 @@
 package com.oberasoftware.home.service.commands.handlers;
 
+import com.oberasoftware.base.event.EventHandler;
+import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.BasicCommand;
 import com.oberasoftware.home.api.commands.DeviceCommand;
 import com.oberasoftware.home.api.commands.converters.CommandConverter;
 import com.oberasoftware.home.api.commands.converters.ConverterType;
 import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
-import com.oberasoftware.home.api.events.EventHandler;
-import com.oberasoftware.home.api.events.EventSubscribe;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

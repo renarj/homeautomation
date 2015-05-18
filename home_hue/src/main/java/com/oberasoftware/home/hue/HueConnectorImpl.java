@@ -1,8 +1,8 @@
 package com.oberasoftware.home.hue;
 
-import com.oberasoftware.home.api.events.EventBus;
-import com.oberasoftware.home.api.events.EventHandler;
-import com.oberasoftware.home.api.events.EventSubscribe;
+import com.oberasoftware.base.event.EventBus;
+import com.oberasoftware.base.event.EventHandler;
+import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.events.controller.PluginUpdateEvent;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
@@ -16,7 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.slf4j.LoggerFactory.getLogger;

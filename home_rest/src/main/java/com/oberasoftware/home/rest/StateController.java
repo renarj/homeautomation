@@ -1,7 +1,7 @@
 package com.oberasoftware.home.rest;
 
-import com.oberasoftware.home.api.events.EventHandler;
-import com.oberasoftware.home.api.events.EventSubscribe;
+import com.oberasoftware.base.event.EventHandler;
+import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.events.devices.StateUpdateEvent;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
