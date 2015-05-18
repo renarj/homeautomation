@@ -6,11 +6,13 @@ import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.api.storage.model.Container;
 import com.oberasoftware.home.api.storage.model.UIItem;
+import nl.renarj.core.utilities.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -52,6 +54,16 @@ public class UIManagerImpl implements UIManager {
         return homeDAO.findUIItems(containerId);
     }
 
+
+    @Override
+    public void deleteContainer(String containerId) {
+        List<Container> children = getChildren(containerId);
+        children.forEach(c -> deleteContainer(c.getId()));
+
+        getItems(containerId).forEach(i -> delete(i.getId()));
+        delete(containerId);
+    }
+
     @Override
     public void delete(String itemId) {
         try {
@@ -64,6 +76,10 @@ public class UIManagerImpl implements UIManager {
     @Override
     public UIItem store(UIItem item) {
         try {
+            if(StringUtils.stringEmpty(item.getId())) {
+                item.setId(UUID.randomUUID().toString());
+            }
+
             return centralDatastore.store(item);
         } catch (DataStoreException e) {
             LOG.error("", e);
@@ -74,6 +90,9 @@ public class UIManagerImpl implements UIManager {
     @Override
     public Container store(Container container) {
         try {
+            if(StringUtils.stringEmpty(container.getId())) {
+                container.setId(UUID.randomUUID().toString());
+            }
 
             return centralDatastore.store(container);
         } catch (DataStoreException e) {

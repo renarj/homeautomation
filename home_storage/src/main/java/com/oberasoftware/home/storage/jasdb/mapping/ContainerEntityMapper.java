@@ -16,9 +16,6 @@ public class ContainerEntityMapper implements EntityMapper<Container> {
     @Override
     public SimpleEntity mapFrom(Container input) {
         String id = input.getId();
-        if(StringUtils.stringEmpty(id)) {
-            id = UUID.randomUUID().toString();
-        }
         SimpleEntity containerEntity = new SimpleEntity(id);
         containerEntity.addProperty("type", JasDBCentralDatastore.CONTAINER_TYPE);
         if(StringUtils.stringNotEmpty(input.getParentContainerId())) {

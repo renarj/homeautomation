@@ -2,7 +2,6 @@ package com.oberasoftware.home.storage.jasdb.mapping;
 
 import com.oberasoftware.home.api.storage.model.UIItem;
 import com.oberasoftware.home.storage.jasdb.JasDBCentralDatastore;
-import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -26,10 +24,6 @@ public class UIItemEntityMapper implements EntityMapper<UIItem> {
         LOG.debug("Converting item: {}", item);
 
         String id = item.getId();
-        if(StringUtils.stringEmpty(id)) {
-            id = UUID.randomUUID().toString();
-        }
-
         SimpleEntity itemEntity = new SimpleEntity(id);
         itemEntity.addProperty("type", JasDBCentralDatastore.UI_TYPE);
         itemEntity.addProperty("name", item.getName());

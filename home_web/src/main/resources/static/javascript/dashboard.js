@@ -13,13 +13,16 @@ $(document).ready(function() {
         var container = {
             "name" : name,
             "parentContainerId" : parentContainer
-        }
+        };
         var jsonData = JSON.stringify(container);
 
         $.ajax({url: "/ui/containers", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
-            console.log("Posted Container successfully");
+            var containerId = data.id;
+            console.log("Posted Container successfully, id: " + containerId);
 
-            $('#containerModal').modal('hide')
+            $('#containerModal').modal('hide');
+
+            renderContainerById(containerId);
         }})
 
     })

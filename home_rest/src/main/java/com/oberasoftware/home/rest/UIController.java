@@ -32,6 +32,11 @@ public class UIController {
         return uiManager.getChildren(containerId);
     }
 
+    @RequestMapping(value = "/containers/{containerId}", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    public void deleteContainer(@PathVariable String containerId) {
+        uiManager.deleteContainer(containerId);
+    }
+
     @RequestMapping("/containers")
     public List<Container> getContainers() {
         return uiManager.getRootContainers();

@@ -12,10 +12,23 @@ $(document).ready(function() {
 
         $.ajax({url: "/ui/items/" + widgetId, type: "DELETE", dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
             console.log("Removed Widget successfully");
-        }})
+        }});
 
         $("#" + widgetId).remove();
     });
+
+    $(document).on("click", ".removeContainer", function (event) {
+        event.preventDefault();
+        var containerId = this.getAttribute('containerId');
+
+        $.ajax({url: "/ui/containers/" + containerId, type: "DELETE", dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
+            console.log("Removed container successfully");
+        }});
+
+        $("#" + containerId).remove();
+    });
+
+
 
 
     function loadControllers() {
@@ -128,6 +141,8 @@ $(document).ready(function() {
             console.log("Posted UI Item successfully");
 
             $('#dataModal').modal('hide')
+
+            renderWidget(container, data);
         }})
     })
 

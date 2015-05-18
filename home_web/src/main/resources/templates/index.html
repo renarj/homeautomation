@@ -3,9 +3,9 @@
 <head th:replace="includes/header :: header">
 </head>
 <body>
-<script th:src="@{/javascript/dashboard.js}" src="/static/javascript/dashboard.js"></script>
 <script th:src="@{/javascript/widget.js}" src="/static/javascript/widget.js"></script>
 <script th:src="@{/javascript/widgetForm.js}" src="/static/javascript/widgetForm.js"></script>
+<script th:src="@{/javascript/dashboard.js}" src="/static/javascript/dashboard.js"></script>
 <script id="labelTemplate" type="x-tmpl-mustache">
     <div class="well well-sm" id="{{widgetId}}">
         <div class="row">
@@ -31,9 +31,12 @@
             <div class="col-xs-4">
                 <label>{{name}}</label>
             </div>
-            <div class="col-xs-6">&nbsp;</div>
+            <div class="col-xs-5">&nbsp;</div>
             <div class="col-xs-2">
                 <input type="checkbox" data-size="small" deviceId="{{deviceId}}" labelId="{{label}}" name="{{deviceId}}_switch"/>
+            </div>
+            <div class="col-xs-1">
+                <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
     </div>
@@ -44,9 +47,29 @@
             <div class="col-xs-4">
                 <label>{{name}}</label>
             </div>
-            <div class="col-xs-4">&nbsp;</div>
+            <div class="col-xs-3">&nbsp;</div>
             <div class="col-xs-4">
                 <input name="{{deviceId}}_slider" deviceId="{{deviceId}}" data-slider-id='{{deviceId}}' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+            </div>
+            <div class="col-xs-1">
+                <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="containerTemplate" type="x-tmpl-mustache">
+    <div class="row" id="{{containerId}}">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-primary">
+                <div class="panel-heading clearfix">
+                    <h3 class="panel-title pull-left">{{name}}</h3>
+                    <div class="btn btn-group pull-right">
+                        <a href="#" containerId="{{containerId}}" class="btn btn-default btn-sm removeContainer" title="Delete container"><span class="glyphicon glyphicon-trash"></span></a>
+                        <a href="#" data-toggle="modal" data-target="#dataModal" data-id="{{containerId}}" class="btn btn-default btn-sm addWidget" title="Add a Widget"><span class="glyphicon glyphicon-plus"></span></a>
+                    </div>
+                </div>
+                <div class="panel-body" containerId="{{containerId}}">
+                </div>
             </div>
         </div>
     </div>
@@ -163,21 +186,7 @@
                     <a href="#" data-toggle="modal" data-target="#containerModal" data-id="" class="btn btn-default btn-sm addContainer" title="Add a Container"><span class="glyphicon glyphicon-plus"></span></a>
                 </div>
             </div>
-            <div class="panel-body">
-                <div class="row" th:each="container : ${containers}">
-                    <div class="col-md-10 col-md-offset-1">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading clearfix">
-                                <h3 class="panel-title pull-left" th:text="${container.name}">Container name</h3>
-                                <div class="btn btn-group pull-right">
-                                    <a href="#" data-toggle="modal" data-target="#dataModal" data-id="" th:attr="data-id=${container.id}" class="btn btn-default btn-sm addWidget" title="Add a Widget"><span class="glyphicon glyphicon-plus"></span></a>
-                                </div>
-                            </div>
-                            <div class="panel-body" th:attr="containerId=${container.id}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="panel-body" id="container">
             </div>
         </div>
     </div>

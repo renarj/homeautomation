@@ -19,6 +19,8 @@ public interface UIManager {
 
     List<UIItem> getItems(String containerId);
 
+    void deleteContainer(String containerId);
+
     void delete(String itemId);
 
     UIItem store(UIItem item);
