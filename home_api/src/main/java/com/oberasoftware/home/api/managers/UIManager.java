@@ -19,6 +19,8 @@ public interface UIManager {
 
     List<UIItem> getItems(String containerId);
 
+    void setWeight(String itemId, long weight);
+
     void deleteContainer(String containerId);
 
     void delete(String itemId);

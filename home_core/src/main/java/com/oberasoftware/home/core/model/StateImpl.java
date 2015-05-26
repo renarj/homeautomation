@@ -46,4 +46,13 @@ public class StateImpl implements State {
     public void addStateItem(String label, StateItem stateItem) {
         this.stateItems.put(label, stateItem);
     }
+
+    @Override
+    public String toString() {
+        return "StateImpl{" +
+                "itemId='" + itemId + '\'' +
+                ", deviceStatus=" + deviceStatus +
+                ", stateItems=" + stateItems +
+                '}';
+    }
 }

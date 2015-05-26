@@ -75,6 +75,25 @@ function renderContainer(item) {
 
     var rendered = renderTemplate("containerTemplate", data);
     $("#container").append(rendered);
+    var container = $("ul[containerId=" + containerId + "]");
+    container.disableSelection();
+    container.sortable({
+        revert: true,
+        update: function( event, ui ) {
+            var movedDiv = ui.item;
+
+            console.log("Parent: " + $(this).attr("containerId"));
+
+            $(this).children("li").each(function(index) {
+                var widgetId = $(this).attr("id");
+                console.log("Widget: " + widgetId + " position: " + index);
+
+                $.ajax({url: "/ui/items/" + widgetId + "/" + index, type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
+
+            });
+        }
+    });
+
     renderContainerItems(containerId);
 }
 
@@ -110,7 +129,8 @@ function renderDimmer(item, containerId) {
     var data = {
         "widgetId": item.id,
         "name": item.name,
-        "deviceId": item.deviceId
+        "deviceId": item.deviceId,
+        "weight" : item.weight
     }
 
     renderWidgetTemplate("sliderTemplate", data, item.id, containerId);
@@ -147,7 +167,8 @@ function renderSwitch(item, containerId) {
         "widgetId": item.id,
         "name": item.name,
         "deviceId": item.deviceId,
-        "label": "on-off"
+        "label": "on-off",
+        "weight" : item.weight
     }
 
     renderWidgetTemplate("switchTemplate", data, item.id, containerId);
@@ -192,7 +213,8 @@ function renderLabel(item, containerId) {
         "value": 0,
         "deviceId": item.deviceId,
         "label": label,
-        "unit": unit
+        "unit": unit,
+        "weight" : item.weight
     }
 
     renderWidgetTemplate("labelTemplate", data, item.id, containerId)
@@ -224,7 +246,7 @@ function appendContainer(widgetHtml, elementId, containerId) {
     if ($("#" + elementId).length > 0) {
         //widget already exists
     } else {
-        var container = $("div[containerId=" + containerId + "]");
+        var container = $("ul[containerId=" + containerId + "]");
         container.append(widgetHtml);
     }
 }

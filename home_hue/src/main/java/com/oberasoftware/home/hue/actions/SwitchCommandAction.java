@@ -1,8 +1,11 @@
 package com.oberasoftware.home.hue.actions;
 
+import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.SwitchCommand;
+import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
 import com.oberasoftware.home.api.storage.model.DeviceItem;
 import com.oberasoftware.home.hue.HueConnector;
+import com.oberasoftware.home.hue.HueExtension;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
@@ -25,6 +28,9 @@ public class SwitchCommandAction implements HueCommandAction<SwitchCommand> {
     @Autowired
     private HueConnector hueConnector;
 
+    @Autowired
+    private AutomationBus automationBus;
+
     @Override
     public void receive(DeviceItem item, SwitchCommand switchCommand) {
         PHBridge bridge = hueConnector.getSdk().getSelectedBridge();
@@ -38,6 +44,8 @@ public class SwitchCommandAction implements HueCommandAction<SwitchCommand> {
             st.setOn(switchCommand.getState() == SwitchCommand.STATE.ON);
 
             bridge.updateLightState(light.get(), st);
+
+            automationBus.publish(new OnOffValueEvent(automationBus.getControllerId(), HueExtension.HUE_ID, item.getDeviceId(), switchCommand.getState() == SwitchCommand.STATE.ON));
         }
 
     }

@@ -25,4 +25,12 @@ public class StateItemImpl implements StateItem {
     public Value getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "StateItemImpl{" +
+                "label='" + label + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

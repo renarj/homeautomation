@@ -16,9 +16,11 @@ public class UIItem implements Item {
 
     private String deviceId;
 
+    private long weight = 0;
+
     private Map<String, String> properties = new HashMap<>();
 
-    public UIItem(String id, String name, String containerId, String description, String uiType, String deviceId, Map<String, String> properties) {
+    public UIItem(String id, String name, String containerId, String description, String uiType, String deviceId, Map<String, String> properties, long weight) {
         this.id = id;
         this.name = name;
         this.containerId = containerId;
@@ -26,9 +28,18 @@ public class UIItem implements Item {
         this.uiType = uiType;
         this.deviceId = deviceId;
         this.properties = properties;
+        this.weight = weight;
     }
 
     public UIItem() {
+    }
+
+    public long getWeight() {
+        return weight;
+    }
+
+    public void setWeight(long weight) {
+        this.weight = weight;
     }
 
     public void setId(String id) {

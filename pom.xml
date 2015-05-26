@@ -91,6 +91,7 @@
         <module>home_exampledevice</module>
         <module>home_web</module>
         <module>home_voice</module>
+        <module>home_arduino</module>
     </modules>
 
     <build>

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.oberasoftware.home.storage.jasdb.JasDBCentralDatastore.*;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -88,7 +89,7 @@ public class JasDBDAO implements HomeDAO {
     public List<UIItem> findUIItems(String containerId) {
         return findItems(new ImmutableMap.Builder<String, String>()
                 .put("type", UI_TYPE)
-                .put("containerId", containerId).build());
+                .put("containerId", containerId).build(), newArrayList("weight"));
     }
 
     @Override
@@ -148,6 +149,10 @@ public class JasDBDAO implements HomeDAO {
     }
 
     private <T> List<T> findItems(Map<String, String> properties) {
+        return findItems(properties, new ArrayList<>());
+    }
+
+    private <T> List<T> findItems(Map<String, String> properties, List<String> orderedBy) {
         List<T> results = new ArrayList<>();
 
         try {
@@ -155,6 +160,7 @@ public class JasDBDAO implements HomeDAO {
 
             QueryBuilder queryBuilder = QueryBuilder.createBuilder();
             properties.forEach((k, v) -> queryBuilder.field(k).value(v));
+            orderedBy.forEach(queryBuilder::sortBy);
 
             QueryResult result = bag.find(queryBuilder).execute();
             LOG.debug("Query: {} results: {}", queryBuilder, result.size());

@@ -70,7 +70,12 @@
         <!--</dependency>-->
         <!--<dependency>-->
             <!--<groupId>com.oberasoftware</groupId>-->
-            <!--<artifactId>youless</artifactId>-->
+            <!--<artifactId>home_youless</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.oberasoftware</groupId>-->
+            <!--<artifactId>home_arduino</artifactId>-->
             <!--<version>${project.version}</version>-->
         <!--</dependency>-->
     </dependencies>

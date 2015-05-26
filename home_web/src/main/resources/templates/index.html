@@ -7,7 +7,7 @@
 <script th:src="@{/javascript/widgetForm.js}" src="/static/javascript/widgetForm.js"></script>
 <script th:src="@{/javascript/dashboard.js}" src="/static/javascript/dashboard.js"></script>
 <script id="labelTemplate" type="x-tmpl-mustache">
-    <div class="well well-sm" id="{{widgetId}}">
+    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
         <div class="row">
             <div class="col-xs-4">
                 <label>{{name}}</label>
@@ -23,10 +23,10 @@
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
-    </div>
+    </li>
 </script>
 <script id="switchTemplate" type="x-tmpl-mustache">
-    <div class="well well-sm" id="{{widgetId}}">
+    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
         <div class="row">
             <div class="col-xs-4">
                 <label>{{name}}</label>
@@ -39,10 +39,10 @@
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
-    </div>
+    </li>
 </script>
 <script id="sliderTemplate" type="x-tmpl-mustache">
-    <div class="well well-sm" id="{{widgetId}}">
+    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
         <div class="row">
             <div class="col-xs-4">
                 <label>{{name}}</label>
@@ -55,7 +55,7 @@
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
-    </div>
+    </li>
 </script>
 <script id="containerTemplate" type="x-tmpl-mustache">
     <div class="row" id="{{containerId}}">
@@ -68,8 +68,8 @@
                         <a href="#" data-toggle="modal" data-target="#dataModal" data-id="{{containerId}}" class="btn btn-default btn-sm addWidget" title="Add a Widget"><span class="glyphicon glyphicon-plus"></span></a>
                     </div>
                 </div>
-                <div class="panel-body" containerId="{{containerId}}">
-                </div>
+                <ul class="panel-body list-unstyled" containerId="{{containerId}}">
+                </ul>
             </div>
         </div>
     </div>

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -54,6 +55,15 @@ public class UIManagerImpl implements UIManager {
         return homeDAO.findUIItems(containerId);
     }
 
+    @Override
+    public void setWeight(String itemId, long weight) {
+        Optional<UIItem> item = homeDAO.findItem(itemId);
+        if(item.isPresent()) {
+            UIItem uiItem = item.get();
+            uiItem.setWeight(weight);
+            store(uiItem);
+        }
+    }
 
     @Override
     public void deleteContainer(String containerId) {

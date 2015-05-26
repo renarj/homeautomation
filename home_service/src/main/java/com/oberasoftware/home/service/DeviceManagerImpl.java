@@ -48,6 +48,12 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     @Override
+    public DeviceItem findDevice(String deviceId) {
+        Optional<DeviceItem> d =  homeDAO.findItem(deviceId);
+        return d.get();
+    }
+
+    @Override
     public Optional<DeviceItem> findDeviceItem(String controllerId, String pluginId, String deviceId) {
         return homeDAO.findDevice(controllerId, pluginId, deviceId);
     }

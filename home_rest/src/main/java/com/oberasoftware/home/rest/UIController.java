@@ -3,6 +3,7 @@ package com.oberasoftware.home.rest;
 import com.oberasoftware.home.api.managers.UIManager;
 import com.oberasoftware.home.api.storage.model.Container;
 import com.oberasoftware.home.api.storage.model.UIItem;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,12 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * @author renarj
  */
 @RestController
 @RequestMapping("/ui")
 public class UIController {
+    private static final Logger LOG = getLogger(UIController.class);
 
     @Autowired
     private UIManager uiManager;
@@ -56,6 +60,13 @@ public class UIController {
     public void deleteItem(@PathVariable String itemId) {
         uiManager.delete(itemId);
     }
+
+    @RequestMapping(value = "/items/{itemId}/{weight}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    public void deleteItem(@PathVariable String itemId, @PathVariable long weight) {
+        LOG.debug("Setting item: {} weight: {}", itemId, weight);
+        uiManager.setWeight(itemId, weight);
+    }
+
 
     @RequestMapping(value = "/containers", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public Container createContainer(@RequestBody Container container) {

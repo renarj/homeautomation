@@ -31,6 +31,7 @@ public class UIItemEntityMapper implements EntityMapper<UIItem> {
         itemEntity.addProperty("containerId", item.getContainerId());
         itemEntity.addProperty("uiType", item.getUiType());
         itemEntity.addProperty("deviceId", item.getDeviceId());
+        itemEntity.addProperty("weight", item.getWeight());
 
         EmbeddedEntity itemProperties = new EmbeddedEntity();
         item.getProperties().forEach(itemProperties::addProperty);
@@ -47,12 +48,13 @@ public class UIItemEntityMapper implements EntityMapper<UIItem> {
         String uiType = entity.getValue("uiType");
         String deviceId = entity.getValue("deviceId");
         String containerId = entity.hasProperty("containerId") ? entity.getValue("containerId") : null;
+        long weight = entity.hasProperty("weight") ? entity.getValue("weight") : 0;
 
         Map<String, String> properties = new HashMap<>();
         SimpleEntity itemProperties = entity.getEntity("itemProperties");
         itemProperties.getProperties().forEach(p -> properties.put(p.getPropertyName(), p.getFirstValueObject()));
 
 
-        return new UIItem(entity.getInternalId(), name, containerId, description, uiType, deviceId, properties);
+        return new UIItem(entity.getInternalId(), name, containerId, description, uiType, deviceId, properties, 0);
     }
 }
