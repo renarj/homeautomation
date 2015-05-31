@@ -57,29 +57,59 @@ public class UIManagerImpl implements UIManager {
 
     @Override
     public void setWeight(String itemId, long weight) {
-        Optional<UIItem> item = homeDAO.findItem(itemId);
-        if(item.isPresent()) {
-            UIItem uiItem = item.get();
-            uiItem.setWeight(weight);
-            store(uiItem);
+        centralDatastore.beginTransaction();
+        try {
+            Optional<UIItem> item = homeDAO.findItem(itemId);
+            if (item.isPresent()) {
+                UIItem uiItem = item.get();
+                uiItem.setWeight(weight);
+                store(uiItem);
+            }
+        } finally {
+            centralDatastore.commitTransaction();
+        }
+    }
+
+
+    @Override
+    public void setParentContainer(String itemId, String parentContainerId) {
+        centralDatastore.beginTransaction();
+        try {
+            Optional<UIItem> item = homeDAO.findItem(itemId);
+            if (item.isPresent()) {
+                UIItem uiItem = item.get();
+                uiItem.setContainerId(parentContainerId);
+                store(uiItem);
+            }
+        } finally {
+            centralDatastore.commitTransaction();
+        }
+    }
+
+
+    @Override
+    public void deleteContainer(String containerId) {
+        centralDatastore.beginTransaction();
+        try {
+            List<Container> children = getChildren(containerId);
+            children.forEach(c -> deleteContainer(c.getId()));
+
+            getItems(containerId).forEach(i -> delete(i.getId()));
+            delete(containerId);
+        } finally {
+            centralDatastore.commitTransaction();
         }
     }
 
     @Override
-    public void deleteContainer(String containerId) {
-        List<Container> children = getChildren(containerId);
-        children.forEach(c -> deleteContainer(c.getId()));
-
-        getItems(containerId).forEach(i -> delete(i.getId()));
-        delete(containerId);
-    }
-
-    @Override
     public void delete(String itemId) {
+        centralDatastore.beginTransaction();
         try {
             centralDatastore.delete(itemId);
         } catch (DataStoreException e) {
             LOG.error("", e);
+        } finally {
+            centralDatastore.commitTransaction();
         }
     }
 

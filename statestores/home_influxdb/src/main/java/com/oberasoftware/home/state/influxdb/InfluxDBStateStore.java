@@ -1,7 +1,8 @@
 package com.oberasoftware.home.state.influxdb;
 
 import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
-import com.oberasoftware.home.api.managers.StateStore;
+import com.oberasoftware.home.api.managers.TimeSeriesStore;
+import com.oberasoftware.home.api.model.DataPoint;
 import com.oberasoftware.home.api.model.State;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
@@ -11,8 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -20,7 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class InfluxDBStateStore implements StateStore {
+public class InfluxDBStateStore implements TimeSeriesStore {
     private static final Logger LOG = getLogger(InfluxDBStateStore.class);
 
     @Value("${influxdb.host}")
@@ -80,6 +84,25 @@ public class InfluxDBStateStore implements StateStore {
                 .build();
 
         this.influxDB.write(database, TimeUnit.MILLISECONDS, serie);
+    }
+
+    @Override
+    public List<DataPoint> findDataPoints(String controllerId, String itemId, String label, long time, TimeUnit unit) {
+        StringBuilder builder = new StringBuilder("select mean(value), label from ");
+        builder.append(controllerId).append(" group by time(60s), label");
+        builder.append(" where label='").append(label).append("' and itemId='").append(itemId);
+        long hours = TimeUnit.HOURS.convert(time, unit);
+        builder.append("' and time>now() - ").append(hours).append("h order asc");
+
+        LOG.debug("Firing InfluxDB Query: {}", builder.toString());
+
+        List<Serie> result = this.influxDB.query(database, builder.toString(), TimeUnit.MILLISECONDS);
+        if(!result.isEmpty()) {
+            Serie serie = result.get(0);
+            return serie.getRows().stream().map(r -> new InfluxDBDataPoint(itemId, r)).collect(Collectors.toList());
+        }
+
+        return new ArrayList<>();
     }
 
     @Override

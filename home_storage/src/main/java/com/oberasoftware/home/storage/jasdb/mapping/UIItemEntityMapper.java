@@ -54,7 +54,6 @@ public class UIItemEntityMapper implements EntityMapper<UIItem> {
         SimpleEntity itemProperties = entity.getEntity("itemProperties");
         itemProperties.getProperties().forEach(p -> properties.put(p.getPropertyName(), p.getFirstValueObject()));
 
-
-        return new UIItem(entity.getInternalId(), name, containerId, description, uiType, deviceId, properties, 0);
+        return new UIItem(entity.getInternalId(), name, containerId, description, uiType, deviceId, properties, weight);
     }
 }

@@ -61,10 +61,16 @@ public class UIController {
         uiManager.delete(itemId);
     }
 
-    @RequestMapping(value = "/items/{itemId}/{weight}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public void deleteItem(@PathVariable String itemId, @PathVariable long weight) {
+    @RequestMapping(value = "/items/{itemId}/weight/{weight}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    public void setItemWeight(@PathVariable String itemId, @PathVariable long weight) {
         LOG.debug("Setting item: {} weight: {}", itemId, weight);
         uiManager.setWeight(itemId, weight);
+    }
+
+    @RequestMapping(value = "/items/{itemId}/parent/{containerId}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    public void setParentContainer(@PathVariable String itemId, @PathVariable String containerId) {
+        LOG.debug("Setting item: {} parent container: {}", itemId, containerId);
+        uiManager.setParentContainer(itemId, containerId);
     }
 
 

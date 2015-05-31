@@ -1,5 +1,11 @@
 var stompClient = null;
 
+Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
+
 function connect() {
     console.log("Connecting to websocket");
     var socket = new SockJS('/ws');
@@ -42,9 +48,26 @@ function handleStateUpdate(state) {
             console.log("Checking for label for item: " + itemId + " with label: " + label)
             var valueLabel = $("label[deviceId=" + itemId + "][labelId=" + label + "]");
 
+            var rawValue = stateItem.value.value;
             if (valueLabel) {
-                valueLabel.text(stateItem.value.value);
+                valueLabel.text(rawValue);
             }
+
+            var graphs = $("li.graph[deviceId=" + itemId + "]");
+            if(graphs) {
+                $.each(graphs, function(i, graph) {
+                    var widgetId = graph.getAttribute("id");
+                    console.log("Updating graph with id: " + widgetId);
+
+                    var widget = $("#" + widgetId);
+                    var series = widget.highcharts().series;
+                    var time = (new Date).getTime();
+
+                    console.log("Adding datapoint: " + time + " val: " + rawValue);
+                    series[0].addPoint([time, rawValue]);
+                });
+            }
+
         }
     })
 }
@@ -68,6 +91,8 @@ function renderContainer(item) {
     var containerId = item.id;
     var name = item.name;
 
+    console.log("Rendering container: " + containerId + " name: " + name);
+
     var data = {
         "containerId" : containerId,
         "name" : name
@@ -79,18 +104,25 @@ function renderContainer(item) {
     container.disableSelection();
     container.sortable({
         revert: true,
+        connectWith: ".sortable",
         update: function( event, ui ) {
-            var movedDiv = ui.item;
-
             console.log("Parent: " + $(this).attr("containerId"));
 
             $(this).children("li").each(function(index) {
                 var widgetId = $(this).attr("id");
                 console.log("Widget: " + widgetId + " position: " + index);
 
-                $.ajax({url: "/ui/items/" + widgetId + "/" + index, type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
+                $.ajax({url: "/ui/items/" + widgetId + "/weight/" + index, type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
 
             });
+        },
+        receive: function( event, ui ) {
+            var containerId = $(this).attr("containerId");
+            var widgetId = ui.item.attr("id");
+
+            console.log("Setting Parent: " + containerId + " for widget: " + widgetId);
+
+            $.ajax({url: "/ui/items/" + widgetId + "/parent/" + containerId, type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
         }
     });
 
@@ -106,24 +138,100 @@ function renderContainerItems(containerId) {
 }
 
 function renderWidget(containerId, item) {
-    console.log("Rendering widget: " + item.id);
+    console.log("Rendering widget: " + item.id + " in container: " + containerId);
     var widgetType = item.uiType;
     switch (widgetType.toLowerCase()) {
         case "switch":
             renderSwitch(item, containerId);
             break;
         case "dimmer":
-            renderDimmer(item, containerId);
+            renderSlider(item, containerId);
             break;
         case "label":
             renderLabel(item, containerId);
+            break;
+        case "graph":
+            renderGraph(containerId, item);
             break;
         default:
             console.log("Unsupported widget type: " + widgetType + " for item: " + item.name);
     }
 }
 
-function renderDimmer(item, containerId) {
+function renderGraph(containerId, item) {
+    console.log("Rendering graph for item: " + item.name);
+
+    var label = item.properties.label;
+    var unit = item.properties.unit;
+
+    var data = {
+        "widgetId": item.id,
+        "deviceId": item.deviceId,
+        "name": item.name,
+        "weight" : item.weight
+    }
+
+    renderWidgetTemplate("graphTemplate", data, item.id, containerId);
+
+    var widget = $("#" + item.id);
+    widget.highcharts({
+        chart: {
+            type: 'area'
+        },
+        title: {
+            text: item.name
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            title: {
+                text: unit
+            }
+        },
+        plotOptions: {
+            area: {
+                fillColor: {
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                    stops: [
+                        [0, Highcharts.getOptions().colors[0]],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
+        series: [{
+            name: unit,
+            data : []
+        }]
+    });
+
+    $.get("/timeserieshmm /" + item.deviceId + "/" + label, function(data) {
+        var array = [];
+        $.each(data, function(i, point) {
+            var value = point.value;
+            var timestamp = point.timestamp;
+
+            array.push([timestamp, value]);
+        });
+        var series = widget.highcharts().series;
+        series[0].setData(array);
+    });
+
+
+}
+
+function renderSlider(item, containerId) {
     console.log("Rendering dimmer for item: " + item.name)
 
     var data = {

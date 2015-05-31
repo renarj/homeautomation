@@ -28,9 +28,6 @@ $(document).ready(function() {
         $("#" + containerId).remove();
     });
 
-
-
-
     function loadControllers() {
         $.get("/data/controllers", function(data){
             if(!isEmpty(data)) {
@@ -92,7 +89,7 @@ $(document).ready(function() {
 
     $("#widgetList").change(function () {
         var widgetType = this.value;
-        if(widgetType == "label") {
+        if(widgetType == "label" || widgetType == "graph") {
             $("#widgetValueTypeDiv").removeClass("hide");
             $("#widgetUnitTypeDiv").removeClass("hide");
         } else {
@@ -124,7 +121,7 @@ $(document).ready(function() {
             "containerId" : container,
             "deviceId" : deviceId
         };
-        if(widget == "label") {
+        if(widget == "label" || widget == "graph") {
             var label = $("#widgetLabel").find('option:selected').val();
             var unit = $("#widgetLabelUnitType").find('option:selected').text();
             console.log("We have a label: " + label + " and unit: " + unit);
@@ -141,6 +138,14 @@ $(document).ready(function() {
             console.log("Posted UI Item successfully");
 
             $('#dataModal').modal('hide')
+
+            $("#itemName").val("");
+            $("#itemDescription").val("");
+            $("#containerId").val("");
+            $("#widgetList").find('option:selected').val("none");
+            $("#deviceList").find('option:selected').empty();
+            $("#pluginList").find('option:selected').empty();
+            $("#controllerList").find('option:selected').empty();
 
             renderWidget(container, data);
         }})

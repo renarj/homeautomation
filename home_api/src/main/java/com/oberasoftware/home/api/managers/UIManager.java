@@ -21,6 +21,8 @@ public interface UIManager {
 
     void setWeight(String itemId, long weight);
 
+    void setParentContainer(String itemId, String parentContainerId);
+
     void deleteContainer(String containerId);
 
     void delete(String itemId);

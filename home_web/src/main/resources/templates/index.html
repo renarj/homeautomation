@@ -25,6 +25,11 @@
         </div>
     </li>
 </script>
+<script id="graphTemplate" type="x-tmpl-mustache">
+    <li class="well well-sm widget graph" id="{{widgetId}}" deviceId="{{deviceId}}" weight="{{weight}}">
+    </li>
+</script>
+
 <script id="switchTemplate" type="x-tmpl-mustache">
     <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
         <div class="row">
@@ -68,7 +73,7 @@
                         <a href="#" data-toggle="modal" data-target="#dataModal" data-id="{{containerId}}" class="btn btn-default btn-sm addWidget" title="Add a Widget"><span class="glyphicon glyphicon-plus"></span></a>
                     </div>
                 </div>
-                <ul class="panel-body list-unstyled" containerId="{{containerId}}">
+                <ul class="panel-body list-unstyled sortable" containerId="{{containerId}}">
                 </ul>
             </div>
         </div>
@@ -118,6 +123,7 @@
                                     <option value="switch">Switch</option>
                                     <option value="dimmer">Dimmer</option>
                                     <option value="label">Device Value</option>
+                                    <option value="graph">Graph</option>
                                 </select>
                             </div>
                             <div class="form-group hide" id="widgetValueTypeDiv">
