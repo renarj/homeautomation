@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+    	<groupId>com.oberasoftware</groupId>
+    	<artifactId>home_automation</artifactId>
+    	<version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<name>ZWave</name>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>home_zwave</artifactId>
+	<packaging>jar</packaging>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>obera_zwave</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.1.7.RELEASE</version>
+        <version>1.1.9.RELEASE</version>
     </parent>
 
     <groupId>com.oberasoftware</groupId>
@@ -15,10 +15,29 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <repositories>
+        <repository>
+            <id>project.local</id>
+            <name>project</name>
+            <url>file:///${project.basedir}/../repo</url>
+        </repository>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <dependencyManagement>
@@ -28,22 +47,51 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>2.3.3</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>org.springframework.boot</groupId>-->
-                <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-            <!--</dependency>-->
-            <!--<dependency>-->
-                <!--<groupId>org.hsqldb</groupId>-->
-                <!--<artifactId>hsqldb</artifactId>-->
-                <!--<scope>runtime</scope>-->
-            <!--</dependency>-->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>18.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.influxdb</groupId>
+                <artifactId>influxdb-java</artifactId>
+                <version>1.5</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.cmu.sphinx</groupId>
+                <artifactId>sphinx4-core</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.cmu.sphinx</groupId>
+                <artifactId>sphinx4-data</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
+                <artifactId>obera-base</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <module>data_monitors/youless</module>
-        <!--<module>openhab/org.openhab.binding.zwave</module>-->
-        <module>openhab/zwave</module>
+        <module>home_youless</module>
+        <module>home_zwave</module>
+        <module>home_api</module>
+        <module>home_service</module>
+        <module>home_storage</module>
+        <module>home_rest</module>
+        <module>home_hue</module>
+        <module>home_core</module>
+        <module>home_nest</module>
+        <module>statestores/home_influxdb</module>
+        <module>home_assembly</module>
+        <module>home_exampledevice</module>
+        <module>home_web</module>
+        <module>home_voice</module>
+        <module>home_arduino</module>
     </modules>
 
     <build>
@@ -57,6 +105,18 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.springframework.boot</groupId>-->
+                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.springframework</groupId>-->
+                        <!--<artifactId>springloaded</artifactId>-->
+                        <!--<version>1.2.0.RELEASE</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+            <!--</plugin>-->
         </plugins>
     </build>
+
 </project>
