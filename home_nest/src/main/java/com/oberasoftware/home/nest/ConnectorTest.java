@@ -26,7 +26,7 @@ public class ConnectorTest {
         }
 
         LOG.info("Thermostat connected");
-        TheromostatManager theromostatManager = new TheromostatManager();
+        ThermostatManager theromostatManager = new ThermostatManager();
         theromostatManager.setNestConnector(connector);
 
         theromostatManager.getDevices().forEach(t -> LOG.debug("Thermostat: {}", t));

@@ -80,7 +80,7 @@ public class NodeValueEventListener implements EventHandler {
     }
 
     private String getNodeId(DeviceEvent event) {
-        return event.getNodeId() + ":" + event.getEndpointId();
+        return event.getNodeId() + "-" + event.getEndpointId();
     }
 
     @EventSubscribe

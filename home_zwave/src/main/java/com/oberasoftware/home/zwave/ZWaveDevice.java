@@ -29,7 +29,7 @@ public class ZWaveDevice implements Device {
 
     @Override
     public String getId() {
-        return node.getNodeId() + ":" + endpointId;
+        return node.getNodeId() + "-" + endpointId;
     }
 
     @Override

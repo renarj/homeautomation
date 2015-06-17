@@ -61,7 +61,7 @@ public class ItemManagerImpl implements ItemManager {
                 return safelyStorePluginItem(itemId, controllerId, pluginId, name, properties);
             } else {
                 PluginItem currentPlugin = optionalPlugin.get();
-                if(havePropertiesChanged(currentPlugin.getProperties(), properties) && !name.equals(currentPlugin.getName())) {
+                if(havePropertiesChanged(currentPlugin.getProperties(), properties) || !name.equals(currentPlugin.getName())) {
                     LOG.debug("Plugin information has changed, storing plugin item: {}", pluginId);
 
                     return safelyStorePluginItem(currentPlugin.getId(), controllerId, pluginId, name, properties);

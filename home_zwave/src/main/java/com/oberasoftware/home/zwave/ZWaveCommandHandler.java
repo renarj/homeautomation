@@ -41,7 +41,7 @@ public class ZWaveCommandHandler implements CommandHandler {
         if(command instanceof SwitchCommand) {
             SwitchCommand switchCommand = (SwitchCommand) command;
 
-            String[] idParts = item.getDeviceId().split(":");
+            String[] idParts = item.getDeviceId().split("-");
             int nodeId = Integer.parseInt(idParts[0]);
             int endpointId = Integer.parseInt(idParts[1]);
 
@@ -58,7 +58,7 @@ public class ZWaveCommandHandler implements CommandHandler {
             }
         } else if(command instanceof DeviceValueCommand) {
             DeviceValueCommand valueCommand = (DeviceValueCommand) command;
-            String[] idParts = item.getDeviceId().split(":");
+            String[] idParts = item.getDeviceId().split("-");
             int nodeId = Integer.parseInt(idParts[0]);
             int endpointId = Integer.parseInt(idParts[1]);
 

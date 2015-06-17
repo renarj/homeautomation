@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ExtensionManager {
     void activateController(String controllerId) throws HomeAutomationException;
 
-    void activateExtension(AutomationExtension extension) throws HomeAutomationException;
+    void activateExtensions() throws HomeAutomationException;
 
     List<AutomationExtension> getExtensions();
 

@@ -28,9 +28,6 @@ public class HueCommandHandler implements CommandHandler {
     private static final Logger LOG = getLogger(HueCommandHandler.class);
 
     @Autowired
-    private HueConnector hueConnector;
-
-    @Autowired
     private List<HueCommandAction> actions;
 
     private ConcurrentMap<String, HueCommandAction<Command>> actionMap = new ConcurrentHashMap<>();

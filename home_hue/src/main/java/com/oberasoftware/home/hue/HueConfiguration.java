@@ -1,4 +1,4 @@
-package com.oberasoftware.home.state.influxdb;
+package com.oberasoftware.home.hue;
 
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,5 +9,5 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan
-public class InfluxDBConfiguration implements SpringExtension {
+public class HueConfiguration implements SpringExtension {
 }
