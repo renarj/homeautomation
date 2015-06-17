@@ -1,6 +1,6 @@
 package com.oberasoftware.home.service;
 
-import com.oberasoftware.home.api.extensions.AutomationExtension;
+import com.oberasoftware.home.api.extensions.SpringExtension;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -17,17 +17,17 @@ public class ExtensionServiceLoaderUtil {
 
     private static final ExtensionServiceLoaderUtil INSTANCE = new ExtensionServiceLoaderUtil();
 
-    private final List<AutomationExtension> automationExtensions = new ArrayList<>();
+    private final List<SpringExtension> springExtensions = new ArrayList<>();
 
     private ExtensionServiceLoaderUtil() {
-        ServiceLoader<AutomationExtension> extensions = ServiceLoader.load(AutomationExtension.class);
+        ServiceLoader<SpringExtension> extensions = ServiceLoader.load(SpringExtension.class);
         extensions.forEach(e -> {
-            LOG.debug("Found extension: {}", e);
-            automationExtensions.add(e);
+            LOG.debug("Found spring extension: {}", e);
+            springExtensions.add(e);
         });
     }
 
-    public static List<AutomationExtension> getExtensions() {
-        return INSTANCE.automationExtensions;
+    public static List<SpringExtension> getExtensions() {
+        return INSTANCE.springExtensions;
     }
 }

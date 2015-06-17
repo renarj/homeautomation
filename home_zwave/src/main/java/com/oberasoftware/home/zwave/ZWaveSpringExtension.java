@@ -1,55 +1,55 @@
 package com.oberasoftware.home.zwave;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.oberasoftware.home.api.extensions.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
-import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import com.oberasoftware.home.zwave.exceptions.ZWaveException;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
-@Configuration
-@Import(ZWaveConfiguration.class)
-@ComponentScan
-public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
+@Component
+public class ZWaveSpringExtension implements DeviceExtension {
     private static final Logger LOG = getLogger(ZWaveSpringExtension.class);
 
-    private ApplicationContext context;
+    @Autowired
+    private ZWaveController zWaveController;
+
+    @Autowired
+    private DeviceRegistry deviceRegistry;
+
+    @Autowired
+    private SerialZWaveConnector serialZWaveConnector;
+
+    @Autowired
+    private ZWaveCommandHandler commandHandler;
 
     @Override
     public boolean isReady() {
-        assertContext();
-        return context.getBean(ZWaveController.class).isNetworkReady();
+        return zWaveController.isNetworkReady();
     }
 
     @Override
     public List<Device> getDevices() {
-        assertContext();
-        return context.getBean(DeviceRegistry.class).getDevices();
+        return deviceRegistry.getDevices();
     }
 
     @Override
     public void activate(Optional<PluginItem> pluginItem) {
-        assertContext();
         try {
-            context.getBean(SerialZWaveConnector.class).connect();
-            context.getBean(ProtocolBootstrap.class).startInitialization();
+            serialZWaveConnector.connect();
+            zWaveController.initializeNetwork();
         } catch (ZWaveException e) {
             LOG.error("Unable to initialize zwave plugin", e);
         }
@@ -57,14 +57,12 @@ public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
 
     @Override
     public String getId() {
-        assertContext();
-        return context.getBean(DeviceRegistry.class).getZwaveId();
+        return deviceRegistry.getZwaveId();
     }
 
     @Override
     public String getName() {
-        assertContext();
-        return context.getBean(DeviceRegistry.class).getZwaveName();
+        return deviceRegistry.getZwaveName();
     }
 
     @Override
@@ -74,36 +72,11 @@ public class ZWaveSpringExtension implements DeviceExtension, SpringExtension {
 
     @Override
     public CommandHandler getCommandHandler() {
-        assertContext();
-        return context.getBean(ZWaveCommandHandler.class);
-    }
-
-    @Override
-    public List<Class<?>> getAnnotatedConfigurationClasses() {
-        return Lists.newArrayList(ZWaveConfiguration.class);
-    }
-
-    @Override
-    public void provideContext(ApplicationContext context) {
-        this.context = context;
-    }
-
-    private void assertContext() {
-        checkNotNull(context, "ApplicationContext was null, could not load ZWave extension");
+        return commandHandler;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ZWaveSpringExtension{");
-        if(context != null) {
-            builder.append("name=").append(getName());
-            builder.append(",id=").append(getId());
-        } else {
-            builder.append("Not Initialized");
-        }
-        builder.append("}");
-
-        return builder.toString();
+        return "ZWaveSpringExtension{" + "name=" + getName() + ",id=" + getId() + "}";
     }
 }

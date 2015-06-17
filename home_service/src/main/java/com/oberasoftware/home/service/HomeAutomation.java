@@ -4,12 +4,10 @@ import com.oberasoftware.base.BaseConfiguration;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
-import com.oberasoftware.home.api.extensions.AutomationExtension;
 import com.oberasoftware.home.api.extensions.ExtensionManager;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.core.CoreConfiguation;
 import com.oberasoftware.home.rest.RestConfiguration;
-import com.oberasoftware.home.state.influxdb.InfluxDBConfiguration;
 import com.oberasoftware.home.storage.jasdb.JasDBConfiguration;
 import com.oberasoftware.home.web.WebConfiguration;
 import org.slf4j.Logger;
@@ -29,7 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @EnableAutoConfiguration(exclude = {
         org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
-@Import({RestConfiguration.class, JasDBConfiguration.class, CoreConfiguation.class, WebConfiguration.class, BaseConfiguration.class, InfluxDBConfiguration.class})
+@Import({RestConfiguration.class, JasDBConfiguration.class, CoreConfiguation.class, WebConfiguration.class, BaseConfiguration.class})
 @ComponentScan
 public class HomeAutomation {
     private static final Logger LOG = getLogger(HomeAutomation.class);
@@ -42,10 +40,8 @@ public class HomeAutomation {
         LOG.info("Starting HomeAutomation system");
 
         try {
-            List<AutomationExtension> automationExtensions = ExtensionServiceLoaderUtil.getExtensions();
-            List<SpringExtension> springExtensions = automationExtensions.stream().filter(e -> e instanceof SpringExtension).map(e -> (SpringExtension) e).collect(Collectors.toList());
-
-            List<Class<?>> c = springExtensions.stream().flatMap(s -> s.getAnnotatedConfigurationClasses().stream()).collect(Collectors.toList());
+            List<SpringExtension> springExtensions = ExtensionServiceLoaderUtil.getExtensions();
+            List<Class<?>> c = springExtensions.stream().map(SpringExtension::getClass).collect(Collectors.toList());
             c.add(HomeAutomation.class);
 
             LOG.debug("Starting spring context with configuration classes: {}", c);
@@ -53,17 +49,10 @@ public class HomeAutomation {
 
             String controllerId = context.getBean(AutomationBus.class).getControllerId();
 
-            springExtensions.forEach(s -> s.provideContext(context));
-
             ExtensionManager extensionManager = context.getBean(ExtensionManager.class);
             extensionManager.activateController(controllerId);
-            automationExtensions.forEach(x -> {
-                try {
-                    extensionManager.activateExtension(x);
-                } catch (HomeAutomationException e) {
-                    throw new RuntimeHomeAutomationException("Unable to register home automation extension", e);
-                }
-            });
+
+            extensionManager.activateExtensions();
         } catch (HomeAutomationException | RuntimeHomeAutomationException e) {
             LOG.error("Could not start the HomeAutomationSystem", e);
         }

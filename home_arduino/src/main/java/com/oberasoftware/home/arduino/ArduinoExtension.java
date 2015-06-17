@@ -1,12 +1,11 @@
 package com.oberasoftware.home.arduino;
 
-import com.google.common.collect.Lists;
 import com.oberasoftware.home.api.extensions.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.storage.model.PluginItem;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,16 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * @author renarj
  */
 @Configuration
 @ComponentScan
 public class ArduinoExtension implements SpringExtension, DeviceExtension {
-    private ApplicationContext context;
-
+    @Autowired
+    private ArduinoConnector arduinoConnector;
 
     @Override
     public List<Device> getDevices() {
@@ -59,21 +56,6 @@ public class ArduinoExtension implements SpringExtension, DeviceExtension {
 
     @Override
     public void activate(Optional<PluginItem> pluginItem) {
-        assertContext();
-        context.getBean(ArduinoConnector.class).connect();
-    }
-
-    @Override
-    public List<Class<?>> getAnnotatedConfigurationClasses() {
-        return Lists.newArrayList(ArduinoExtension.class);
-    }
-
-    @Override
-    public void provideContext(ApplicationContext context) {
-        this.context = context;
-    }
-
-    private void assertContext() {
-        checkNotNull(context, "ApplicationContext was null, could not load ZWave extension");
+        arduinoConnector.connect();
     }
 }

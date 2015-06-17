@@ -3,7 +3,6 @@ package com.oberasoftware.home.youless;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.oberasoftware.exceptions.MonitorException;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
@@ -100,11 +99,11 @@ public class YoulessConnector implements Runnable {
             JsonNode root = OBJECT_MAPPER.readTree(response);
             return root.findValue("pwr").asLong();
         } catch (IOException e) {
-            throw new MonitorException("Unable to read wattage", e);
+            throw new HomeAutomationException("Unable to read wattage", e);
         }
     }
 
-    public String getResponseAsString(InputStream inputStream) throws MonitorException {
+    public String getResponseAsString(InputStream inputStream) throws HomeAutomationException {
         try {
             BufferedReader read = new BufferedReader(new InputStreamReader(inputStream));
             String r = read.readLine();
@@ -112,7 +111,7 @@ public class YoulessConnector implements Runnable {
 
             return r;
         } catch(IOException e) {
-            throw new MonitorException("Unable to load monitoring data from youless device", e);
+            throw new HomeAutomationException("Unable to load monitoring data from youless device", e);
         }
     }
 }

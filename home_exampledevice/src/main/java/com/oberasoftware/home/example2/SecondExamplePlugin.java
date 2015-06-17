@@ -18,7 +18,7 @@ import com.oberasoftware.home.core.types.ValueImpl;
 import com.oberasoftware.home.example.ExampleCommandHandler;
 import com.oberasoftware.home.example.ExampleDevice;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,6 +44,9 @@ public class SecondExamplePlugin implements DeviceExtension, SpringExtension {
             ImmutableMap.<String, String>builder().put("manufacturer", "pietje").put("batteryDevice", "true").build());
 
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+
+    @Autowired
+    private AutomationBus automationBus;
 
     @Override
     public List<Device> getDevices() {
@@ -91,17 +94,6 @@ public class SecondExamplePlugin implements DeviceExtension, SpringExtension {
 
     @Override
     public void activate(Optional<PluginItem> pluginItem) {
-
-    }
-
-    @Override
-    public List<Class<?>> getAnnotatedConfigurationClasses() {
-        return Lists.newArrayList(SecondExamplePlugin.class);
-    }
-
-    @Override
-    public void provideContext(ApplicationContext applicationContext) {
-        final AutomationBus automationBus = applicationContext.getBean(AutomationBus.class);
         Random rnd = new Random();
         SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> automationBus.publish(
                         new DeviceNumericValueEvent(automationBus.getControllerId(), getId(), "2", new ValueImpl(VALUE_TYPE.NUMBER, rnd.nextInt(35)), "temperature")),

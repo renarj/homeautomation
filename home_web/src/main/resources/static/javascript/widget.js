@@ -53,7 +53,7 @@ function handleStateUpdate(state) {
                 valueLabel.text(rawValue);
             }
 
-            var graphs = $("li.graph[deviceId=" + itemId + "]");
+            var graphs = $("li.graph[deviceId=" + itemId + "][labelId=" + label + "]");
             if(graphs) {
                 $.each(graphs, function(i, graph) {
                     var widgetId = graph.getAttribute("id");
@@ -168,6 +168,7 @@ function renderGraph(containerId, item) {
         "widgetId": item.id,
         "deviceId": item.deviceId,
         "name": item.name,
+        "label": label,
         "weight" : item.weight
     }
 
@@ -216,7 +217,7 @@ function renderGraph(containerId, item) {
         }]
     });
 
-    $.get("/timeserieshmm /" + item.deviceId + "/" + label, function(data) {
+    $.get("/timeseries/" + item.deviceId + "/" + label, function(data) {
         var array = [];
         $.each(data, function(i, point) {
             var value = point.value;

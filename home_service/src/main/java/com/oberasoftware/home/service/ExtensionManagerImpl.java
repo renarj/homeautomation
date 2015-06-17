@@ -15,11 +15,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +31,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ExtensionManagerImpl implements ExtensionManager {
     private static final Logger LOG = getLogger(ExtensionManagerImpl.class);
 
-    private ConcurrentMap<String, AutomationExtension> extensions = new ConcurrentHashMap<>();
+//    private ConcurrentMap<String, AutomationExtension> extensions = new ConcurrentHashMap<>();
+//
+    @Autowired(required = false)
+    private List<AutomationExtension> extensions;
 
     @Autowired
     private DeviceManager deviceManager;
@@ -52,12 +52,12 @@ public class ExtensionManagerImpl implements ExtensionManager {
 
     @Override
     public List<AutomationExtension> getExtensions() {
-        return new ArrayList<>(extensions.values());
+        return extensions;
     }
 
     @Override
     public Optional<AutomationExtension> getExtension(String extensionId) {
-        return Optional.ofNullable(extensions.get(extensionId));
+        return extensions.stream().filter(x -> x.getId().equals(extensionId)).findFirst();
     }
 
     @Override
@@ -66,8 +66,16 @@ public class ExtensionManagerImpl implements ExtensionManager {
     }
 
     @Override
-    public void activateExtension(AutomationExtension extension) throws HomeAutomationException {
+    public void activateExtensions() throws HomeAutomationException {
+        LOG.info("Activating all installed extensions");
+        extensions.forEach(this::activateExtension);
+    }
+
+    private void activateExtension(AutomationExtension extension)  {
         executorService.submit(() -> {
+            LOG.info("Registering extension: {}", extension);
+            itemManager.createOrUpdatePlugin(automationBus.getControllerId(), extension.getId(), extension.getName(), extension.getProperties());
+
             Optional<PluginItem> pluginItem = homeDAO.findPlugin(automationBus.getControllerId(), extension.getId());
             LOG.info("Activating plugin: {}", pluginItem);
             extension.activate(pluginItem);
@@ -76,11 +84,6 @@ public class ExtensionManagerImpl implements ExtensionManager {
                 LOG.debug("Extension: {} is not ready yet", extension.getId());
                 sleepUninterruptibly(1, TimeUnit.SECONDS);
             }
-
-            extensions.putIfAbsent(extension.getId(), extension);
-
-            LOG.info("Registering extension: {}", extension);
-            itemManager.createOrUpdatePlugin(automationBus.getControllerId(), extension.getId(), extension.getName(), extension.getProperties());
 
             if (extension instanceof DeviceExtension) {
                 registerDevices((DeviceExtension) extension);

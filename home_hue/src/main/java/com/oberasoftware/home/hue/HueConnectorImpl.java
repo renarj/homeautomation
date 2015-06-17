@@ -1,8 +1,8 @@
 package com.oberasoftware.home.hue;
 
-import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.events.controller.PluginUpdateEvent;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
@@ -13,7 +13,6 @@ import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHHueParsingError;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -41,8 +40,7 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
     private AtomicBoolean connected = new AtomicBoolean(false);
 
     @Autowired
-    @Qualifier("localAutomationBus")
-    private EventBus automationBus;
+    private AutomationBus automationBus;
 
     @Override
     public void connect(Optional<PluginItem> pluginItem) {
@@ -54,22 +52,36 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
         sdk.getNotificationManager().registerSDKListener(new HueListener());
 
         if(!pluginItem.isPresent()) {
-            LOG.info("No existing bridge found, searching for a bridge");
-            PHBridgeSearchManager sm = (PHBridgeSearchManager) sdk.getSDKService(PHHueSDK.SEARCH_BRIDGE);
-            sm.search(true, true);
+            LOG.info("No bridge configured");
+//            startSearchBrige();
         } else {
             Map<String, String> properties = pluginItem.get().getProperties();
             this.bridgeIp = properties.get("bridgeIp");
             this.bridgeUser = properties.get("username");
+//            if(bridgeIp != null && bridgeUser != null) {
+                LOG.info("Existing bridge found: {} username: {}", bridgeIp, bridgeUser);
+                automationBus.publish(new HueBridgeDiscovered("10.1.0.249", "883cadb2-d653-4a3e-bfa1-31e43060c15"));
+//            } else {
+//                startSearchBrige();
+//            }
 
-            LOG.info("Existing bridge found: {} username: {}", bridgeIp, bridgeUser);
-            automationBus.publish(new HueBridgeDiscovered(bridgeIp, bridgeUser));
         }
+    }
+
+    private void startSearchBrige() {
+        LOG.info("No existing bridge found, searching for a bridge");
+        PHBridgeSearchManager sm = (PHBridgeSearchManager) sdk.getSDKService(PHHueSDK.SEARCH_BRIDGE);
+        sm.search(true, true);
     }
 
     @Override
     public PHHueSDK getSdk() {
         return sdk;
+    }
+
+    @Override
+    public PHBridge getBridge() {
+        return sdk.getSelectedBridge();
     }
 
     private class HueListener implements PHSDKListener {
@@ -160,7 +172,7 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
         return connected.get();
     }
 
-    public void setAutomationBus(EventBus automationBus) {
+    public void setAutomationBus(AutomationBus automationBus) {
         this.automationBus = automationBus;
     }
 }

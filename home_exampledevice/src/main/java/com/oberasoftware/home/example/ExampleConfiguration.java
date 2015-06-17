@@ -2,7 +2,6 @@ package com.oberasoftware.home.example;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.extensions.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
@@ -12,7 +11,6 @@ import com.oberasoftware.home.api.model.Status;
 import com.oberasoftware.home.api.storage.model.PluginItem;
 import com.oberasoftware.home.core.model.ExtensionResourceImpl;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -84,16 +82,6 @@ public class ExampleConfiguration implements DeviceExtension, SpringExtension {
 
     @Override
     public void activate(Optional<PluginItem> pluginItem) {
-
-    }
-
-    @Override
-    public List<Class<?>> getAnnotatedConfigurationClasses() {
-        return Lists.newArrayList(ExampleConfiguration.class);
-    }
-
-    @Override
-    public void provideContext(ApplicationContext applicationContext) {
 
     }
 }

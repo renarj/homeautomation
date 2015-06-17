@@ -1,14 +1,9 @@
 package com.oberasoftware.home.api.extensions;
 
-import org.springframework.context.ApplicationContext;
-
-import java.util.List;
-
 /**
- * @author renarj
+ * This is a marker interface that is used to detect spring based extensions on startup
+ *
+ * @author Renze de Vries
  */
 public interface SpringExtension {
-    List<Class<?>> getAnnotatedConfigurationClasses();
-
-    void provideContext(ApplicationContext applicationContext);
 }
