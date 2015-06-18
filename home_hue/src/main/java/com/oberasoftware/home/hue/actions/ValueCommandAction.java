@@ -43,7 +43,7 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
         if(light.isPresent()) {
             PHLightState st = new PHLightState();
             st.setOn(true);
-            Optional<Integer> brightness = getValue(command, "brightness", true);
+            Optional<Integer> brightness = getValue(command, "value", true);
             Optional<Integer> saturation = getValue(command, "saturation", true);
             Optional<Integer> color = getValue(command, "color", false);
             Optional<Integer> transitionTime = getValue(command, "transition", false);

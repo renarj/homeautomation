@@ -33,4 +33,23 @@ public class StateItemImpl implements StateItem {
                 ", value=" + value +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StateItemImpl stateItem = (StateItemImpl) o;
+
+        if (!label.equals(stateItem.label)) return false;
+        return value.equals(stateItem.value);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = label.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
 }

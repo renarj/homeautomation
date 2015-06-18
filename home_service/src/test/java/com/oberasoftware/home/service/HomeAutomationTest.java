@@ -1,11 +1,18 @@
 package com.oberasoftware.home.service;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
+
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class HomeAutomationTest {
-    public static void main(String[] args) {
+    @Test
+    public void testHomeAutomation() {
+        new HomeAutomation().start(new String[]{});
 
-
+        Uninterruptibles.sleepUninterruptibly(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
     }
 }

@@ -43,8 +43,14 @@ public class StateImpl implements State {
         return deviceStatus;
     }
 
-    public void addStateItem(String label, StateItem stateItem) {
+    public boolean updateIfChanged(String label, StateItem stateItem) {
+        boolean updated = true;
+        if(stateItems.containsKey(label)) {
+            //if the existing item is different than new item it is updated
+            updated = !stateItems.get(label).equals(stateItem);
+        }
         this.stateItems.put(label, stateItem);
+        return updated;
     }
 
     @Override

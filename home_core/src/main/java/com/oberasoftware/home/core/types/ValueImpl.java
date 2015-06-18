@@ -38,4 +38,23 @@ public class ValueImpl implements Value {
                 ", type=" + type +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ValueImpl value1 = (ValueImpl) o;
+
+        if (!value.equals(value1.value)) return false;
+        return type == value1.type;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = value.hashCode();
+        result = 31 * result + type.hashCode();
+        return result;
+    }
 }

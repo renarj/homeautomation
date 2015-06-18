@@ -58,12 +58,12 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
             Map<String, String> properties = pluginItem.get().getProperties();
             this.bridgeIp = properties.get("bridgeIp");
             this.bridgeUser = properties.get("username");
-//            if(bridgeIp != null && bridgeUser != null) {
+            if(bridgeIp != null && bridgeUser != null) {
                 LOG.info("Existing bridge found: {} username: {}", bridgeIp, bridgeUser);
-                automationBus.publish(new HueBridgeDiscovered("10.1.0.249", "883cadb2-d653-4a3e-bfa1-31e43060c15"));
-//            } else {
-//                startSearchBrige();
-//            }
+                automationBus.publish(new HueBridgeDiscovered(bridgeIp, bridgeUser));
+            } else {
+                startSearchBrige();
+            }
 
         }
     }

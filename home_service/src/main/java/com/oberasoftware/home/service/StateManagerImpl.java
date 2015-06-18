@@ -44,11 +44,12 @@ public class StateManagerImpl implements StateManager {
         LOG.debug("Updating state of item: {} with label: {} to value: {}", itemId, label, value);
         itemStates.putIfAbsent(itemId, new StateImpl(itemId, Status.UNKNOWN));
         StateImpl state = itemStates.get(itemId);
-        state.addStateItem(label, new StateItemImpl(label, value));
+        boolean updated = state.updateIfChanged(label, new StateItemImpl(label, value));
+        if(updated) {
+            updateStateStores(item, label, value);
 
-        updateStateStores(item, label, value);
-
-        automationBus.publish(new StateUpdateEvent(state));
+            automationBus.publish(new StateUpdateEvent(state));
+        }
 
         return state;
     }
@@ -61,7 +62,7 @@ public class StateManagerImpl implements StateManager {
             State oldState = itemStates.get(itemId);
 
             StateImpl newState = new StateImpl(itemId, newStatus);
-            oldState.getStateItems().forEach(si -> newState.addStateItem(si.getLabel(), si));
+            oldState.getStateItems().forEach(si -> newState.updateIfChanged(si.getLabel(), si));
 
             itemStates.put(itemId, newState);
         } else {

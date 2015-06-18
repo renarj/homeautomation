@@ -9,7 +9,7 @@
     </appender>
 
 
-    <logger name="nl.renarj" level="info"/>
+    <logger name="com.oberasoftware" level="info"/>
 
     <root level="OFF">
         <appender-ref ref="STDOUT"/>
