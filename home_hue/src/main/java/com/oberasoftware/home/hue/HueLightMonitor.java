@@ -55,6 +55,7 @@ public class HueLightMonitor {
         if(hueConnector.isConnected()) {
             LOG.debug("Checking hue light state");
             PHBridge bridge = hueConnector.getBridge();
+
             PHBridgeResourcesCache resourcesCache = bridge.getResourceCache();
             resourcesCache.getAllLights().forEach(this::checkLightState);
         } else {

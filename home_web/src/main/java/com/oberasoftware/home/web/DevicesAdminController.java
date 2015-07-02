@@ -6,9 +6,9 @@ import com.oberasoftware.home.api.extensions.ExtensionManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.managers.UIManager;
 import com.oberasoftware.home.api.model.ExtensionResource;
-import com.oberasoftware.home.api.storage.model.Container;
-import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.Container;
+import com.oberasoftware.home.api.model.storage.ControllerItem;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 import com.oberasoftware.home.web.model.WebPluginItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,9 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Controller
-@RequestMapping("/web/configuration")
-public class ConfigurationController {
-    private static final Logger LOG = getLogger(ConfigurationController.class);
+@RequestMapping("/web/admin/devices")
+public class DevicesAdminController {
+    private static final Logger LOG = getLogger(DevicesAdminController.class);
 
     @Autowired
     private ItemManager itemManager;
@@ -47,7 +47,7 @@ public class ConfigurationController {
     private ExtensionManager extensionManager;
 
 
-    @RequestMapping(value = "/{controllerId:.+}")
+    @RequestMapping(value = "/{controllerId}")
     public String getPlugins(@PathVariable String controllerId, Model model) {
         List<ControllerItem> controllers = itemManager.findControllers();
         List<PluginItem> plugins = itemManager.findPlugins(controllerId);
@@ -63,15 +63,16 @@ public class ConfigurationController {
         model.addAttribute("selectedController", controllerId);
         model.addAttribute("containers", containers);
 
-        return "configuration/config";
+        return "admin/devices";
     }
 
-    @RequestMapping(value = "/")
+    @RequestMapping
     public String getControllers(Model model) {
+        LOG.debug("Showing admin screen - controllers");
         List<ControllerItem> controllers = itemManager.findControllers();
         model.addAttribute("controllers", controllers);
 
-        return "configuration/config";
+        return "admin/devices";
     }
 
     @RequestMapping(value = "/icon/plugin/{pluginId}")

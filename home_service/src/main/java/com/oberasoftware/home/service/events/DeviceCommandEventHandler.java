@@ -6,8 +6,9 @@ import com.oberasoftware.home.api.commands.DeviceCommand;
 import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
 import com.oberasoftware.home.api.extensions.AutomationExtension;
 import com.oberasoftware.home.api.extensions.ExtensionManager;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.storage.HomeDAO;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class DeviceCommandEventHandler implements EventHandler {
         DeviceCommand command = event.getCommand();
         LOG.debug("Looking up device details for command: {} and itemId: {}",command, command.getItemId());
 
-        Optional<DeviceItem> deviceData = homeDAO.findItem(command.getItemId());
+        Optional<DeviceItemImpl> deviceData = homeDAO.findItem(DeviceItemImpl.class, command.getItemId());
         if(deviceData.isPresent()) {
             DeviceItem deviceItem = deviceData.get();
             String pluginId = deviceItem.getPluginId();

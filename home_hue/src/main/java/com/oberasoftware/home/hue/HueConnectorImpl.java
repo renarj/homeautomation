@@ -4,7 +4,7 @@ import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.events.controller.PluginUpdateEvent;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
 import com.philips.lighting.hue.sdk.PHHueSDK;
@@ -32,7 +32,6 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
     private static final Logger LOG = getLogger(HueConnectorImpl.class);
 
     private PHHueSDK sdk;
-    private PHAccessPoint ap;
 
     private String bridgeUser;
     private String bridgeIp;
@@ -53,7 +52,7 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
 
         if(!pluginItem.isPresent()) {
             LOG.info("No bridge configured");
-//            startSearchBrige();
+            startSearchBrige();
         } else {
             Map<String, String> properties = pluginItem.get().getProperties();
             this.bridgeIp = properties.get("bridgeIp");
@@ -152,7 +151,7 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
     public void receive(HueBridgeDiscovered bridgeEvent) {
         LOG.info("Connecting to bridge: {} with user: {}", bridgeEvent.getBridgeIp(), bridgeEvent.getUsername());
 
-        ap = new PHAccessPoint();
+        PHAccessPoint ap = new PHAccessPoint();
         ap.setIpAddress(bridgeEvent.getBridgeIp());
         ap.setUsername(bridgeEvent.getUsername());
 
@@ -170,9 +169,5 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
     @Override
     public boolean isConnected() {
         return connected.get();
-    }
-
-    public void setAutomationBus(AutomationBus automationBus) {
-        this.automationBus = automationBus;
     }
 }

@@ -1,10 +1,10 @@
 package com.oberasoftware.home.api.managers;
 
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
-import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.Item;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.ControllerItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.model.storage.Item;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 
 import java.util.List;
 import java.util.Map;

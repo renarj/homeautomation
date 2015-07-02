@@ -64,7 +64,7 @@
 </script>
 <script id="containerTemplate" type="x-tmpl-mustache">
     <div class="row" id="{{containerId}}">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading clearfix">
                     <h3 class="panel-title pull-left">{{name}}</h3>
@@ -82,8 +82,10 @@
 
 <div class="container-fluid">
 
-    <div th:replace="includes/header :: navigation"></div>
+    <div th:replace="includes/header :: navigation (selectTab='dashboard')"></div>
     <div class="row">
+        <div class="col-md-12">
+
         <!-- Modal for data insertion -->
         <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="addUiItemLabel" aria-hidden="true">
             <form role="form" id="createUIItemForm" action="#" method="post">
@@ -194,6 +196,8 @@
             </div>
             <div class="panel-body" id="container">
             </div>
+        </div>
+
         </div>
     </div>
     <div th:replace="includes/header :: footer"></div>

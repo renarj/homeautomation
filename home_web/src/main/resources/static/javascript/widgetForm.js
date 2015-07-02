@@ -10,7 +10,7 @@ $(document).ready(function() {
         event.preventDefault();
         var widgetId = this.getAttribute('widgetId');
 
-        $.ajax({url: "/ui/items/" + widgetId, type: "DELETE", dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
+        $.ajax({url: "/ui/items(" + widgetId + ")", type: "DELETE", contentType: "application/json; charset=utf-8", success: function(data) {
             console.log("Removed Widget successfully");
         }});
 
@@ -21,7 +21,7 @@ $(document).ready(function() {
         event.preventDefault();
         var containerId = this.getAttribute('containerId');
 
-        $.ajax({url: "/ui/containers/" + containerId, type: "DELETE", dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
+        $.ajax({url: "/ui/containers(" + containerId + ")", type: "DELETE", contentType: "application/json; charset=utf-8", success: function(data) {
             console.log("Removed container successfully");
         }});
 
@@ -142,10 +142,10 @@ $(document).ready(function() {
             $("#itemName").val("");
             $("#itemDescription").val("");
             $("#containerId").val("");
-            $("#widgetList").find('option:selected').val("none");
-            $("#deviceList").find('option:selected').empty();
-            $("#pluginList").find('option:selected').empty();
-            $("#controllerList").find('option:selected').empty();
+            $("#widgetList").val("none");
+            $("#deviceList").empty();
+            $("#pluginList").empty();
+            $("#controllerList").empty();
 
             renderWidget(container, data);
         }})

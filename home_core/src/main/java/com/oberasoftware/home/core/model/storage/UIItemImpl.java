@@ -1,4 +1,9 @@
-package com.oberasoftware.home.api.storage.model;
+package com.oberasoftware.home.core.model.storage;
+
+import com.oberasoftware.home.api.model.storage.UIItem;
+import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
+import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
+import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +11,8 @@ import java.util.Map;
 /**
  * @author renarj
  */
-public class UIItem implements Item {
+@JasDBEntity(bagName = "widgets")
+public class UIItemImpl implements UIItem {
     private String id;
     private String name;
     private String description;
@@ -20,7 +26,7 @@ public class UIItem implements Item {
 
     private Map<String, String> properties = new HashMap<>();
 
-    public UIItem(String id, String name, String containerId, String description, String uiType, String deviceId, Map<String, String> properties, long weight) {
+    public UIItemImpl(String id, String name, String containerId, String description, String uiType, String deviceId, Map<String, String> properties, long weight) {
         this.id = id;
         this.name = name;
         this.containerId = containerId;
@@ -31,9 +37,22 @@ public class UIItem implements Item {
         this.weight = weight;
     }
 
-    public UIItem() {
+    public UIItemImpl() {
     }
 
+    @Override
+    @Id
+    @JasDBProperty
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    @JasDBProperty
     public long getWeight() {
         return weight;
     }
@@ -42,55 +61,58 @@ public class UIItem implements Item {
         this.weight = weight;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setUiType(String uiType) {
-        this.uiType = uiType;
+    @Override
+    @JasDBProperty
+    public String getContainerId() {
+        return containerId;
     }
 
     public void setContainerId(String containerId) {
         this.containerId = containerId;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public String getContainerId() {
-        return containerId;
-    }
-
     @Override
-    public String getId() {
-        return id;
-    }
-
+    @JasDBProperty
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    @JasDBProperty
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    @JasDBProperty
     public String getUiType() {
         return uiType;
     }
 
+    public void setUiType(String uiType) {
+        this.uiType = uiType;
+    }
+
+    @Override
+    @JasDBProperty
     public String getDeviceId() {
         return deviceId;
     }
 
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @Override
+    @JasDBProperty
     public Map<String, String> getProperties() {
         return properties;
     }

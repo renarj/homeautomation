@@ -53,8 +53,8 @@ public class OnOffValueEvent implements DeviceValueEvent {
             }
 
             @Override
-            public <T> T getValue() {
-                return (T)asString();
+            public String getValue() {
+                return asString();
             }
 
             @Override

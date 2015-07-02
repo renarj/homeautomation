@@ -11,7 +11,7 @@ import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.model.ExtensionResource;
 import com.oberasoftware.home.api.model.Status;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.core.model.ExtensionResourceImpl;
 import com.oberasoftware.home.core.types.ValueImpl;

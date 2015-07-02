@@ -8,7 +8,7 @@ import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.model.ExtensionResource;
 import com.oberasoftware.home.api.model.Status;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 import com.oberasoftware.home.core.model.ExtensionResourceImpl;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.ComponentScan;

@@ -3,9 +3,11 @@
 <head th:replace="includes/header :: header">
 </head>
 <body>
-<script th:src="@{/javascript/config.js}" src="/static/javascript/config.js"></script>
-<div class="container">
-    <div th:replace="includes/header :: navigation"></div>
+<script th:src="@{/javascript/devices.js}" src="/static/javascript/devices.js"></script>
+<div class="container-fluid">
+    <div th:replace="includes/header :: navigation (selectTab='admin')"></div>
+
+    <div th:replace="includes/header :: adminTabs (selectTab='devices')"></div>
 
     <div class="row">
         <div class="col-md-4">
@@ -15,57 +17,12 @@
                 </div>
                 <div class="panel-body">
                     <div class="list-group" th:each="controller: ${controllers}">
-                        <a href="#" th:href="@{'/web/configuration/'+${controller.controllerId}}" class="list-group-item" th:classappend="${selectedController != null and selectedController == controller.controllerId} ? 'active'" th:text="${controller.controllerId}">Text</a>
+                        <a href="#" th:href="@{'/web/admin/devices/'+${controller.controllerId}}" class="list-group-item" th:classappend="${selectedController != null and selectedController == controller.controllerId} ? 'active'" th:text="${controller.controllerId}">Text</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6" th:if="${selectedController}">
-            <!-- Modal for data insertion -->
-            <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="addUiItemLabel" aria-hidden="true">
-                <form role="form" id="createUIItemForm" action="#" method="post">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title" id="addUiItemLabel">Add a UI Item</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="itemName">Name</label>
-                                    <input class="form-control" id="itemName" type="text"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="itemDescription">Description</label>
-                                    <input class="form-control" id="itemDescription" type="text"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="containerList">Container</label>
-                                    <select class="form-control" id="containerList">
-                                        <option>None</option>
-                                        <option th:each="container : ${containers}" th:value="${container.id}" th:text="${container.name}"></option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="widgetList">Widget Type</label>
-                                    <select class="form-control" id="widgetList">
-                                        <option value="switch">Switch</option>
-                                        <option value="dimmer">Dimmer</option>
-                                        <option value="temperature">Temperature Label</option>
-                                        <option value="power">Power Label</option>
-                                    </select>
-                                </div>
-                                <input type="hidden" value="" id="deviceId"/>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Create</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
+        <div class="col-md-8" th:if="${selectedController}">
             <div class="panel panel-primary" th:each="plugin : ${plugins}">
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="'Plugin: ' + ${plugin.name}"></h3>
@@ -121,10 +78,6 @@
                                     <div class="panel panel-info">
                                         <div class="panel-heading clearfix">
                                             <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Devices</h4>
-                                            <div class="btn-group pull-right">
-                                                <!-- we want an add devices UI item button -->
-                                                <a href="#" data-toggle="modal" data-target="#dataModal" data-id="" th:attr="data-id=${device.id}" class="btn btn-default btn-sm addItem" title="Add a UI Item"><span class="glyphicon glyphicon-plus"></span></a>
-                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <table class="table">

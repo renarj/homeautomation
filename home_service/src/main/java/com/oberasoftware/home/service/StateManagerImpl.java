@@ -7,7 +7,7 @@ import com.oberasoftware.home.api.managers.StateManager;
 import com.oberasoftware.home.api.managers.StateStore;
 import com.oberasoftware.home.api.model.State;
 import com.oberasoftware.home.api.model.Status;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.core.model.StateImpl;
 import com.oberasoftware.home.core.model.StateItemImpl;

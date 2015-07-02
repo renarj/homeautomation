@@ -112,7 +112,7 @@ function renderContainer(item) {
                 var widgetId = $(this).attr("id");
                 console.log("Widget: " + widgetId + " position: " + index);
 
-                $.ajax({url: "/ui/items/" + widgetId + "/weight/" + index, type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
+                $.ajax({url: "/ui/items(" + widgetId + ")/setWeight(" + index + ")", type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
 
             });
         },
@@ -122,7 +122,7 @@ function renderContainer(item) {
 
             console.log("Setting Parent: " + containerId + " for widget: " + widgetId);
 
-            $.ajax({url: "/ui/items/" + widgetId + "/parent/" + containerId, type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
+            $.ajax({url: "/ui/items(" + widgetId + ")/setParent(" + containerId + ")", type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
         }
     });
 
@@ -130,7 +130,7 @@ function renderContainer(item) {
 }
 
 function renderContainerItems(containerId) {
-    $.get("/ui/containers/" + containerId + "/items", function (data) {
+    $.get("/ui/containers(" + containerId + ")/items", function (data) {
         $.each(data, function (i, item) {
             renderWidget(containerId, item);
         })
@@ -217,7 +217,7 @@ function renderGraph(containerId, item) {
         }]
     });
 
-    $.get("/timeseries/" + item.deviceId + "/" + label, function(data) {
+    $.get("/timeseries/item(" + item.deviceId + ")/label(" + label + ")", function(data) {
         var array = [];
         $.each(data, function(i, point) {
             var value = point.value;

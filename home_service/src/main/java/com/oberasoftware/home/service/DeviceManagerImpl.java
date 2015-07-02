@@ -5,9 +5,10 @@ import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.model.Device;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 import com.oberasoftware.home.api.storage.HomeDAO;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class DeviceManagerImpl implements DeviceManager {
 
     @Override
     public DeviceItem findDevice(String deviceId) {
-        Optional<DeviceItem> d =  homeDAO.findItem(deviceId);
+        Optional<DeviceItemImpl> d =  homeDAO.findItem(DeviceItemImpl.class, deviceId);
         return d.get();
     }
 

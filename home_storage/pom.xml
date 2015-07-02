@@ -15,27 +15,15 @@
         <dependency>
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_localservice</artifactId>
-            <version>1.1-SNAPSHOT</version>
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework</groupId>-->
-                    <!--<artifactId>*</artifactId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework.security</groupId>-->
-                    <!--<artifactId>*</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_restconnector</artifactId>
-            <version>1.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>home_api</artifactId>
+            <artifactId>home_core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -53,11 +41,5 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-        <!--</dependency>-->
-
     </dependencies>
 </project>

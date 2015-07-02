@@ -1,8 +1,9 @@
 package com.oberasoftware.home.storage.jasdb;
 
 import com.oberasoftware.home.api.exceptions.DataStoreException;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.UIItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
+import com.oberasoftware.home.core.model.storage.UIItemImpl;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
@@ -57,13 +58,13 @@ public class JasDBCentralDataStoreTest {
     public void storeAndUpdateDevice() throws JasDBException, DataStoreException {
         String id = UUID.randomUUID().toString();
 
-        centralDatastore.store(new DeviceItem(id, "controller1", "plugin1", "device1", "test device", new HashMap<>(), new HashMap<>()));
+        centralDatastore.store(new DeviceItemImpl(id, "controller1", "plugin1", "device1", "test device", new HashMap<>()));
 
         Optional<DeviceItem> item = jasDBDAO.findDevice("controller1", "plugin1", "device1");
         assertThat(item.isPresent(), is(true));
         assertThat(item.get().getName(), is("test device"));
 
-        centralDatastore.store(new DeviceItem(id, "controller1", "plugin1", "device1", "updated name", new HashMap<>(), new HashMap<>()));
+        centralDatastore.store(new DeviceItemImpl(id, "controller1", "plugin1", "device1", "updated name", new HashMap<>()));
 
         assertThat(jasDBDAO.findDevices().size(), is(1));
 
@@ -77,8 +78,8 @@ public class JasDBCentralDataStoreTest {
         String id1 = UUID.randomUUID().toString();
         String id2 = UUID.randomUUID().toString();
 
-        centralDatastore.store(new UIItem(id1, "UI Item 1", "container1","Special item", "switch", "jsdlfjsd", new HashMap<>(), 0));
-        centralDatastore.store(new UIItem(id2, "UI Item 2", "container1", "Special item", "switch", "jsdlfjsd", new HashMap<>(), 0));
+        centralDatastore.store(new UIItemImpl(id1, "UI Item 1", "container1","Special item", "switch", "jsdlfjsd", new HashMap<>(), 0));
+        centralDatastore.store(new UIItemImpl(id2, "UI Item 2", "container1", "Special item", "switch", "jsdlfjsd", new HashMap<>(), 0));
 
         assertThat(jasDBDAO.findUIItems("containe1").size(), is(2));
     }

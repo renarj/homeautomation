@@ -2,29 +2,37 @@ package com.oberasoftware.home.storage.jasdb;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.oberasoftware.home.api.model.storage.Container;
+import com.oberasoftware.home.api.model.storage.ControllerItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.model.storage.GroupItem;
+import com.oberasoftware.home.api.model.storage.Item;
+import com.oberasoftware.home.api.model.storage.PluginItem;
+import com.oberasoftware.home.api.model.storage.UIItem;
 import com.oberasoftware.home.api.storage.HomeDAO;
-import com.oberasoftware.home.api.storage.model.Container;
-import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.Item;
-import com.oberasoftware.home.api.storage.model.PluginItem;
-import com.oberasoftware.home.api.storage.model.UIItem;
-import com.oberasoftware.home.storage.jasdb.mapping.EntityMapperFactory;
-import nl.renarj.jasdb.api.model.EntityBag;
+import com.oberasoftware.home.core.model.storage.ContainerImpl;
+import com.oberasoftware.home.core.model.storage.ControllerItemImpl;
+import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
+import com.oberasoftware.home.core.model.storage.GroupItemImpl;
+import com.oberasoftware.home.core.model.storage.PluginItemImpl;
+import com.oberasoftware.home.core.model.storage.UIItemImpl;
+import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
+import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.oberasoftware.home.storage.jasdb.JasDBCentralDatastore.*;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -38,134 +46,141 @@ public class JasDBDAO implements HomeDAO {
     @Autowired
     private JasDBSessionFactory sessionFactory;
 
-    @Autowired
-    private EntityMapperFactory mapperFactory;
-
     @Override
-    public <T extends Item> Optional<T> findItem(String id) {
+    public <T extends Item> Optional<T> findItem(Class<T> type, String id) {
         try {
-            EntityBag bag = sessionFactory.createSession().createOrGetBag(ITEMS_BAG_NAME);
+            DBSession session = sessionFactory.createSession();
+            EntityManager entityManager = session.getEntityManager();
 
-            return Optional.of(mapperFactory.mapTo(bag.getEntity(id)));
+            T result = entityManager.findEntity(type, id);
+            return Optional.of(result);
         } catch(JasDBStorageException e) {
-            LOG.error("", e);
+            LOG.error("Unable to load item", e);
+            return empty();
         }
-        return Optional.empty();
     }
 
     @Override
-    public <T extends Container> Optional<T> findContainer(String id) {
+    public Optional<Container> findContainer(String id) {
         try {
-            EntityBag bag = sessionFactory.createSession().createOrGetBag(ITEMS_BAG_NAME);
+            DBSession session = sessionFactory.createSession();
+            EntityManager entityManager = session.getEntityManager();
 
-            return Optional.of(mapperFactory.mapTo(bag.getEntity(id)));
+            ContainerImpl container = entityManager.findEntity(ContainerImpl.class, id);
+            return Optional.of(container);
         } catch(JasDBStorageException e) {
-            LOG.error("", e);
+            LOG.error("Unable to load container", e);
+            return empty();
         }
-        return Optional.empty();
     }
 
     @Override
     public List<Container> findRootContainers() {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("type", CONTAINER_TYPE)
-                .put("parent", "").build());
+        return newArrayList(findItems(ContainerImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("parentContainerId", "").build()));
     }
 
     @Override
     public List<Container> findContainers() {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("type", CONTAINER_TYPE).build());
+        return newArrayList(findItems(ContainerImpl.class, new ImmutableMap.Builder<String, String>()
+                .build()));
     }
 
     @Override
     public List<Container> findContainers(String parentId) {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("type", CONTAINER_TYPE)
-                .put("parent", parentId).build());
+        return newArrayList(findItems(ContainerImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("parentContainerId", parentId).build()));
     }
 
     @Override
     public List<UIItem> findUIItems(String containerId) {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("type", UI_TYPE)
-                .put("containerId", containerId).build(), newArrayList("weight"));
+        return newArrayList(findItems(UIItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("containerId", containerId).build(), newArrayList("weight")));
     }
 
     @Override
     public Optional<ControllerItem> findController(String controllerId) {
-        return findItem(new ImmutableMap.Builder<String, String>()
-                .put("controllerId", controllerId)
-                .put("type", CONTROLLER_TYPE).build());
+        ControllerItemImpl controllerItem = findItem(ControllerItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId).build());
+        return ofNullable(controllerItem);
     }
 
     @Override
     public Optional<PluginItem> findPlugin(String controllerId, String pluginId) {
-        return findItem(new ImmutableMap.Builder<String, String>()
+        PluginItemImpl pluginItem = findItem(PluginItemImpl.class, new ImmutableMap.Builder<String, String>()
                 .put("controllerId", controllerId)
-                .put("pluginId", pluginId)
-                .put("type", PLUGIN_TYPE).build());
+                .put("pluginId", pluginId).build());
+        return ofNullable(pluginItem);
     }
 
     @Override
     public List<ControllerItem> findControllers() {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("type", CONTROLLER_TYPE).build());
+        return newArrayList(findItems(ControllerItemImpl.class, new ImmutableMap.Builder<String, String>().build()));
     }
 
     @Override
     public List<PluginItem> findPlugins(String controllerId) {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("controllerId", controllerId)
-                .put("type", PLUGIN_TYPE).build());
+        List<PluginItemImpl> pluginItems = findItems(PluginItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId).build());
+
+        return pluginItems.stream().map(p -> (PluginItem) p).collect(Collectors.toList());
     }
 
     @Override
     public List<DeviceItem> findDevices(String controllerId, String pluginId) {
-        return findItems(new ImmutableMap.Builder<String, String>()
+        return newArrayList(findItems(DeviceItemImpl.class, new ImmutableMap.Builder<String, String>()
                 .put("controllerId", controllerId)
-                .put("pluginId", pluginId)
-                .put("type", DEVICE_TYPE).build());
+                .put("pluginId", pluginId).build()));
     }
 
     @Override
     public Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId) {
-        return findItem(new ImmutableMap.Builder<String, String>()
+        DeviceItemImpl deviceItem = findItem(DeviceItemImpl.class, new ImmutableMap.Builder<String, String>()
                 .put("controllerId", controllerId)
                 .put("pluginId", pluginId)
-                .put("deviceId", deviceId)
-                .put("type", DEVICE_TYPE).build());
+                .put("deviceId", deviceId).build());
+        return ofNullable(deviceItem);
     }
 
     @Override
     public List<DeviceItem> findDevices() {
-        return findItems(new ImmutableMap.Builder<String, String>()
-                .put("type", DEVICE_TYPE).build());
+        return newArrayList(findItems(DeviceItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .build()));
     }
 
-    private <T> Optional<T> findItem(Map<String, String> properties) {
-        List<T> items = findItems(properties);
-        return ofNullable(Iterables.getFirst(items, null));
+    @Override
+    public List<GroupItem> findGroups() {
+        return newArrayList(findItems(GroupItemImpl.class, new HashMap<>()));
     }
 
-    private <T> List<T> findItems(Map<String, String> properties) {
-        return findItems(properties, new ArrayList<>());
+    @Override
+    public List<GroupItem> findGroups(String controllerId) {
+        return newArrayList(findItems(GroupItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId)
+                .build()));
     }
 
-    private <T> List<T> findItems(Map<String, String> properties, List<String> orderedBy) {
+    private <T> T findItem(Class<T> type, Map<String, String> properties) {
+        List<T> items = findItems(type, properties);
+        return Iterables.getFirst(items, null);
+    }
+
+    private <T> List<T> findItems(Class<T> type, Map<String, String> properties) {
+        return findItems(type, properties, new ArrayList<>());
+    }
+
+    private <T> List<T> findItems(Class<T> type, Map<String, String> properties, List<String> orderedBy) {
         List<T> results = new ArrayList<>();
 
         try {
-            EntityBag bag = sessionFactory.createSession().createOrGetBag(ITEMS_BAG_NAME);
+            DBSession session = sessionFactory.createSession();
+            EntityManager entityManager = session.getEntityManager();
 
             QueryBuilder queryBuilder = QueryBuilder.createBuilder();
             properties.forEach((k, v) -> queryBuilder.field(k).value(v));
             orderedBy.forEach(queryBuilder::sortBy);
 
-            QueryResult result = bag.find(queryBuilder).execute();
-            LOG.debug("Query: {} results: {}", queryBuilder, result.size());
-
-            result.forEach(r -> results.add(mapperFactory.mapTo(r)));
+            return entityManager.findEntities(type, queryBuilder);
         } catch (JasDBStorageException e) {
             LOG.error("Unable to query JasDB", e);
         }

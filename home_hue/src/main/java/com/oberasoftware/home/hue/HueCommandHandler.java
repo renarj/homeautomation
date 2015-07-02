@@ -4,7 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.oberasoftware.home.api.commands.Command;
 import com.oberasoftware.home.api.commands.Result;
 import com.oberasoftware.home.api.extensions.CommandHandler;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.hue.actions.HueCommandAction;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

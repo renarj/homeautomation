@@ -1,4 +1,4 @@
-package com.oberasoftware.home.api.storage.model;
+package com.oberasoftware.home.api.model.storage;
 
 /**
  * @author renarj

@@ -1,7 +1,7 @@
 package com.oberasoftware.home.api.managers;
 
-import com.oberasoftware.home.api.storage.model.Container;
-import com.oberasoftware.home.api.storage.model.UIItem;
+import com.oberasoftware.home.api.model.storage.Container;
+import com.oberasoftware.home.api.model.storage.UIItem;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public interface UIManager {
 
     void deleteContainer(String containerId);
 
-    void delete(String itemId);
+    void deleteWidget(String itemId);
 
     UIItem store(UIItem item);
 

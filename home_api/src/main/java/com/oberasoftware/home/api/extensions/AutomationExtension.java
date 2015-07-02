@@ -1,7 +1,7 @@
 package com.oberasoftware.home.api.extensions;
 
 import com.oberasoftware.home.api.model.ExtensionResource;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 
 import java.util.Map;
 import java.util.Optional;

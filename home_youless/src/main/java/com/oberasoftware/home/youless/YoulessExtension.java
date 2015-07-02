@@ -4,7 +4,8 @@ import com.google.common.collect.Lists;
 import com.oberasoftware.home.api.extensions.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.model.Device;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.PluginItem;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * @author Renze de Vries
  */
 @Component
 public class YoulessExtension implements DeviceExtension {
+    private static final Logger LOG = getLogger(YoulessExtension.class);
 
     @Autowired
     private YoulessConnector connector;
@@ -56,6 +60,8 @@ public class YoulessExtension implements DeviceExtension {
 
     @Override
     public void activate(Optional<PluginItem> pluginItem) {
+        LOG.debug("Activating youless extension");
+
         connector.connect();
     }
 }

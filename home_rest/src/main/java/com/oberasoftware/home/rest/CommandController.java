@@ -28,10 +28,4 @@ public class CommandController {
 
         return command;
     }
-
-    @RequestMapping(value = "/test")
-    public String test() {
-        return "Hello world";
-    }
-
 }

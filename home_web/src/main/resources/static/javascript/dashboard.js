@@ -22,6 +22,9 @@ $(document).ready(function() {
 
             $('#containerModal').modal('hide');
 
+            $("#containerName").val("");
+            $("#parentContainerId").val("");
+
             renderContainerById(containerId);
         }})
 

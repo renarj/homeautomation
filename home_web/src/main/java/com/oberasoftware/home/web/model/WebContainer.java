@@ -1,17 +1,17 @@
 package com.oberasoftware.home.web.model;
 
-import com.oberasoftware.home.api.storage.model.Container;
-import com.oberasoftware.home.api.storage.model.UIItem;
+import com.oberasoftware.home.core.model.storage.ContainerImpl;
+import com.oberasoftware.home.api.model.storage.UIItem;
 
 import java.util.List;
 
 /**
  * @author renarj
  */
-public class WebContainer extends Container {
+public class WebContainer extends ContainerImpl {
     private final List<UIItem> items;
 
-    public WebContainer(Container container, List<UIItem> items) {
+    public WebContainer(ContainerImpl container, List<UIItem> items) {
         super(container.getId(), container.getName(), container.getParentContainerId());
         this.items = items;
     }

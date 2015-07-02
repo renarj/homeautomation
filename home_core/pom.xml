@@ -21,5 +21,9 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>obera-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb_api</artifactId>
+        </dependency>
     </dependencies>
 </project>

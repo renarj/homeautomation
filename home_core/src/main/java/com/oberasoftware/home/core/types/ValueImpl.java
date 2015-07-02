@@ -22,6 +22,7 @@ public class ValueImpl implements Value {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getValue() {
         return (T) value;
     }

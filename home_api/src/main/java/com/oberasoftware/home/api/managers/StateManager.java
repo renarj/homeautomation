@@ -2,7 +2,7 @@ package com.oberasoftware.home.api.managers;
 
 import com.oberasoftware.home.api.model.State;
 import com.oberasoftware.home.api.model.Status;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.types.Value;
 
 import java.util.Map;

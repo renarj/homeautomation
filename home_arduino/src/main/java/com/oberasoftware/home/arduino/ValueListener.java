@@ -6,7 +6,7 @@ import com.oberasoftware.home.api.events.devices.StateUpdateEvent;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.model.State;
 import com.oberasoftware.home.api.model.StateItem;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -5,12 +5,15 @@ import com.google.common.collect.Maps;
 import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.ItemManager;
+import com.oberasoftware.home.core.model.storage.ControllerItemImpl;
+import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
+import com.oberasoftware.home.core.model.storage.PluginItemImpl;
 import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.HomeDAO;
-import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.Item;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.ControllerItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.model.storage.Item;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,7 +42,7 @@ public class ItemManagerImpl implements ItemManager {
             Optional<ControllerItem> controllerItem = homeDAO.findController(controllerId);
             if (!controllerItem.isPresent()) {
                 LOG.debug("Initial startup, new controller detected registering in central datastore");
-                return centralDatastore.store(new ControllerItem(generateId(), controllerId));
+                return centralDatastore.store(new ControllerItemImpl(generateId(), controllerId));
             } else {
                 LOG.debug("Controller: {} was already registered", controllerId);
                 return controllerItem.get();
@@ -76,14 +79,14 @@ public class ItemManagerImpl implements ItemManager {
     }
 
     private PluginItem safelyStorePluginItem(String itemId, String controllerId, String pluginId, String name, Map<String, String> properties) throws DataStoreException {
-        PluginItem item = createPluginItem(itemId, controllerId, pluginId, name, properties);
+        PluginItemImpl item = createPluginItem(itemId, controllerId, pluginId, name, properties);
 
         LOG.debug("Storing plugin data: {}", item);
         return centralDatastore.store(item);
     }
 
-    private PluginItem createPluginItem(String id, String controllerId, String pluginId, String name, Map<String, String> properties) {
-        return new PluginItem(id, controllerId, pluginId, name, properties);
+    private PluginItemImpl createPluginItem(String id, String controllerId, String pluginId, String name, Map<String, String> properties) {
+        return new PluginItemImpl(id, controllerId, pluginId, name, properties);
     }
 
     @Override
@@ -96,8 +99,8 @@ public class ItemManagerImpl implements ItemManager {
 
                 if(havePropertiesChanged(item.getProperties(), properties) || !item.getName().equals(name)) {
                     LOG.debug("Device: {} already exist, properties have changed, updating device with id: {}", deviceId, item.getId());
-                    return centralDatastore.store(new DeviceItem(item.getId(), controllerId, pluginId, deviceId,
-                            name, properties, new HashMap<>()));
+                    return centralDatastore.store(new DeviceItemImpl(item.getId(), controllerId, pluginId, deviceId,
+                            name, properties));
                 } else {
                     LOG.debug("Device: {} has not changed, not updating item: {}", deviceId, item.getId());
                     return item;
@@ -105,8 +108,8 @@ public class ItemManagerImpl implements ItemManager {
             } else {
                 String id = generateId();
                 LOG.debug("Device: {} does not yet exist, creating new with id: {}", deviceId, id);
-                return centralDatastore.store(new DeviceItem(id, controllerId, pluginId, deviceId,
-                        name, properties, new HashMap<>()));
+                return centralDatastore.store(new DeviceItemImpl(id, controllerId, pluginId, deviceId,
+                        name, properties));
             }
         } finally {
             centralDatastore.commitTransaction();

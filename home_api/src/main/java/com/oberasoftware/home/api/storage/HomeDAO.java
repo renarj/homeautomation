@@ -1,11 +1,12 @@
 package com.oberasoftware.home.api.storage;
 
-import com.oberasoftware.home.api.storage.model.Container;
-import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.Item;
-import com.oberasoftware.home.api.storage.model.PluginItem;
-import com.oberasoftware.home.api.storage.model.UIItem;
+import com.oberasoftware.home.api.model.storage.Container;
+import com.oberasoftware.home.api.model.storage.ControllerItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.model.storage.GroupItem;
+import com.oberasoftware.home.api.model.storage.Item;
+import com.oberasoftware.home.api.model.storage.PluginItem;
+import com.oberasoftware.home.api.model.storage.UIItem;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +15,13 @@ import java.util.Optional;
  * @author renarj
  */
 public interface HomeDAO {
-    <T extends Item> Optional<T> findItem(String id);
+    <T extends Item> Optional<T> findItem(Class<T> type, String id);
 
     Optional<ControllerItem> findController(String controllerId);
 
     List<ControllerItem> findControllers();
 
-    <T extends Container> Optional<T> findContainer(String id);
+    Optional<Container> findContainer(String id);
 
     List<Container> findRootContainers();
 
@@ -39,4 +40,8 @@ public interface HomeDAO {
     Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId);
 
     List<DeviceItem> findDevices();
+
+    List<GroupItem> findGroups();
+
+    List<GroupItem> findGroups(String controllerId);
 }

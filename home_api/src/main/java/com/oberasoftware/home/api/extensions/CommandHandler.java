@@ -2,7 +2,7 @@ package com.oberasoftware.home.api.extensions;
 
 import com.oberasoftware.home.api.commands.Command;
 import com.oberasoftware.home.api.commands.Result;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 
 /**
  * @author renarj

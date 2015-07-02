@@ -4,10 +4,10 @@ import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.managers.StateManager;
 import com.oberasoftware.home.api.model.State;
-import com.oberasoftware.home.api.storage.model.ControllerItem;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
-import com.oberasoftware.home.api.storage.model.Item;
-import com.oberasoftware.home.api.storage.model.PluginItem;
+import com.oberasoftware.home.api.model.storage.ControllerItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.model.storage.Item;
+import com.oberasoftware.home.api.model.storage.PluginItem;
 import com.oberasoftware.home.rest.model.RestItemDevice;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class DataController {
         return itemManager.findControllers();//.stream().map(RestHomeController::new).collect(Collectors.toList());
     }
 
-    @RequestMapping("/item({id}")
+    @RequestMapping("/item({id})")
     public Item getItem(@PathVariable String id) {
         return itemManager.findItem(id);
     }

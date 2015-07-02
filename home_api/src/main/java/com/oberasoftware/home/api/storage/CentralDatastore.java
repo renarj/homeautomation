@@ -1,8 +1,8 @@
 package com.oberasoftware.home.api.storage;
 
 import com.oberasoftware.home.api.exceptions.DataStoreException;
-import com.oberasoftware.home.api.storage.model.Container;
-import com.oberasoftware.home.api.storage.model.Item;
+import com.oberasoftware.home.api.model.storage.Container;
+import com.oberasoftware.home.api.model.storage.Item;
 
 /**
  * @author renarj
@@ -12,7 +12,7 @@ public interface CentralDatastore {
 
     void commitTransaction();
 
-    void delete(String id) throws DataStoreException;
+    void delete(Class<?> type, String id) throws DataStoreException;
 
     <T extends Item> T store(Item entity) throws DataStoreException;
 

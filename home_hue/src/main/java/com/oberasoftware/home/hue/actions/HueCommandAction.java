@@ -1,7 +1,7 @@
 package com.oberasoftware.home.hue.actions;
 
 import com.oberasoftware.home.api.commands.Command;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 
 /**
  * @author renarj

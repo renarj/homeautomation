@@ -5,8 +5,8 @@
 
     <link th:href="@{/images/favicon.ico}" rel="shortcut icon" href="/static/images/favicon.ico" title="Favicon"/>
 
-    <script th:src="@{/javascript/jquery-2.1.0.min.js}" src="/static/javascript/jquery-2.1.0.min.js"></script>
-    <script th:src="@{/javascript/jquery-ui.min.js}" src="/static/javascript/jquery-ui.min.js"></script>
+    <script th:src="@{/javascript/ext/jquery-2.1.0.min.js}" src="/static/javascript/ext/jquery-2.1.0.min.js"></script>
+    <script th:src="@{/javascript/ext/jquery-ui.min.js}" src="/static/javascript/ext/jquery-ui.min.js"></script>
 
 
     <link th:href="@{/css/jquery-ui.min.css}" href="/static/css/jquery-ui.min.css" rel="stylesheet"/>
@@ -14,20 +14,20 @@
     <link th:href="@{/bootstrap/css/bootstrap-switch.min.css}" href="/static/bootstrap/css/bootstrap-switch.min.css" rel="stylesheet"/>
     <link th:href="@{/bootstrap/css/bootstrap-slider.min.css}" href="/static/bootstrap/css/bootstrap-slider.min.css" rel="stylesheet"/>
 
-    <script th:src="@{/javascript/mustache.min.js}" src="/static/javascript/mustache.min.js"></script>
-    <script th:src="@{/javascript/stomp.min.js}" src="/static/javascript/stomp.min.js"></script>
-    <script th:src="@{/javascript/sockjs-0.3.4.min.js}" src="/static/javascript/sockjs-0.3.4.min.js"></script>
+    <script th:src="@{/javascript/ext/mustache.min.js}" src="/static/javascript/ext/mustache.min.js"></script>
+    <script th:src="@{/javascript/ext/stomp.min.js}" src="/static/javascript/ext/stomp.min.js"></script>
+    <script th:src="@{/javascript/ext/sockjs-0.3.4.min.js}" src="/static/javascript/ext/sockjs-0.3.4.min.js"></script>
 
 
     <script th:src="@{/bootstrap/js/bootstrap.min.js}" src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script th:src="@{/bootstrap/js/bootstrap-switch.min.js}" src="/static/bootstrap/js/bootstrap-switch.min.js"></script>
     <script th:src="@{/bootstrap/js/bootstrap-slider.min.js}" src="/static/bootstrap/js/bootstrap-slider.min.js"></script>
 
-    <script th:src="@{/javascript/highcharts.js}" src="/static/javascript/highcharts.js"></script>
+    <script th:src="@{/javascript/ext/highcharts.js}" src="/static/javascript/ext/highcharts.js"></script>
 </head>
 
 
-    <nav class="navbar navbar-default" role="navigation" th:fragment="navigation">
+    <nav class="navbar navbar-default" role="navigation" th:fragment="navigation (selectTab)">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#"><img height="" th:src="@{/images/obera.png}"/></a>
@@ -35,8 +35,8 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a th:href="@{'/web/'}">DashBoard</a></li>
-                    <li><a th:href="@{'/web/configuration/'}">Configuration</a></li>
+                    <li th:classappend="${selectTab == 'dashboard'} ? 'active'"><a th:href="@{'/web/'}">DashBoard</a></li>
+                    <li th:classappend="${selectTab == 'admin'} ? 'active'"><a th:href="@{'/web/admin/devices'}">Administration</a></li>
                 </ul>
                 <form class="navbar-form navbar-left" role="search">
                     <div class="form-group">
@@ -48,7 +48,10 @@
         </div>
     </nav>
 
-
+    <ul class="nav nav-tabs" th:fragment="adminTabs (selectTab)">
+        <li role="presentation" th:classappend="${selectTab == 'devices'} ? 'active'"><a href="#" th:href="@{'/web/admin/devices'}">Devices</a></li>
+        <li role="presentation" th:classappend="${selectTab == 'groups'} ? 'active'"><a href="#" th:href="@{'/web/admin/groups'}">Groups</a></li>
+    </ul>
 
 
 <div id="version" th:fragment="footer">

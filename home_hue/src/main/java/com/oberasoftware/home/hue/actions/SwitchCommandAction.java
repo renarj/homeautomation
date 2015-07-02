@@ -3,7 +3,7 @@ package com.oberasoftware.home.hue.actions;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.SwitchCommand;
 import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.hue.HueConnector;
 import com.oberasoftware.home.hue.HueExtension;
 import com.philips.lighting.model.PHBridge;

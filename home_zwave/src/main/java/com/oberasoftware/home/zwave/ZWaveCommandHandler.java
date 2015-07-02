@@ -6,7 +6,7 @@ import com.oberasoftware.home.api.commands.DeviceValueCommand;
 import com.oberasoftware.home.api.commands.Result;
 import com.oberasoftware.home.api.commands.SwitchCommand;
 import com.oberasoftware.home.api.extensions.CommandHandler;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.zwave.api.actions.SwitchAction;

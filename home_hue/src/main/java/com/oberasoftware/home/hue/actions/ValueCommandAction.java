@@ -1,7 +1,7 @@
 package com.oberasoftware.home.hue.actions;
 
 import com.oberasoftware.home.api.commands.DeviceValueCommand;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.hue.HueConnector;
 import com.philips.lighting.model.PHBridge;

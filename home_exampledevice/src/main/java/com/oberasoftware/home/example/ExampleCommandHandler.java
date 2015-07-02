@@ -3,7 +3,7 @@ package com.oberasoftware.home.example;
 import com.oberasoftware.home.api.commands.Command;
 import com.oberasoftware.home.api.commands.Result;
 import com.oberasoftware.home.api.extensions.CommandHandler;
-import com.oberasoftware.home.api.storage.model.DeviceItem;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;

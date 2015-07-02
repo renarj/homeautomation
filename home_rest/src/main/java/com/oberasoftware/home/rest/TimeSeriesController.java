@@ -32,7 +32,7 @@ public class TimeSeriesController {
     @Autowired
     private AutomationBus bus;
 
-    @RequestMapping("/{itemId}/{label}")
+    @RequestMapping("/item({itemId})/label({label})")
     public List<DataPoint> findDeviceData(@PathVariable String itemId,
                                           @PathVariable String label) {
         if(timeSeriesStore != null) {
