@@ -37,14 +37,32 @@ public class StateManagerImpl implements StateManager {
     @Autowired
     private AutomationBus automationBus;
 
-    @Override
-    public State updateState(DeviceItem item, String label, Value value) {
-        String itemId = item.getId();
-
+    private boolean updateState(String itemId, String label, Value value) {
         LOG.debug("Updating state of item: {} with label: {} to value: {}", itemId, label, value);
         itemStates.putIfAbsent(itemId, new StateImpl(itemId, Status.UNKNOWN));
         StateImpl state = itemStates.get(itemId);
-        boolean updated = state.updateIfChanged(label, new StateItemImpl(label, value));
+
+        return  state.updateIfChanged(label, new StateItemImpl(label, value));
+    }
+
+
+    @Override
+    public State updateItemState(String itemId, String label, Value value) {
+        boolean updated = updateState(itemId, label, value);
+        State state = itemStates.get(itemId);
+
+        if(updated) {
+            automationBus.publish(new StateUpdateEvent(state));
+        }
+
+        return itemStates.get(itemId);
+    }
+
+    @Override
+    public State updateDeviceState(DeviceItem item, String label, Value value) {
+        boolean updated = updateState(item.getId(), label, value);
+
+        StateImpl state = itemStates.get(item.getId());
         if(updated) {
             updateStateStores(item, label, value);
 

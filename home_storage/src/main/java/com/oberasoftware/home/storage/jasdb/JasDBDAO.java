@@ -53,7 +53,7 @@ public class JasDBDAO implements HomeDAO {
             EntityManager entityManager = session.getEntityManager();
 
             T result = entityManager.findEntity(type, id);
-            return Optional.of(result);
+            return Optional.ofNullable(result);
         } catch(JasDBStorageException e) {
             LOG.error("Unable to load item", e);
             return empty();

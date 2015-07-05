@@ -43,17 +43,23 @@ function handleStateUpdate(state) {
             console.log("Setting slider value: " + stateItem.value.value + " for device: " + itemId)
             var iDimmer = $("input[name=" + itemId + "_slider]");
             iDimmer.slider('setValue', stateItem.value.value);
+        } else if(label == "rgb") {
+            console.log("Setting rgb: " + stateItem.value.value + " for device: " + itemId);
+
+            var colorPicker = $("input[name=" + itemId + "_color]");
+            colorPicker.spectrum("set", stateItem.value.value);
+
         } else {
             //most likely a raw value on a label
             console.log("Checking for label for item: " + itemId + " with label: " + label)
-            var valueLabel = $("label[deviceId=" + itemId + "][labelId=" + label + "]");
+            var valueLabel = $("label[itemId=" + itemId + "][labelId=" + label + "]");
 
             var rawValue = stateItem.value.value;
             if (valueLabel) {
                 valueLabel.text(rawValue);
             }
 
-            var graphs = $("li.graph[deviceId=" + itemId + "][labelId=" + label + "]");
+            var graphs = $("li.graph[itemId=" + itemId + "][labelId=" + label + "]");
             if(graphs) {
                 $.each(graphs, function(i, graph) {
                     var widgetId = graph.getAttribute("id");
@@ -153,9 +159,53 @@ function renderWidget(containerId, item) {
         case "graph":
             renderGraph(containerId, item);
             break;
+        case "color":
+            renderColorPicker(containerId, item);
+            break;
         default:
             console.log("Unsupported widget type: " + widgetType + " for item: " + item.name);
     }
+}
+
+function renderColorPicker(containerId, item) {
+    console.log("Rendering color picker widget for item: " + item.name);
+
+    var data = {
+        "widgetId": item.id,
+        "name": item.name,
+        "itemId": item.itemId,
+        "weight" : item.weight
+    }
+
+    renderWidgetTemplate("colorTemplate", data, item.id, containerId);
+
+    var cPicker = $("input[name=" + item.itemId + "_color]");
+
+    cPicker.spectrum({
+        change: function(color) {
+            handleColorChange(cPicker, color);
+        },
+        showButtons: false
+    });
+}
+
+function handleColorChange(picker, color) {
+    console.log("Target color: " + color.toHexString());
+
+    var data = {
+        "itemId" : picker.attr('itemId'),
+        "commandType" : "value",
+        "properties" : {
+            "rgb" : color.toHexString()
+        }
+    }
+    var jsonData = JSON.stringify(data);
+    console.log("Sending command: " + jsonData);
+
+    $.ajax({url: "/command/send", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
+        console.log("Posted Command successfully");
+    }})
+
 }
 
 function renderGraph(containerId, item) {
@@ -166,7 +216,7 @@ function renderGraph(containerId, item) {
 
     var data = {
         "widgetId": item.id,
-        "deviceId": item.deviceId,
+        "itemId": item.itemId,
         "name": item.name,
         "label": label,
         "weight" : item.weight
@@ -217,7 +267,7 @@ function renderGraph(containerId, item) {
         }]
     });
 
-    $.get("/timeseries/item(" + item.deviceId + ")/label(" + label + ")", function(data) {
+    $.get("/timeseries/item(" + item.itemId + ")/label(" + label + ")", function(data) {
         var array = [];
         $.each(data, function(i, point) {
             var value = point.value;
@@ -238,13 +288,13 @@ function renderSlider(item, containerId) {
     var data = {
         "widgetId": item.id,
         "name": item.name,
-        "deviceId": item.deviceId,
+        "itemId": item.itemId,
         "weight" : item.weight
     }
 
     renderWidgetTemplate("sliderTemplate", data, item.id, containerId);
 
-    var iDimmer = $("input[name=" + item.deviceId + "_slider]");
+    var iDimmer = $("input[name=" + item.itemId + "_slider]");
     iDimmer.slider();
     iDimmer.on("slideStop", handleSlideEvent);
 }
@@ -254,7 +304,7 @@ function handleSlideEvent(slideEvt) {
     console.log("Slide event: " + val);
 
     var data = {
-        "itemId" : this.getAttribute('deviceId'),
+        "itemId" : this.getAttribute('itemId'),
         "commandType" : "value",
         "properties" : {
             "value" : val
@@ -275,19 +325,19 @@ function renderSwitch(item, containerId) {
     var data = {
         "widgetId": item.id,
         "name": item.name,
-        "deviceId": item.deviceId,
+        "itemId": item.itemId,
         "label": "on-off",
         "weight" : item.weight
     }
 
     renderWidgetTemplate("switchTemplate", data, item.id, containerId);
 
-    var iSwitch = $("input[name=" + item.deviceId + "_switch]");
+    var iSwitch = $("input[name=" + item.itemId + "_switch]");
     iSwitch.bootstrapSwitch();
     iSwitch.on('switchChange.bootstrapSwitch', handleSwitchEvent);
 
     //lets get the initial state for the widget
-    forceUpdateDeviceState(item.deviceId);
+    forceUpdateDeviceState(item.itemId);
 }
 
 function handleSwitchEvent(event, state) {
@@ -296,7 +346,7 @@ function handleSwitchEvent(event, state) {
         command = "on";
     }
     var data = {
-        "itemId" : this.getAttribute('deviceId'),
+        "itemId" : this.getAttribute('itemId'),
         "commandType" : "switch",
         "properties" : {
             "value" : command
@@ -320,7 +370,7 @@ function renderLabel(item, containerId) {
         "widgetId": item.id,
         "name": item.name,
         "value": 0,
-        "deviceId": item.deviceId,
+        "itemId": item.itemId,
         "label": label,
         "unit": unit,
         "weight" : item.weight
@@ -329,7 +379,7 @@ function renderLabel(item, containerId) {
     renderWidgetTemplate("labelTemplate", data, item.id, containerId)
 
     //lets get the initial state for the widget
-    forceUpdateDeviceState(item.deviceId);
+    forceUpdateDeviceState(item.itemId);
 }
 
 function renderWidgetTemplate(templateName, data, itemId, containerId) {
@@ -343,8 +393,8 @@ function renderTemplate(templateName, data) {
     return Mustache.render(template, data);
 }
 
-function forceUpdateDeviceState(deviceId) {
-    $.get("/data/state(" + deviceId + ")", function(data){
+function forceUpdateDeviceState(itemId) {
+    $.get("/data/state(" + itemId + ")", function(data){
         if(!isEmpty(data)) {
             handleStateUpdate(data);
         }

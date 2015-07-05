@@ -3,8 +3,23 @@ $(document).ready(function() {
         var containerId = $(this).data('id');
         $(".modal-body #containerId").val( containerId );
 
+        showDevice();
         loadControllers();
     });
+
+    function showGroup() {
+        $("#group").removeClass("hide");
+        $("#controller").addClass("hide");
+        $("#plugin").addClass("hide");
+        $("#device").addClass("hide");
+    }
+
+    function showDevice() {
+        $("#group").addClass("hide");
+        $("#controller").removeClass("hide");
+        $("#plugin").removeClass("hide");
+        $("#device").removeClass("hide");
+    }
 
     $(document).on("click", ".removeWidget", function (event) {
         event.preventDefault();
@@ -46,6 +61,33 @@ $(document).ready(function() {
                 loadPlugins(selectedController);
             }
         });
+    }
+
+    $("#sourceItem").change(function() {
+        var selectedSource = $("#sourceItem").find('option:selected').val();
+
+        if(selectedSource == "device") {
+            showDevice();
+            loadControllers();
+        } else {
+            showGroup();
+            loadGroups();
+        }
+    });
+
+    function loadGroups() {
+        console.log("Retrieving Groups");
+        $.get("/groups/", function(data){
+            if(!isEmpty(data)) {
+                var list = $("#groupList");
+                list.empty();
+
+                $.each(data, function (i, g) {
+                    list.append(new Option(g.name, g.id));
+                })
+            }
+        })
+
     }
 
     $("#controllerList").change(function() {
@@ -107,7 +149,13 @@ $(document).ready(function() {
         var container = $("#containerId").val();
         var widget = $("#widgetList").find('option:selected').val();
         var deviceId = $("#deviceList").find('option:selected').val();
+        var groupId = $("#groupList").find('option:selected').val();
+        var selectedSource = $("#sourceItem").find('option:selected').val();
 
+        var itemId = deviceId;
+        if(selectedSource == "group") {
+            itemId = groupId;
+        }
 
         console.log("Creating ui item name: " + name);
         console.log("Creating ui item description: " + description);
@@ -119,7 +167,7 @@ $(document).ready(function() {
             "description" : description,
             "uiType" : widget,
             "containerId" : container,
-            "deviceId" : deviceId
+            "itemId" : itemId
         };
         if(widget == "label" || widget == "graph") {
             var label = $("#widgetLabel").find('option:selected').val();
@@ -146,6 +194,7 @@ $(document).ready(function() {
             $("#deviceList").empty();
             $("#pluginList").empty();
             $("#controllerList").empty();
+            $("#groupList").empty();
 
             renderWidget(container, data);
         }})

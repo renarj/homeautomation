@@ -58,11 +58,11 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.oberasoftware</groupId>-->
-            <!--<artifactId>home_influxdb</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_influxdb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>com.oberasoftware</groupId>-->
             <!--<artifactId>home_nest</artifactId>-->

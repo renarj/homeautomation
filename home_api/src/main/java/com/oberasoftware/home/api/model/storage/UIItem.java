@@ -16,7 +16,7 @@ public interface UIItem extends Item {
 
     String getUiType();
 
-    String getDeviceId();
+    String getItemId();
 
     Map<String, String> getProperties();
 }

@@ -1,14 +1,18 @@
-package com.oberasoftware.home.service.events;
+package com.oberasoftware.home.service.commands.handlers;
 
+import com.oberasoftware.base.event.Event;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.commands.DeviceCommand;
+import com.oberasoftware.home.api.commands.handlers.DeviceCommandHandler;
 import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
 import com.oberasoftware.home.api.extensions.AutomationExtension;
 import com.oberasoftware.home.api.extensions.ExtensionManager;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
+import com.oberasoftware.home.core.model.storage.GroupItemImpl;
+import com.oberasoftware.home.service.commands.GroupCommandImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +35,7 @@ public class DeviceCommandEventHandler implements EventHandler {
     private HomeDAO homeDAO;
 
     @EventSubscribe
-    public void receive(DeviceCommandEvent event) {
+    public Event receive(DeviceCommandEvent event) {
         LOG.debug("Received a device command event: {}", event);
 
         DeviceCommand command = event.getCommand();
@@ -42,12 +46,24 @@ public class DeviceCommandEventHandler implements EventHandler {
             DeviceItem deviceItem = deviceData.get();
             String pluginId = deviceItem.getPluginId();
 
-            Optional<AutomationExtension> extension = extensionManager.getExtension(pluginId);
+            AutomationExtension extension = extensionManager.getExtension(pluginId).get();
+            DeviceCommandHandler commandHandler = (DeviceCommandHandler) extension.getCommandHandler();
 
             LOG.debug("Executing command: {} on extension: {}", command, extension);
-            extension.ifPresent(e -> e.getCommandHandler().receive(deviceItem, command));
+            commandHandler.receive(deviceItem, command);
         } else {
-            LOG.warn("Could not find deviceItem information for itemId: {}", command.getItemId());
+            Optional<GroupItemImpl> groupItemImpl = homeDAO.findItem(GroupItemImpl.class, command.getItemId());
+            if(groupItemImpl.isPresent()) {
+                LOG.debug("Received a group command: {} for group: {}", event, groupItemImpl.get().getName());
+
+                //return a new event, automation bus will process this
+                return new GroupCommandImpl(command, groupItemImpl.get());
+            } else {
+                LOG.warn("Could not find deviceItem information for itemId: {}", command.getItemId());
+            }
         }
+
+        //no follow-up event to return
+        return null;
     }
 }

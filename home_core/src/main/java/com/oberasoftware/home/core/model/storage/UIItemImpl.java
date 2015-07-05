@@ -20,19 +20,19 @@ public class UIItemImpl implements UIItem {
 
     private String containerId;
 
-    private String deviceId;
+    private String itemId;
 
     private long weight = 0;
 
     private Map<String, String> properties = new HashMap<>();
 
-    public UIItemImpl(String id, String name, String containerId, String description, String uiType, String deviceId, Map<String, String> properties, long weight) {
+    public UIItemImpl(String id, String name, String containerId, String description, String uiType, String itemId, Map<String, String> properties, long weight) {
         this.id = id;
         this.name = name;
         this.containerId = containerId;
         this.description = description;
         this.uiType = uiType;
-        this.deviceId = deviceId;
+        this.itemId = itemId;
         this.properties = properties;
         this.weight = weight;
     }
@@ -103,12 +103,12 @@ public class UIItemImpl implements UIItem {
 
     @Override
     @JasDBProperty
-    public String getDeviceId() {
-        return deviceId;
+    public String getItemId() {
+        return itemId;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class UIItemImpl implements UIItem {
                 ", description='" + description + '\'' +
                 ", uiType='" + uiType + '\'' +
                 ", containerId='" + containerId + '\'' +
-                ", deviceId='" + deviceId + '\'' +
+                ", itemId='" + itemId + '\'' +
                 '}';
     }
 }

@@ -2,9 +2,9 @@ package com.oberasoftware.home.hue;
 
 import com.google.common.reflect.TypeToken;
 import com.oberasoftware.home.api.commands.Command;
-import com.oberasoftware.home.api.commands.Result;
-import com.oberasoftware.home.api.extensions.CommandHandler;
+import com.oberasoftware.home.api.commands.handlers.GroupCommandHandler;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.model.storage.GroupItem;
 import com.oberasoftware.home.hue.actions.HueCommandAction;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class HueCommandHandler implements CommandHandler {
+public class HueCommandHandler implements GroupCommandHandler {
     private static final Logger LOG = getLogger(HueCommandHandler.class);
 
     @Autowired
@@ -61,31 +61,50 @@ public class HueCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Result receive(DeviceItem item, Command command) {
-        LOG.debug("Received a command for HUE device: {} command: {}", item.getDeviceId(), command);
+    public void receive(GroupItem groupItem, List<DeviceItem> items, Command command) {
+        Optional<HueCommandAction<Command>> action = getAction(command);
+        if(action.isPresent()) {
+            LOG.debug("Executing group: {} action: {}", groupItem, command);
+
+            action.get().receive(groupItem, items, command);
+        }
+    }
+
+    @Override
+    public void receive(DeviceItem item, Command command) {
+        Optional<HueCommandAction<Command>> action = getAction(command);
+        if(action.isPresent()) {
+            LOG.debug("Executing device: {} action: {}", item, action.get());
+
+            action.get().receive(item, command);
+        }
+    }
+
+    private Optional<HueCommandAction<Command>> getAction(Command command) {
+        LOG.debug("Received a command, finding action handler for Command: {}", command);
 
         final Set<String> actionsExecuted = new HashSet<>();
-        TypeToken.of(command.getClass()).getTypes().forEach(t -> {
+        for(TypeToken t : TypeToken.of(command.getClass()).getTypes()) {
             String typeName = t.getRawType().getName();
             LOG.debug("Checking an action for type: {}", typeName);
 
-            if(!actionsExecuted.contains(typeName)) {
+            if (!actionsExecuted.contains(typeName)) {
                 actionsExecuted.add(typeName);
 
                 Optional<HueCommandAction<Command>> action = ofNullable(actionMap.get(typeName));
                 if (action.isPresent()) {
-                    LOG.debug("Sending command: {} to HUE Action handler: {}", command, action.get());
+                    LOG.debug("Found handler: {} for command: {}", action.get(), command);
 
-                    action.get().receive(item, command);
+                    return action;
                 } else {
                     LOG.warn("Unsupported command: {} for HUE plugin type: {}", command, typeName);
                 }
             } else {
                 LOG.debug("Type already executed, skipping: {}", typeName);
             }
-        });
+        }
 
-        return null;
+        return Optional.empty();
     }
 
 }

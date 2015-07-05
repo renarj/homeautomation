@@ -82,4 +82,15 @@ public class GroupItemImpl implements GroupItem {
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
+
+    @Override
+    public String toString() {
+        return "GroupItemImpl{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", controllerId='" + controllerId + '\'' +
+                ", properties=" + properties +
+                ", deviceIds=" + deviceIds +
+                '}';
+    }
 }

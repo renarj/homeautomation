@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
 import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
-import com.oberasoftware.home.api.extensions.CommandHandler;
+import com.oberasoftware.home.api.commands.handlers.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;

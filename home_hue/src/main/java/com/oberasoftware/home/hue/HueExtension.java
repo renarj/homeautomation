@@ -1,8 +1,9 @@
 package com.oberasoftware.home.hue;
 
 import com.google.common.collect.Maps;
-import com.oberasoftware.home.api.extensions.CommandHandler;
+import com.oberasoftware.home.api.commands.handlers.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
+import com.oberasoftware.home.api.extensions.ExtensionCapability;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.model.storage.PluginItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,10 @@ public class HueExtension implements DeviceExtension {
     @Autowired
     private HueDeviceManager hueDeviceManager;
 
+    @Override
+    public boolean supports(ExtensionCapability capability) {
+        return capability == ExtensionCapability.GroupSupport;
+    }
 
     @Override
     public String getId() {

@@ -11,7 +11,9 @@ import java.util.Map;
  * @author renarj
  */
 public interface StateManager {
-    State updateState(DeviceItem item, String label, Value value);
+    State updateItemState(String itemId, String label, Value value);
+
+    State updateDeviceState(DeviceItem item, String label, Value value);
 
     State updateStatus(DeviceItem item, Status newStatus);
 

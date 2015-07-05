@@ -1,6 +1,6 @@
 package com.oberasoftware.home.arduino;
 
-import com.oberasoftware.home.api.extensions.CommandHandler;
+import com.oberasoftware.home.api.commands.handlers.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;

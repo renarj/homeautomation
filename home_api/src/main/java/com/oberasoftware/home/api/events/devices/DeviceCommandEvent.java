@@ -1,12 +1,12 @@
 package com.oberasoftware.home.api.events.devices;
 
 import com.oberasoftware.home.api.commands.DeviceCommand;
-import com.oberasoftware.home.api.events.DeviceEvent;
+import com.oberasoftware.home.api.events.ItemEvent;
 
 /**
  * @author renarj
  */
-public class DeviceCommandEvent implements DeviceEvent {
+public class DeviceCommandEvent implements ItemEvent {
 
     private final String itemId;
     private final DeviceCommand command;

@@ -3,9 +3,8 @@ package com.oberasoftware.home.zwave;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.Command;
 import com.oberasoftware.home.api.commands.DeviceValueCommand;
-import com.oberasoftware.home.api.commands.Result;
 import com.oberasoftware.home.api.commands.SwitchCommand;
-import com.oberasoftware.home.api.extensions.CommandHandler;
+import com.oberasoftware.home.api.commands.handlers.DeviceCommandHandler;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.api.types.Value;
@@ -25,7 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class ZWaveCommandHandler implements CommandHandler {
+public class ZWaveCommandHandler implements DeviceCommandHandler {
     private static final Logger LOG = getLogger(ZWaveCommandHandler.class);
 
     @Autowired
@@ -35,7 +34,7 @@ public class ZWaveCommandHandler implements CommandHandler {
     private AutomationBus automationBus;
 
     @Override
-    public Result receive(DeviceItem item, Command command) {
+    public void receive(DeviceItem item, Command command) {
         LOG.debug("Received a command for ZWave device: {} command: {}", item.getDeviceId(), command);
 
         if(command instanceof SwitchCommand) {
@@ -78,8 +77,5 @@ public class ZWaveCommandHandler implements CommandHandler {
                 automationBus.publish(new SwitchLevelEvent(nodeId, (int)level));
             }
         }
-
-
-        return null;
     }
 }

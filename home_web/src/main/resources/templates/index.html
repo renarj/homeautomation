@@ -14,7 +14,7 @@
             </div>
             <div class="col-xs-3">&nbsp;</div>
             <div class="col-xs-3">
-                <label deviceId="{{deviceId}}" labelId="{{label}}">{{value}}</label>
+                <label itemId="{{itemId}}" labelId="{{label}}">{{value}}</label>
             </div>
             <div class="col-xs-1">
                 <label>{{unit}}</label>
@@ -26,7 +26,7 @@
     </li>
 </script>
 <script id="graphTemplate" type="x-tmpl-mustache">
-    <li class="well well-sm widget graph" id="{{widgetId}}" deviceId="{{deviceId}}" weight="{{weight}}" labelId="{{label}}">
+    <li class="well well-sm widget graph" id="{{widgetId}}" itemId="{{itemId}}" weight="{{weight}}" labelId="{{label}}">
     </li>
 </script>
 
@@ -38,7 +38,7 @@
             </div>
             <div class="col-xs-5">&nbsp;</div>
             <div class="col-xs-2">
-                <input type="checkbox" data-size="small" deviceId="{{deviceId}}" labelId="{{label}}" name="{{deviceId}}_switch"/>
+                <input type="checkbox" data-size="small" itemId="{{itemId}}" labelId="{{label}}" name="{{itemId}}_switch"/>
             </div>
             <div class="col-xs-1">
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
@@ -46,6 +46,23 @@
         </div>
     </li>
 </script>
+<script id="colorTemplate" type="x-tmpl-mustache">
+    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
+        <div class="row">
+            <div class="col-xs-4">
+                <label>{{name}}</label>
+            </div>
+            <div class="col-xs-3">&nbsp;</div>
+            <div class="col-xs-4">
+                <input type="text" name="{{itemId}}_color" itemId="{{itemId}}"/>
+            </div>
+            <div class="col-xs-1">
+                <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+        </div>
+    </li>
+</script>
+
 <script id="sliderTemplate" type="x-tmpl-mustache">
     <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
         <div class="row">
@@ -54,7 +71,7 @@
             </div>
             <div class="col-xs-3">&nbsp;</div>
             <div class="col-xs-4">
-                <input name="{{deviceId}}_slider" deviceId="{{deviceId}}" data-slider-id='{{deviceId}}' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+                <input name="{{itemId}}_slider" itemId="{{itemId}}" data-slider-id='{{itemId}}' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
             </div>
             <div class="col-xs-1">
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
@@ -105,18 +122,30 @@
                                 <input class="form-control" id="itemDescription" type="text"/>
                             </div>
                             <div class="form-group">
+                                <label for="sourceItem">Item Type</label>
+                                <select class="form-control" id="sourceItem">
+                                    <option value="device">Device</option>
+                                    <option value="group">Group</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="controller">
                                 <label for="controllerList">Controller</label>
                                 <select class="form-control" id="controllerList">
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="plugin">
                                 <label for="pluginList">Plugin</label>
                                 <select class="form-control" id="pluginList">
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="device">
                                 <label for="deviceList">Device</label>
                                 <select class="form-control" id="deviceList">
+                                </select>
+                            </div>
+                            <div class="form-group" id="group">
+                                <label for="groupList">Group</label>
+                                <select class="form-control" id="groupList">
                                 </select>
                             </div>
                             <div class="form-group">
@@ -124,6 +153,7 @@
                                 <select class="form-control" id="widgetList">
                                     <option value="switch">Switch</option>
                                     <option value="dimmer">Dimmer</option>
+                                    <option value="color">Color</option>
                                     <option value="label">Device Value</option>
                                     <option value="graph">Graph</option>
                                 </select>

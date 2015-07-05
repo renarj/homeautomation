@@ -1,5 +1,6 @@
 package com.oberasoftware.home.api.extensions;
 
+import com.oberasoftware.home.api.commands.handlers.CommandHandler;
 import com.oberasoftware.home.api.model.ExtensionResource;
 import com.oberasoftware.home.api.model.storage.PluginItem;
 
@@ -13,6 +14,10 @@ public interface AutomationExtension {
     String getId();
 
     String getName();
+
+    default boolean supports(ExtensionCapability capability) {
+        return false;
+    }
 
     Map<String, String> getProperties();
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -50,7 +51,12 @@ public class UIController {
 
     @RequestMapping("/containers({containerId})/items")
     public List<UIItem> getItems(@PathVariable String containerId) {
-        return uiManager.getItems(containerId);
+        try {
+            return uiManager.getItems(containerId);
+        } catch(Exception e) {
+            LOG.error("", e);
+            return new ArrayList<>();
+        }
     }
 
     @RequestMapping(value = "/items", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
