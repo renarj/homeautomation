@@ -37,7 +37,7 @@ public class GroupHelper {
 
         Set<String> deviceIds = deviceItems.stream().map(DeviceItem::getDeviceId).collect(Collectors.toSet());
 
-        Optional<PHGroup> existingGroup = groups.stream().filter(g -> deviceIds.containsAll(new HashSet<>(g.getLightIdentifiers()))).findFirst();
+        Optional<PHGroup> existingGroup = groups.stream().filter(g -> deviceIds.equals(new HashSet<>(g.getLightIdentifiers()))).findFirst();
         if(existingGroup.isPresent()) {
             LOG.debug("Identified an existing hue group, using this: {}", existingGroup.get().getIdentifier());
             return existingGroup.get();

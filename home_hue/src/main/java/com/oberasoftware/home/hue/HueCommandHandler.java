@@ -97,7 +97,7 @@ public class HueCommandHandler implements GroupCommandHandler {
 
                     return action;
                 } else {
-                    LOG.warn("Unsupported command: {} for HUE plugin type: {}", command, typeName);
+                    LOG.debug("Unsupported command: {} for HUE plugin type: {}", command, typeName);
                 }
             } else {
                 LOG.debug("Type already executed, skipping: {}", typeName);
