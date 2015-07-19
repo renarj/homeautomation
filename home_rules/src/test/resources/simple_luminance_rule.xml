@@ -1,0 +1,38 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+    <block type="rule" id="312" x="416" y="35">
+        <field name="rule_name">Activate Lights After Dark</field>
+        <statement name="ruleTrigger">
+            <block type="triggerDevice" id="314"></block>
+        </statement>
+        <statement name="ruleStatement">
+            <block type="controls_if" id="325">
+                <value name="IF0">
+                    <block type="logic_compare" id="336">
+                        <field name="OP">LTE</field>
+                        <value name="A">
+                            <block type="devicevalue" id="372">
+                                <field name="NAME">luminance</field>
+                                <value name="item">
+                                    <block type="Device.homeautomation.zwave.2-0" id="398"></block>
+                                </value>
+                            </block>
+                        </value>
+                        <value name="B">
+                            <block type="math_number" id="409">
+                                <field name="NUM">10</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+                <statement name="DO0">
+                    <block type="switchdevice" id="445">
+                        <field name="state">on</field>
+                        <value name="item">
+                            <block type="Group.homeautomation.All Lights Huiskamer" id="450"></block>
+                        </value>
+                    </block>
+                </statement>
+            </block>
+        </statement>
+    </block>
+</xml>

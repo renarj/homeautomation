@@ -12,7 +12,7 @@ import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
 import com.oberasoftware.home.core.model.storage.GroupItemImpl;
-import com.oberasoftware.home.service.commands.GroupCommandImpl;
+import com.oberasoftware.home.core.commands.GroupCommandImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

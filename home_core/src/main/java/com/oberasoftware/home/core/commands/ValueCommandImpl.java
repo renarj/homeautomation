@@ -1,4 +1,4 @@
-package com.oberasoftware.home.service.commands;
+package com.oberasoftware.home.core.commands;
 
 import com.oberasoftware.home.api.commands.DeviceValueCommand;
 import com.oberasoftware.home.api.types.Value;

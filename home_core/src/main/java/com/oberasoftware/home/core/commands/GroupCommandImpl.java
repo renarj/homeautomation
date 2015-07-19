@@ -1,4 +1,4 @@
-package com.oberasoftware.home.service.commands;
+package com.oberasoftware.home.core.commands;
 
 import com.oberasoftware.home.api.commands.DeviceCommand;
 import com.oberasoftware.home.api.commands.GroupCommand;

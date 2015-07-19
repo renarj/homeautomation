@@ -111,6 +111,7 @@
         <module>home_web</module>
         <module>home_voice</module>
         <module>home_arduino</module>
+        <module>home_rules</module>
     </modules>
 
     <build>

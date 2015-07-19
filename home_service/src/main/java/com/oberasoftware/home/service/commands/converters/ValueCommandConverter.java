@@ -7,7 +7,7 @@ import com.oberasoftware.home.api.commands.converters.ConverterType;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.core.types.ValueImpl;
-import com.oberasoftware.home.service.commands.ValueCommandImpl;
+import com.oberasoftware.home.core.commands.ValueCommandImpl;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 

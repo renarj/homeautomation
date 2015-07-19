@@ -8,6 +8,7 @@ import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.model.storage.GroupItem;
 import com.oberasoftware.home.api.model.storage.Item;
 import com.oberasoftware.home.api.model.storage.PluginItem;
+import com.oberasoftware.home.api.model.storage.RuleItem;
 import com.oberasoftware.home.api.model.storage.UIItem;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.core.model.storage.ContainerImpl;
@@ -15,6 +16,7 @@ import com.oberasoftware.home.core.model.storage.ControllerItemImpl;
 import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
 import com.oberasoftware.home.core.model.storage.GroupItemImpl;
 import com.oberasoftware.home.core.model.storage.PluginItemImpl;
+import com.oberasoftware.home.core.model.storage.RuleItemImpl;
 import com.oberasoftware.home.core.model.storage.UIItemImpl;
 import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
 import nl.renarj.jasdb.api.DBSession;
@@ -158,6 +160,18 @@ public class JasDBDAO implements HomeDAO {
         return newArrayList(findItems(GroupItemImpl.class, new ImmutableMap.Builder<String, String>()
                 .put("controllerId", controllerId)
                 .build()));
+    }
+
+    @Override
+    public List<RuleItem> findRules(String controllerId) {
+        return newArrayList(findItems(RuleItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId)
+                .build()));
+    }
+
+    @Override
+    public List<RuleItem> findRules() {
+        return newArrayList(findItems(RuleItemImpl.class, new HashMap<>()));
     }
 
     private <T> T findItem(Class<T> type, Map<String, String> properties) {

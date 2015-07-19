@@ -6,6 +6,7 @@ import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.model.storage.GroupItem;
 import com.oberasoftware.home.api.model.storage.Item;
 import com.oberasoftware.home.api.model.storage.PluginItem;
+import com.oberasoftware.home.api.model.storage.RuleItem;
 import com.oberasoftware.home.api.model.storage.UIItem;
 
 import java.util.List;
@@ -44,4 +45,8 @@ public interface HomeDAO {
     List<GroupItem> findGroups();
 
     List<GroupItem> findGroups(String controllerId);
+
+    List<RuleItem> findRules();
+
+    List<RuleItem> findRules(String controllerId);
 }

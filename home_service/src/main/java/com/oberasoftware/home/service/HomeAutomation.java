@@ -8,6 +8,7 @@ import com.oberasoftware.home.api.extensions.ExtensionManager;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.core.CoreConfiguation;
 import com.oberasoftware.home.rest.RestConfiguration;
+import com.oberasoftware.home.rules.RuleConfiguration;
 import com.oberasoftware.home.storage.jasdb.JasDBConfiguration;
 import com.oberasoftware.home.web.WebConfiguration;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @EnableAutoConfiguration(exclude = {
         org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
-@Import({RestConfiguration.class, JasDBConfiguration.class, CoreConfiguation.class, WebConfiguration.class, BaseConfiguration.class})
+@Import({RestConfiguration.class, JasDBConfiguration.class, CoreConfiguation.class, WebConfiguration.class, BaseConfiguration.class, RuleConfiguration.class})
 @ComponentScan
 public class HomeAutomation {
     private static final Logger LOG = getLogger(HomeAutomation.class);
