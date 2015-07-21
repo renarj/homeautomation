@@ -9,14 +9,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class Rule {
 
     private String name;
-    private Condition condition;
-    private Action action;
+    private Block block;
     private Trigger trigger;
 
-    public Rule(String name, Condition condition, Action action, Trigger trigger) {
+    public Rule(String name, Block block, Trigger trigger) {
         this.name = name;
-        this.condition = condition;
-        this.action = action;
+        this.block = block;
         this.trigger = trigger;
     }
 
@@ -31,20 +29,12 @@ public class Rule {
         this.name = name;
     }
 
-    public Condition getCondition() {
-        return condition;
+    public Block getBlock() {
+        return block;
     }
 
-    public void setCondition(Condition condition) {
-        this.condition = condition;
-    }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
+    public void setBlock(Block block) {
+        this.block = block;
     }
 
     public Trigger getTrigger() {
@@ -59,8 +49,7 @@ public class Rule {
     public String toString() {
         return "RuleImpl{" +
                 "name='" + name + '\'' +
-                ", condition=" + condition +
-                ", statement=" + action +
+                ", block=" + block +
                 '}';
     }
 }

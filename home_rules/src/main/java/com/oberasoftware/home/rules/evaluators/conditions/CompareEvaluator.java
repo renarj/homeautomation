@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -29,7 +28,14 @@ public class CompareEvaluator implements ConditionEvaluator<CompareCondition> {
 
     @Override
     public Set<String> getDependentItems(CompareCondition input) {
-        return new HashSet<>();
+        Set<String> l = getDependentItems(input.getLeftValue());
+        Set<String> r = getDependentItems(input.getRightValue());
+
+        Set<String> d = new HashSet<>();
+        d.addAll(l);
+        d.addAll(r);
+
+        return d;
     }
 
     @Override
@@ -40,14 +46,14 @@ public class CompareEvaluator implements ConditionEvaluator<CompareCondition> {
         return compareValues(leftValue, rightValue, input.getOperator());
     }
 
+    private Set<String> getDependentItems(ResolvableValue value) {
+        ValueEvaluator<ResolvableValue> valueEvaluator = evaluatorFactory.getEvaluator(value);
+        return valueEvaluator.getDependentItems(value);
+    }
+
     private Value resolve(ResolvableValue value) {
-        Optional<ValueEvaluator> valueEvaluator = evaluatorFactory.getEvaluator(value);
-        if(valueEvaluator.isPresent()) {
-            ValueEvaluator<ResolvableValue> evaluator = valueEvaluator.get();
-            return evaluator.eval(value);
-        } else {
-            return null;
-        }
+        ValueEvaluator<ResolvableValue> valueEvaluator = evaluatorFactory.getEvaluator(value);
+        return valueEvaluator.eval(value);
     }
 
     private boolean compareValues(Value left, Value right, Operator operator) {

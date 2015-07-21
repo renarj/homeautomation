@@ -6,6 +6,9 @@ import com.oberasoftware.home.core.types.ValueImpl;
 import com.oberasoftware.home.rules.api.StaticValue;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Renze de Vries
  */
@@ -26,5 +29,10 @@ public class StaticValueEvaluator implements ValueEvaluator<StaticValue> {
         }
 
         return new ValueImpl(input.getType(), input.getValue());
+    }
+
+    @Override
+    public Set<String> getDependentItems(StaticValue input) {
+        return new HashSet<>();
     }
 }

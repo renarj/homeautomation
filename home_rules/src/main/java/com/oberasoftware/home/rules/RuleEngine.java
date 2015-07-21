@@ -5,13 +5,11 @@ import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.events.DeviceEvent;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.DeviceManager;
-import com.oberasoftware.home.rules.api.Action;
-import com.oberasoftware.home.rules.api.Condition;
+import com.oberasoftware.home.rules.api.Block;
 import com.oberasoftware.home.rules.api.Rule;
 import com.oberasoftware.home.rules.evaluators.EvalException;
 import com.oberasoftware.home.rules.evaluators.EvaluatorFactory;
-import com.oberasoftware.home.rules.evaluators.actions.ActionEvaluator;
-import com.oberasoftware.home.rules.evaluators.conditions.ConditionEvaluator;
+import com.oberasoftware.home.rules.evaluators.blocks.BlockEvaluator;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -46,25 +45,27 @@ public class RuleEngine implements EventHandler {
     public void evaluateRules(String itemId, TriggerSource triggerSource) {
         LOG.debug("Evaluating: {} rules for item: {} source: {}", itemId, triggerSource, rules.size());
 
-//        List<Rule> itemRules = itemMappedRules.get(itemId);
-//        itemRules.forEach(this::eval);
-        rules.forEach(this::eval);
+        List<Rule> itemRules = itemMappedRules.get(itemId);
+        if(itemRules != null && !itemRules.isEmpty()) {
+            LOG.debug("Rules: {} mapped to item: {}", itemRules.size(), itemId);
+
+            itemRules.forEach(this::eval);
+            //        rules.forEach(this::eval);
+        } else {
+            LOG.debug("No rules mapped for item: {}", itemId);
+        }
     }
 
     public void addRule(Rule rule) throws HomeAutomationException {
         checkNotNull(rule);
-
         LOG.info("Registering rule: {}", rule);
 
-        Optional<ConditionEvaluator> evaluator = evaluatorFactory.getEvaluator(rule.getCondition());
-        if(evaluator.isPresent()) {
-//            Set<String> dependentItems = evaluator.get().getDependentItems(rule.getCondition());
-//            dependentItems.forEach(i -> addDependentItem(rule, i));
+        BlockEvaluator<Block> blockEvaluate = evaluatorFactory.getEvaluator(rule.getBlock());
+        Set<String> dependentItems = blockEvaluate.getDependentItems(rule.getBlock());
+        LOG.debug("Adding dependent items: {} for rule: {}", dependentItems, rule);
+        dependentItems.forEach(i -> addDependentItem(rule, i));
 
-            this.rules.add(rule);
-        } else {
-            throw new HomeAutomationException("Unable to register rule, no evaluator could be found to support the rule syntax");
-        }
+        this.rules.add(rule);
     }
 
     private void addDependentItem(Rule rule, String itemId) {
@@ -83,29 +84,35 @@ public class RuleEngine implements EventHandler {
 
     private void eval(Rule rule) {
         LOG.debug("Evaluating rule: {}", rule);
-        Condition condition = rule.getCondition();
-        Action action = rule.getAction();
+        BlockEvaluator<Block> b = evaluatorFactory.getEvaluator(rule.getBlock());
+        try {
+            boolean eval = b.eval(rule.getBlock());
 
-        Optional<ConditionEvaluator> conditionEvaluator = evaluatorFactory.getEvaluator(condition);
-        Optional<ActionEvaluator> actionEvaluator = evaluatorFactory.getEvaluator(action);
-
-        if(conditionEvaluator.isPresent() && actionEvaluator.isPresent()) {
-            ConditionEvaluator<Condition> e = conditionEvaluator.get();
-            try {
-                boolean eval = e.eval(condition);
-
-                if (eval) {
-                    ActionEvaluator<Action> a = actionEvaluator.get();
-                    boolean actionEval = a.eval(action);
-
-                    LOG.debug("Rule: {} was evaluated to: {} action: {} was run: {}", rule, eval, action, actionEval);
-                }
-            } catch(EvalException ex) {
-                LOG.debug("Rule could not be evaluated: {}", ex.getMessage());
-            }
-        } else {
-            LOG.error("Could not evaluate rule: {} condition: {} cannot be evaluated as it is not supported", rule.getName(), condition);
+            LOG.debug("Rule: {} was evaluated: {}", rule, eval);
+        } catch(EvalException e) {
+            LOG.debug("Rule could not be evaluated: {}", e.getMessage());
         }
+//
+//        Optional<ConditionEvaluator<Condition>> conditionEvaluator = evaluatorFactory.getEvaluator(condition);
+//        Optional<ActionEvaluator<Action>> actionEvaluator = evaluatorFactory.getEvaluator(action);
+//
+//        if(conditionEvaluator.isPresent() && actionEvaluator.isPresent()) {
+//            ConditionEvaluator<Condition> e = conditionEvaluator.get();
+//            try {
+//                boolean eval = e.eval(condition);
+//
+//                if (eval) {
+//                    ActionEvaluator<Action> a = actionEvaluator.get();
+//                    boolean actionEval = a.eval(action);
+//
+//                    LOG.debug("Rule: {} was true action: {} being run: {}", rule, action, actionEval);
+//                }
+//            } catch(EvalException ex) {
+//                LOG.debug("Rule could not be evaluated: {}", ex.getMessage());
+//            }
+//        } else {
+//            LOG.error("Could not evaluate rule: {} condition: {} cannot be evaluated as it is not supported", rule.getName(), condition);
+//        }
     }
 
     @EventSubscribe
@@ -122,7 +129,7 @@ public class RuleEngine implements EventHandler {
 //    }
 
     enum TriggerSource {
-        STATE_UPDATE,
+//        STATE_UPDATE,
         DEVICE_EVENT
     }
 }

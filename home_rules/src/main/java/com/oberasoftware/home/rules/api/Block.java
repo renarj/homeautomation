@@ -10,5 +10,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CompareCondition.class, name="compare")
 })
-public interface Condition {
+public interface Block {
+
 }

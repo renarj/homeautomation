@@ -1,17 +1,20 @@
 package com.oberasoftware.home.rules;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.oberasoftware.base.event.Event;
 import com.oberasoftware.home.api.commands.SwitchCommand;
+import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.model.Status;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
-import com.oberasoftware.home.core.commands.SwitchCommandImpl;
 import com.oberasoftware.home.core.model.StateImpl;
 import com.oberasoftware.home.core.model.StateItemImpl;
 import com.oberasoftware.home.core.types.ValueImpl;
 import com.oberasoftware.home.rules.api.CompareCondition;
+import com.oberasoftware.home.rules.api.Condition;
 import com.oberasoftware.home.rules.api.DeviceTrigger;
+import com.oberasoftware.home.rules.api.IfBlock;
 import com.oberasoftware.home.rules.api.ItemValue;
 import com.oberasoftware.home.rules.api.Operator;
 import com.oberasoftware.home.rules.api.Rule;
@@ -60,11 +63,12 @@ public class RuleEngineTest {
     @Test
     public void testSerialise() throws Exception {
         Trigger trigger = new DeviceTrigger(DeviceTrigger.TRIGGER_TYPE.DEVICE_STATE_CHANGE);
-        Rule rule = new Rule("Light after dark", new CompareCondition(
+        Condition condition = new CompareCondition(
                 new ItemValue(MY_ITEM_ID, LUMINANCE_LABEL),
-                    Operator.SMALLER_THAN_EQUALS,
-                new StaticValue(10l, VALUE_TYPE.NUMBER)
-        ), new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON), trigger);
+                Operator.SMALLER_THAN_EQUALS,
+                new StaticValue(10l, VALUE_TYPE.NUMBER));
+
+        Rule rule = new Rule("Light after dark", new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
 
         StringWriter stringWriter = new StringWriter();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -85,11 +89,13 @@ public class RuleEngineTest {
     @Test
     public void testEvaluate() throws HomeAutomationException {
         Trigger trigger = new DeviceTrigger(DeviceTrigger.TRIGGER_TYPE.DEVICE_STATE_CHANGE);
-        Rule rule = new Rule("Light after dark", new CompareCondition(
+
+        Condition condition = new CompareCondition(
                 new ItemValue(MY_ITEM_ID, LUMINANCE_LABEL),
                 Operator.SMALLER_THAN_EQUALS,
-                new StaticValue(10l, VALUE_TYPE.NUMBER)
-        ), new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON), trigger);
+                new StaticValue(10l, VALUE_TYPE.NUMBER));
+
+        Rule rule = new Rule("Light after dark", new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
 
         StateImpl itemState = new StateImpl(MY_ITEM_ID, Status.ACTIVE);
         itemState.updateIfChanged(LUMINANCE_LABEL, new StateItemImpl(LUMINANCE_LABEL, new ValueImpl(VALUE_TYPE.NUMBER, 1l)));
@@ -104,20 +110,22 @@ public class RuleEngineTest {
         assertThat(publishedEvents.size(), is(1));
 
         Event event = publishedEvents.get(0);
-        assertThat(event instanceof SwitchCommandImpl, is(true));
-        SwitchCommandImpl switchCommand = (SwitchCommandImpl) event;
+        assertThat(event instanceof DeviceCommandEvent, is(true));
+        DeviceCommandEvent switchCommand = (DeviceCommandEvent) event;
         assertThat(switchCommand.getItemId(), is(SWITCHABLE_DEVICE_ID));
-        assertThat(switchCommand.getState(), is(SwitchCommand.STATE.ON));
+        assertThat(((SwitchCommand)switchCommand.getCommand()).getState(), is(SwitchCommand.STATE.ON));
     }
 
     @Test
     public void testDeviceMovement() throws  Exception {
         Trigger trigger = new DeviceTrigger(DeviceTrigger.TRIGGER_TYPE.DEVICE_STATE_CHANGE);
-        Rule rule = new Rule("Light on with movement", new CompareCondition(
+
+        Condition condition = new CompareCondition(
                 new ItemValue(MY_ITEM_ID, "movement"),
                 Operator.EQUALS,
-                new StaticValue("detected", VALUE_TYPE.STRING)
-        ), new SwitchAction("LightId", SwitchCommand.STATE.ON), trigger);
+                new StaticValue("detected", VALUE_TYPE.STRING));
+
+        Rule rule = new Rule("Light on with movement", new IfBlock(condition, Lists.newArrayList(new SwitchAction("LightId", SwitchCommand.STATE.ON))), trigger);
 
         StringWriter stringWriter = new StringWriter();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -141,10 +149,10 @@ public class RuleEngineTest {
         assertThat(publishedEvents.size(), is(1));
 
         Event event = publishedEvents.get(0);
-        assertThat(event instanceof SwitchCommandImpl, is(true));
-        SwitchCommandImpl switchCommand = (SwitchCommandImpl) event;
+        assertThat(event instanceof DeviceCommandEvent, is(true));
+        DeviceCommandEvent switchCommand = (DeviceCommandEvent) event;
         assertThat(switchCommand.getItemId(), is("LightId"));
-        assertThat(switchCommand.getState(), is(SwitchCommand.STATE.ON));
+        assertThat(((SwitchCommand)switchCommand.getCommand()).getState(), is(SwitchCommand.STATE.ON));
 
     }
 }

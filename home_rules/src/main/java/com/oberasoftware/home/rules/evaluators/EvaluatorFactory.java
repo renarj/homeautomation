@@ -1,12 +1,6 @@
 package com.oberasoftware.home.rules.evaluators;
 
 import com.google.common.reflect.TypeToken;
-import com.oberasoftware.home.rules.api.Action;
-import com.oberasoftware.home.rules.api.Condition;
-import com.oberasoftware.home.rules.api.ResolvableValue;
-import com.oberasoftware.home.rules.evaluators.actions.ActionEvaluator;
-import com.oberasoftware.home.rules.evaluators.conditions.ConditionEvaluator;
-import com.oberasoftware.home.rules.evaluators.values.ValueEvaluator;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -59,44 +53,31 @@ public class EvaluatorFactory {
         }
     }
 
-    public Optional<ConditionEvaluator> getEvaluator(Condition condition) {
-        LOG.debug("Finding condition evaluator for action: {}", condition);
+//    public ConditionEvaluator<Condition> getEvaluator(Condition condition) {
+//        LOG.debug("Finding condition evaluator for action: {}", condition);
+//
+//        return (ConditionEvaluator<Condition>) getEvaluator(condition.getClass());
+//    }
+//
+//    public ActionEvaluator<Action> getEvaluator(Action action) {
+//        LOG.debug("Finding action evaluator for action: {}", action);
+//
+//        return (ActionEvaluator<Action>) getEvaluator(action.getClass());
+//    }
+//
+//    public ValueEvaluator<ResolvableValue> getEvaluator(ResolvableValue value) {
+//        LOG.debug("Finding value evaluator for value: {}", value);
+//
+//        return (ValueEvaluator < ResolvableValue >) getEvaluator(value.getClass());
+//    }
 
-        Optional<Evaluator> evaluator = getEvaluator(condition.getClass());
-        if(evaluator.isPresent()) {
-            ConditionEvaluator conditionEvaluator = (ConditionEvaluator) evaluator.get();
-            return Optional.of(conditionEvaluator);
-        }
+    public <T extends Evaluator<E, ?>, E> T getEvaluator(E input) {
+        LOG.debug("Finding evaluator for type: {}", input.getClass());
 
-        return Optional.empty();
+        return (T) getEvaluator(input.getClass());
     }
 
-    public Optional<ActionEvaluator> getEvaluator(Action action) {
-        LOG.debug("Finding action evaluator for action: {}", action);
-
-        Optional<Evaluator> evaluator = getEvaluator(action.getClass());
-        if(evaluator.isPresent()) {
-            ActionEvaluator actionEvaluator = (ActionEvaluator) evaluator.get();
-            return Optional.of(actionEvaluator);
-        }
-
-        return Optional.empty();
-    }
-
-    public Optional<ValueEvaluator> getEvaluator(ResolvableValue value) {
-        LOG.debug("Finding value evaluator for value: {}", value);
-
-        Optional<Evaluator> evaluator = getEvaluator(value.getClass());
-        if(evaluator.isPresent()) {
-            ValueEvaluator valueEvaluator = (ValueEvaluator) evaluator.get();
-            return Optional.of(valueEvaluator);
-        }
-
-        return Optional.empty();
-
-    }
-
-    private Optional<Evaluator> getEvaluator(Class<?> evalType) {
+    private Evaluator getEvaluator(Class<?> evalType) {
         for(TypeToken t : TypeToken.of(evalType).getTypes()) {
             String typeName = t.getRawType().getName();
             LOG.debug("Checking an evaluator for type: {}", typeName);
@@ -105,11 +86,11 @@ public class EvaluatorFactory {
             if (evaluator.isPresent()) {
                 LOG.debug("Found Evaluator: {} for type: {}", evaluator.get(), evalType);
 
-                return evaluator;
+                return evaluator.get();
             }
         }
 
-        return Optional.empty();
+        throw new EvalException("Could not find evaluator for type: " + evalType);
     }
 
 }

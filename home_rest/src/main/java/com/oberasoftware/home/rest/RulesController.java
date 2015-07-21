@@ -42,7 +42,7 @@ public class RulesController {
         return ruleManager.store(item);
     }
 
-    @RequestMapping(value = "/({ruleId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "({ruleId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
     public void deleteRule(@PathVariable String ruleId) {
         LOG.debug("Deleting Rule: {}", ruleId);
         ruleManager.delete(ruleId);

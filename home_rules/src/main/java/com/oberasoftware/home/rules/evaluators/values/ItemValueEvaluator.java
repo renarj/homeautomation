@@ -1,5 +1,6 @@
 package com.oberasoftware.home.rules.evaluators.values;
 
+import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.managers.StateManager;
 import com.oberasoftware.home.api.model.State;
 import com.oberasoftware.home.api.model.StateItem;
@@ -9,6 +10,8 @@ import com.oberasoftware.home.rules.evaluators.EvalException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -47,5 +50,10 @@ public class ItemValueEvaluator implements ValueEvaluator<ItemValue> {
             return ONOFF_LABEL;
         }
         return label;
+    }
+
+    @Override
+    public Set<String> getDependentItems(ItemValue input) {
+        return Sets.newHashSet(input.getItemId());
     }
 }
