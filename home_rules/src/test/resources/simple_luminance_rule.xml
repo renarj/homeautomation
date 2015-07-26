@@ -11,9 +11,9 @@
                         <field name="OP">LTE</field>
                         <value name="A">
                             <block type="devicevalue" id="372">
-                                <field name="NAME">luminance</field>
+                                <field name="label">luminance</field>
                                 <value name="item">
-                                    <block type="Device.homeautomation.zwave.2-0" id="398"></block>
+                                    <block type="Device.75f1c663-b7df-4036-8a2d-5e3d95f6a596" id="398"></block>
                                 </value>
                             </block>
                         </value>
@@ -28,7 +28,7 @@
                     <block type="switchdevice" id="445">
                         <field name="state">on</field>
                         <value name="item">
-                            <block type="Group.homeautomation.All Lights Huiskamer" id="450"></block>
+                            <block type="Group.0000001e-0661-7a39-0000-014e5fa2231e" id="450"></block>
                         </value>
                     </block>
                 </statement>
