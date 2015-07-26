@@ -11,6 +11,7 @@ import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.core.model.storage.RuleItemImpl;
 import com.oberasoftware.home.rules.RuleEngine;
 import com.oberasoftware.home.rules.api.Rule;
+import com.oberasoftware.home.rules.blockly.BlocklyParseException;
 import com.oberasoftware.home.rules.blockly.BlocklyParser;
 import nl.renarj.core.utilities.StringUtils;
 import org.slf4j.Logger;
@@ -34,6 +35,8 @@ public class RuleManagerImpl implements RuleManager {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static final String BLOCKLY_PROPERTY = "Blockly";
+
     @Autowired
     private RuleEngine ruleEngine;
 
@@ -51,7 +54,7 @@ public class RuleManagerImpl implements RuleManager {
         homeDAO.findRules().forEach(r -> {
             try {
                 LOG.debug("Registering rule: {}", r);
-                ruleEngine.addRule(toRule(r));
+                ruleEngine.process(toRule(r));
             } catch (HomeAutomationException e) {
                 LOG.error("Could not load rule: " + r.toString(), e);
             }
@@ -74,14 +77,16 @@ public class RuleManagerImpl implements RuleManager {
 
         centralDatastore.beginTransaction();
         try {
-            return centralDatastore.store(storeItem);
+            RuleItem item = centralDatastore.store(storeItem);
+            LOG.debug("Stored rule: {} triggering rule engine", item);
+            ruleEngine.process(toRule(item));
+
+            return item;
         } catch (DataStoreException e) {
             LOG.error("Unable to store rule", e);
             throw new HomeAutomationException("Unable to store rule: " + ruleItem);
         } finally {
             centralDatastore.commitTransaction();
-
-            ruleEngine.addRule(toRule(ruleItem));
         }
     }
 
@@ -94,6 +99,8 @@ public class RuleManagerImpl implements RuleManager {
             throw new RuntimeHomeAutomationException("Unable to delete rule: " + ruleId);
         } finally {
             centralDatastore.commitTransaction();
+
+            ruleEngine.removeRule(ruleId);
         }
     }
 
@@ -103,13 +110,13 @@ public class RuleManagerImpl implements RuleManager {
         return ruleItem.get();
     }
 
-    private RuleItem preProcessRule(RuleItem ruleItem) {
-        String blocklyXML = ruleItem.getBlocklyXML();
+    private RuleItem preProcessRule(RuleItem ruleItem) throws BlocklyParseException {
+        String blocklyXML = ruleItem.getProperties().get(BLOCKLY_PROPERTY);
         if(StringUtils.stringNotEmpty(blocklyXML)) {
             Rule rule = blocklyParser.toRule(blocklyXML);
             String json = toJson(rule);
 
-            return new RuleItemImpl(ruleItem.getId(), ruleItem.getName(), ruleItem.getControllerId(), json, blocklyXML);
+            return new RuleItemImpl(ruleItem.getId(), rule.getName(), ruleItem.getControllerId(), json, ruleItem.getProperties());
         }
 
         LOG.debug("Could not process blockly xml data, ignoring");
@@ -130,9 +137,12 @@ public class RuleManagerImpl implements RuleManager {
 
     private Rule toRule(RuleItem item) {
         try {
-            return OBJECT_MAPPER.readValue(item.getRuleData(), Rule.class);
+            Rule rule = OBJECT_MAPPER.readValue(item.getRule(), Rule.class);
+            rule.setId(item.getId());
+
+            return rule;
         } catch (IOException e) {
-            LOG.error("Could not parse Rule: " + item.getRuleData());
+            LOG.error("Could not parse Rule: " + item.getRule());
             return null;
         }
     }

@@ -34,6 +34,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.StringWriter;
 import java.util.List;
 
+import static java.util.UUID.randomUUID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -68,7 +69,9 @@ public class RuleEngineTest {
                 Operator.SMALLER_THAN_EQUALS,
                 new StaticValue(10l, VALUE_TYPE.NUMBER));
 
-        Rule rule = new Rule("Light after dark", new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
+        String ruleId = randomUUID().toString();
+        Rule rule = new Rule(ruleId, "Light after dark",
+                new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
 
         StringWriter stringWriter = new StringWriter();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -95,16 +98,17 @@ public class RuleEngineTest {
                 Operator.SMALLER_THAN_EQUALS,
                 new StaticValue(10l, VALUE_TYPE.NUMBER));
 
-        Rule rule = new Rule("Light after dark", new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
+        String ruleId = randomUUID().toString();
+        Rule rule = new Rule(ruleId, "Light after dark", new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
 
         StateImpl itemState = new StateImpl(MY_ITEM_ID, Status.ACTIVE);
         itemState.updateIfChanged(LUMINANCE_LABEL, new StateItemImpl(LUMINANCE_LABEL, new ValueImpl(VALUE_TYPE.NUMBER, 1l)));
         mockStateManager.addState(itemState);
 
-        ruleEngine.addRule(rule);
+        ruleEngine.process(rule);
 
 
-        ruleEngine.evalRule("Light after dark");
+        ruleEngine.evalRule(ruleId);
 
         List<Event> publishedEvents = mockAutomationBus.getPublishedEvents();
         assertThat(publishedEvents.size(), is(1));
@@ -125,7 +129,8 @@ public class RuleEngineTest {
                 Operator.EQUALS,
                 new StaticValue("detected", VALUE_TYPE.STRING));
 
-        Rule rule = new Rule("Light on with movement", new IfBlock(condition, Lists.newArrayList(new SwitchAction("LightId", SwitchCommand.STATE.ON))), trigger);
+        String ruleId = randomUUID().toString();
+        Rule rule = new Rule(ruleId, "Light on with movement", new IfBlock(condition, Lists.newArrayList(new SwitchAction("LightId", SwitchCommand.STATE.ON))), trigger);
 
         StringWriter stringWriter = new StringWriter();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -141,9 +146,9 @@ public class RuleEngineTest {
         itemState.updateIfChanged("on-off", new StateItemImpl("on-off", new ValueImpl(VALUE_TYPE.STRING, "on")));
         mockStateManager.addState(itemState);
 
-        ruleEngine.addRule(rule);
+        ruleEngine.process(rule);
 
-        ruleEngine.evalRule("Light on with movement");
+        ruleEngine.evalRule(ruleId);
 
         List<Event> publishedEvents = mockAutomationBus.getPublishedEvents();
         assertThat(publishedEvents.size(), is(1));

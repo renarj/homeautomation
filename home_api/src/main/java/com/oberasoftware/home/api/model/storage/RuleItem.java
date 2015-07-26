@@ -1,5 +1,7 @@
 package com.oberasoftware.home.api.model.storage;
 
+import java.util.Map;
+
 /**
  * @author Renze de Vries
  */
@@ -8,7 +10,7 @@ public interface RuleItem extends Item {
 
     String getControllerId();
 
-    String getRuleData();
+    String getRule();
 
-    String getBlocklyXML();
+    Map<String, String> getProperties();
 }

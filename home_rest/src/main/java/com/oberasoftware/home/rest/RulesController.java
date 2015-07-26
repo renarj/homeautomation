@@ -39,6 +39,8 @@ public class RulesController {
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public RuleItem createRule(@RequestBody RuleItemImpl item) throws HomeAutomationException {
+        LOG.debug("New Rule posted: {}", item);
+
         return ruleManager.store(item);
     }
 

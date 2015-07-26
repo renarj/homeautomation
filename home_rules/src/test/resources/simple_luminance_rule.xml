@@ -25,7 +25,7 @@
                     </block>
                 </value>
                 <statement name="DO0">
-                    <block type="switchdevice" id="445">
+                    <block type="switch_item" id="445">
                         <field name="state">on</field>
                         <value name="item">
                             <block type="Group.0000001e-0661-7a39-0000-014e5fa2231e" id="450"></block>

@@ -54,9 +54,8 @@ public class RuleFragmentParser implements FragmentParser<Rule> {
             Element blockElement = findFirstBlock(statementElement).orElseThrow(() -> new BlocklyParseException("No statements found for rule"));
             Block block = getBlock(blockElement);
 
-            return new Rule(ruleName, block, trigger);
+            return new Rule(null, ruleName, block, trigger);
         }
-
 
         return null;
 

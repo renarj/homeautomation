@@ -14,12 +14,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,7 +39,7 @@ public class RuleEngine implements EventHandler {
 
     private List<Rule> rules = new CopyOnWriteArrayList<>();
 
-    private Map<String, List<Rule>> itemMappedRules = new HashMap<>();
+    private Map<String, List<Rule>> itemMappedRules = new ConcurrentHashMap<>();
 
     public void evaluateRules(String itemId, TriggerSource triggerSource) {
         LOG.debug("Evaluating: {} rules for item: {} source: {}", itemId, triggerSource, rules.size());
@@ -56,29 +55,55 @@ public class RuleEngine implements EventHandler {
         }
     }
 
-    public void addRule(Rule rule) throws HomeAutomationException {
+    public void process(Rule rule) throws HomeAutomationException {
         checkNotNull(rule);
+
+        if(rules.stream().anyMatch(r -> r.getId().equals(rule.getId()))) {
+            LOG.info("Updating existing rule, removing old rule: {}", rule.getId());
+            removeRule(rule.getId());
+        }
+
         LOG.info("Registering rule: {}", rule);
 
-        BlockEvaluator<Block> blockEvaluate = evaluatorFactory.getEvaluator(rule.getBlock());
-        Set<String> dependentItems = blockEvaluate.getDependentItems(rule.getBlock());
+        Set<String> dependentItems = getDependentItems(rule.getBlock());
         LOG.debug("Adding dependent items: {} for rule: {}", dependentItems, rule);
         dependentItems.forEach(i -> addDependentItem(rule, i));
 
         this.rules.add(rule);
     }
 
+    private Set<String> getDependentItems(Block block) {
+        BlockEvaluator<Block> blockEvaluate = evaluatorFactory.getEvaluator(block);
+
+        return blockEvaluate.getDependentItems(block);
+    }
+
     private void addDependentItem(Rule rule, String itemId) {
-        itemMappedRules.putIfAbsent(itemId, new ArrayList<>());
+        itemMappedRules.putIfAbsent(itemId, new CopyOnWriteArrayList<>());
         itemMappedRules.get(itemId).add(rule);
     }
 
-    public void evalRule(String name) {
-        checkNotNull(name);
+    public void evalRule(String id) {
+        checkNotNull(id);
 
-        Optional<Rule> optionalRule = rules.stream().filter(r -> r.getName().equals(name)).findFirst();
+        Optional<Rule> optionalRule = rules.stream().filter(r -> r.getId().equals(id)).findFirst();
         if(optionalRule.isPresent()) {
             eval(optionalRule.get());
+        }
+    }
+
+    public void removeRule(String id) {
+        Optional<Rule> rule = this.rules.stream().filter(r -> r.getId().equals(id)).findFirst();
+        if(rule.isPresent()) {
+            LOG.debug("Removing rule: {}", rule);
+
+            Set<String> dependentItems = getDependentItems(rule.get().getBlock());
+            dependentItems.forEach(d -> {
+                List<Rule> deviceRules = itemMappedRules.get(d);
+                deviceRules.remove(rule.get());
+            });
+
+            this.rules.remove(rule.get());
         }
     }
 
@@ -92,27 +117,6 @@ public class RuleEngine implements EventHandler {
         } catch(EvalException e) {
             LOG.debug("Rule could not be evaluated: {}", e.getMessage());
         }
-//
-//        Optional<ConditionEvaluator<Condition>> conditionEvaluator = evaluatorFactory.getEvaluator(condition);
-//        Optional<ActionEvaluator<Action>> actionEvaluator = evaluatorFactory.getEvaluator(action);
-//
-//        if(conditionEvaluator.isPresent() && actionEvaluator.isPresent()) {
-//            ConditionEvaluator<Condition> e = conditionEvaluator.get();
-//            try {
-//                boolean eval = e.eval(condition);
-//
-//                if (eval) {
-//                    ActionEvaluator<Action> a = actionEvaluator.get();
-//                    boolean actionEval = a.eval(action);
-//
-//                    LOG.debug("Rule: {} was true action: {} being run: {}", rule, action, actionEval);
-//                }
-//            } catch(EvalException ex) {
-//                LOG.debug("Rule could not be evaluated: {}", ex.getMessage());
-//            }
-//        } else {
-//            LOG.error("Could not evaluate rule: {} condition: {} cannot be evaluated as it is not supported", rule.getName(), condition);
-//        }
     }
 
     @EventSubscribe

@@ -5,6 +5,8 @@ import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
 
+import java.util.Map;
+
 /**
  * @author Renze de Vries
  */
@@ -13,18 +15,19 @@ public class RuleItemImpl implements RuleItem {
     private String id;
     private String name;
     private String controllerId;
-    private String ruleData;
-    private String blocklyXML;
+    private String rule;
+
+    private Map<String, String> properties;
 
     public RuleItemImpl() {
     }
 
-    public RuleItemImpl(String id, String name, String controllerId, String ruleData, String blocklyXML) {
+    public RuleItemImpl(String id, String name, String controllerId, String rule, Map<String, String> properties) {
         this.id = id;
         this.name = name;
         this.controllerId = controllerId;
-        this.ruleData = ruleData;
-        this.blocklyXML = blocklyXML;
+        this.rule = rule;
+        this.properties = properties;
     }
 
     @Override
@@ -50,16 +53,6 @@ public class RuleItemImpl implements RuleItem {
 
     @Override
     @JasDBProperty
-    public String getRuleData() {
-        return ruleData;
-    }
-
-    public void setRuleData(String ruleData) {
-        this.ruleData = ruleData;
-    }
-
-    @Override
-    @JasDBProperty
     public String getName() {
         return name;
     }
@@ -70,22 +63,32 @@ public class RuleItemImpl implements RuleItem {
 
     @Override
     @JasDBProperty
-    public String getBlocklyXML() {
-        return blocklyXML;
+    public String getRule() {
+        return rule;
     }
 
-    public void setBlocklyXML(String blocklyXML) {
-        this.blocklyXML = blocklyXML;
+    public void setRule(String rule) {
+        this.rule = rule;
+    }
+
+    @Override
+    @JasDBProperty
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 
     @Override
     public String toString() {
         return "RuleItemImpl{" +
-                "blocklyXML='" + blocklyXML + '\'' +
-                ", ruleData='" + ruleData + '\'' +
-                ", controllerId='" + controllerId + '\'' +
+                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", id='" + id + '\'' +
+                ", controllerId='" + controllerId + '\'' +
+                ", rule='" + rule + '\'' +
+                ", properties=" + properties +
                 '}';
     }
 }

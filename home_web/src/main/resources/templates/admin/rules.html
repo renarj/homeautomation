@@ -1,0 +1,109 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="includes/header :: header">
+</head>
+<body style="height:100%;">
+<script th:src="@{/blockly/blockly_compressed.js}" src="/static/blockly/blockly_compressed.js"></script>
+<script th:src="@{/blockly/blocks_compressed.js}" src="/static/blockly/blocks_compressed.js"></script>
+<script th:src="@{/blockly/msg/js/en.js}" src="/static/blockly/msg/js/en.js"></script>
+
+
+<script th:src="@{/javascript/blocks.js}" src="/static/javascript/blocks.js"></script>
+
+<div class="container-fluid" style="height:100%;">
+    <div th:replace="includes/header :: navigation (selectTab='admin')"></div>
+
+    <div th:replace="includes/header :: adminTabs (selectTab='rules')"></div>
+
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="errorLabel">Blockly scripting error</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="errorReason"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="height: 100%;">
+        <div class="col-md-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Controllers</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group" th:each="controller: ${controllers}">
+                        <a href="#" th:href="@{'/web/admin/rules/'+${controller.controllerId}}" class="list-group-item" th:classappend="${selectedController != null and selectedController == controller.controllerId} ? 'active'" th:text="${controller.controllerId}">Text</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2" th:if="${selectedController}">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <h3 class="panel-title pull-left">Rules</h3>
+                    <div class="btn-group pull-right">
+                        <a th:href="@{'/web/admin/rules/' + ${selectedController} + '/new'}" href="#" class="btn btn-default btn-sm" title="New Rule"><span class="glyphicon glyphicon-plus"></span></a>
+
+                    </div>
+                </div>
+                <div class="panel-body" id="rules">
+                    <div class="list-group" th:each="rule: ${rules}">
+                        <a href="#" th:href="@{'/web/admin/rules/'+${selectedController}}+'/'+${rule.id}" class="list-group-item" th:classappend="${selectedRule != null and selectedRule == rule.id} ? 'active'" th:text="${rule.name}">Text</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8" style="height:100%;" th:if="${selectedRule != null or newRule != null}">
+            <div class="text-right" style="height: 3%;">
+                <button type="button" class="btn btn-default resetRule" id="resetRule">Reset</button>
+                <button type="button" class="btn btn-primary saveRule" th:attr="controllerId=${selectedController}" id="saveRule">Save</button>
+            </div>
+            <div style="height: 95%;" id="blocklyArea">
+
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="includes/header :: footer"></div>
+</div>
+
+<xml id="toolbox" style="display: none">
+    <category name="Logic" expanded="true">
+        <block type="controls_if"></block>
+        <block type="logic_compare"></block>
+        <block type="logic_operation"></block>
+        <block type="math_number"></block>
+
+        <block type="devicevalue"></block>
+        <block type="switch_item"></block>
+
+        <block type="rule"></block>
+        <block type="onoff"></block>
+        <block type="movement"></block>
+    </category>
+    <category name="Devices" id="ItemToolbox">
+    </category>
+    <category name="Groups" id="GroupToolbox">
+    </category>
+    <category name="Triggers" id="Triggers">
+        <block type="triggerDevice"></block>
+    </category>
+</xml>
+
+<div id="blocklyDiv" style="position: absolute" th:if="${selectedRule!=null or newRule!=null}"></div>
+
+<script th:src="@{/javascript/rules.js}" src="/static/javascript/rules.js"></script>
+
+<div class="hide" th:if="${rule}" id="editRule" th:attr="ruleId=${rule.id}" th:utext="${rule.properties.Blockly}">
+</div>
+
+</body>
+</html>

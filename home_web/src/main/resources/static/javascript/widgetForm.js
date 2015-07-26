@@ -198,7 +198,7 @@ $(document).ready(function() {
 
             renderWidget(container, data);
         }})
-    })
+    });
 
     function isEmpty(str) {
         return (!str || 0 === str.length);

@@ -8,17 +8,27 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public class Rule {
 
+    private String id;
     private String name;
     private Block block;
     private Trigger trigger;
 
-    public Rule(String name, Block block, Trigger trigger) {
+    public Rule(String id, String name, Block block, Trigger trigger) {
+        this.id = id;
         this.name = name;
         this.block = block;
         this.trigger = trigger;
     }
 
     public Rule() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -43,6 +53,21 @@ public class Rule {
 
     public void setTrigger(Trigger trigger) {
         this.trigger = trigger;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Rule rule = (Rule) o;
+
+        return id.equals(rule.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 
     @Override
