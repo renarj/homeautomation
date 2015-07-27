@@ -1,6 +1,5 @@
 package com.oberasoftware.home.rest;
 
-import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.RuleManager;
 import com.oberasoftware.home.api.model.storage.RuleItem;
 import com.oberasoftware.home.core.model.storage.RuleItemImpl;
@@ -38,10 +37,15 @@ public class RulesController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public RuleItem createRule(@RequestBody RuleItemImpl item) throws HomeAutomationException {
+    public RuleItem createRule(@RequestBody RuleItemImpl item) throws Exception {
         LOG.debug("New Rule posted: {}", item);
 
-        return ruleManager.store(item);
+        try {
+            return ruleManager.store(item);
+        } catch(Exception e) {
+            LOG.error("", e);
+            throw e;
+        }
     }
 
     @RequestMapping(value = "({ruleId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")

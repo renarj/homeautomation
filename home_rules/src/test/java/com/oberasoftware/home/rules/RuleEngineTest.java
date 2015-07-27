@@ -1,7 +1,6 @@
 package com.oberasoftware.home.rules;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.oberasoftware.base.event.Event;
 import com.oberasoftware.home.api.commands.SwitchCommand;
 import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
@@ -15,6 +14,7 @@ import com.oberasoftware.home.rules.api.CompareCondition;
 import com.oberasoftware.home.rules.api.Condition;
 import com.oberasoftware.home.rules.api.DeviceTrigger;
 import com.oberasoftware.home.rules.api.IfBlock;
+import com.oberasoftware.home.rules.api.IfBranch;
 import com.oberasoftware.home.rules.api.ItemValue;
 import com.oberasoftware.home.rules.api.Operator;
 import com.oberasoftware.home.rules.api.Rule;
@@ -34,6 +34,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.StringWriter;
 import java.util.List;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,9 +70,10 @@ public class RuleEngineTest {
                 Operator.SMALLER_THAN_EQUALS,
                 new StaticValue(10l, VALUE_TYPE.NUMBER));
 
+        IfBranch branch = new IfBranch(condition, newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON)));
+
         String ruleId = randomUUID().toString();
-        Rule rule = new Rule(ruleId, "Light after dark",
-                new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
+        Rule rule = new Rule(ruleId, "Light after dark", new IfBlock(newArrayList(branch)), trigger);
 
         StringWriter stringWriter = new StringWriter();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -98,8 +100,10 @@ public class RuleEngineTest {
                 Operator.SMALLER_THAN_EQUALS,
                 new StaticValue(10l, VALUE_TYPE.NUMBER));
 
+        IfBranch branch = new IfBranch(condition, newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON)));
+
         String ruleId = randomUUID().toString();
-        Rule rule = new Rule(ruleId, "Light after dark", new IfBlock(condition, Lists.newArrayList(new SwitchAction(SWITCHABLE_DEVICE_ID, SwitchCommand.STATE.ON))), trigger);
+        Rule rule = new Rule(ruleId, "Light after dark", new IfBlock(newArrayList(branch)), trigger);
 
         StateImpl itemState = new StateImpl(MY_ITEM_ID, Status.ACTIVE);
         itemState.updateIfChanged(LUMINANCE_LABEL, new StateItemImpl(LUMINANCE_LABEL, new ValueImpl(VALUE_TYPE.NUMBER, 1l)));
@@ -129,8 +133,9 @@ public class RuleEngineTest {
                 Operator.EQUALS,
                 new StaticValue("detected", VALUE_TYPE.STRING));
 
+        IfBranch branch = new IfBranch(condition, newArrayList(new SwitchAction("LightId", SwitchCommand.STATE.ON)));
         String ruleId = randomUUID().toString();
-        Rule rule = new Rule(ruleId, "Light on with movement", new IfBlock(condition, Lists.newArrayList(new SwitchAction("LightId", SwitchCommand.STATE.ON))), trigger);
+        Rule rule = new Rule(ruleId, "Light on with movement", new IfBlock(newArrayList(branch)), trigger);
 
         StringWriter stringWriter = new StringWriter();
         ObjectMapper objectMapper = new ObjectMapper();

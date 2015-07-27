@@ -6,30 +6,27 @@ import java.util.List;
  * @author Renze de Vries
  */
 public class IfBlock implements Block {
-    private Condition condition;
-    private List<Action> actions;
+    private List<IfBranch> branches;
 
-    public IfBlock(Condition condition, List<Action> actions) {
-        this.condition = condition;
-        this.actions = actions;
+    public IfBlock(List<IfBranch> branches) {
+        this.branches = branches;
     }
 
     public IfBlock() {
     }
 
-    public Condition getCondition() {
-        return condition;
+    public List<IfBranch> getBranches() {
+        return branches;
     }
 
-    public void setCondition(Condition condition) {
-        this.condition = condition;
+    public void setBranches(List<IfBranch> branches) {
+        this.branches = branches;
     }
 
-    public List<Action> getActions() {
-        return actions;
-    }
-
-    public void setActions(List<Action> actions) {
-        this.actions = actions;
+    @Override
+    public String toString() {
+        return "IfBlock{" +
+                "branches=" + branches +
+                '}';
     }
 }

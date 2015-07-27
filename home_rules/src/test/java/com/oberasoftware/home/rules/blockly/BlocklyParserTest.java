@@ -10,6 +10,7 @@ import com.oberasoftware.home.rules.api.Action;
 import com.oberasoftware.home.rules.api.CompareCondition;
 import com.oberasoftware.home.rules.api.DeviceTrigger;
 import com.oberasoftware.home.rules.api.IfBlock;
+import com.oberasoftware.home.rules.api.IfBranch;
 import com.oberasoftware.home.rules.api.ItemValue;
 import com.oberasoftware.home.rules.api.Operator;
 import com.oberasoftware.home.rules.api.Rule;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -55,13 +57,18 @@ public class BlocklyParserTest {
         assertThat(rule.getBlock() instanceof IfBlock, is(true));
 
         IfBlock ifBlock = (IfBlock) rule.getBlock();
-        List<Action> actions = ifBlock.getActions();
+        assertThat(ifBlock.getBranches().size(), is(1));
+
+        IfBranch firstBranch = Iterables.getFirst(ifBlock.getBranches(), null);
+        assertThat(firstBranch, notNullValue());
+
+        List<Action> actions = firstBranch.getActions();
         assertThat(actions.size(), is(1));
 
-        assertThat(ifBlock.getCondition(), notNullValue());
-        assertThat(ifBlock.getCondition() instanceof CompareCondition, is(true));
+        assertThat(firstBranch.getCondition(), notNullValue());
+        assertThat(firstBranch.getCondition() instanceof CompareCondition, is(true));
 
-        CompareCondition compareCondition = (CompareCondition) ifBlock.getCondition();
+        CompareCondition compareCondition = (CompareCondition) firstBranch.getCondition();
         assertThat(compareCondition.getLeftValue(), notNullValue());
         assertThat(compareCondition.getRightValue(), notNullValue());
         assertThat(compareCondition.getOperator(), is(Operator.SMALLER_THAN_EQUALS));
@@ -83,5 +90,29 @@ public class BlocklyParserTest {
         SwitchAction switchAction = (SwitchAction) action;
         assertThat(switchAction.getItemId(), is("0000001e-0661-7a39-0000-014e5fa2231e"));
         assertThat(switchAction.getState(), is(SwitchCommand.STATE.ON));
+    }
+
+    @Test
+    public void testParseIfElse() throws Exception {
+        CharSource s = Resources.asCharSource(this.getClass().getResource("/simple_ifelse_rule.xml"), Charset.defaultCharset());
+        String blocklyRuleXML = s.read();
+
+        Rule rule = blocklyParser.toRule(blocklyRuleXML);
+
+        assertThat(rule.getBlock(), notNullValue());
+        assertThat(rule.getBlock() instanceof IfBlock, is(true));
+
+        IfBlock ifBlock = (IfBlock) rule.getBlock();
+        assertThat(ifBlock.getBranches().size(), is(2));
+
+        List<IfBranch> branches = ifBlock.getBranches();
+        IfBranch conditionBranch = branches.get(0);
+        IfBranch elseBranch = branches.get(1);
+
+        assertThat(conditionBranch, notNullValue());
+        assertThat(elseBranch, notNullValue());
+
+        assertThat(conditionBranch.getCondition(), notNullValue());
+        assertThat(elseBranch.getCondition(), nullValue());
     }
 }

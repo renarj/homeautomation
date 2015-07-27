@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = CompareCondition.class, name="compare")
+        @JsonSubTypes.Type(value = IfBlock.class, name="ifBlock"),
+        @JsonSubTypes.Type(value = IfBranch.class, name="ifBranch")
 })
 public interface Block {
 

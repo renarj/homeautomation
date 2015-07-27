@@ -3,6 +3,7 @@ package com.oberasoftware.home.rules.evaluators.blocks;
 import com.oberasoftware.home.rules.api.Action;
 import com.oberasoftware.home.rules.api.Condition;
 import com.oberasoftware.home.rules.api.IfBlock;
+import com.oberasoftware.home.rules.api.IfBranch;
 import com.oberasoftware.home.rules.evaluators.EvaluatorFactory;
 import com.oberasoftware.home.rules.evaluators.actions.ActionEvaluator;
 import com.oberasoftware.home.rules.evaluators.conditions.ConditionEvaluator;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,12 +29,25 @@ public class IfBlockEvaluator implements BlockEvaluator<IfBlock> {
 
     @Override
     public Boolean eval(IfBlock input) {
-        ConditionEvaluator<Condition> conditionEvaluator = evaluatorFactory.getEvaluator(input.getCondition());
-        boolean eval = conditionEvaluator.eval(input.getCondition());
+        List<IfBranch> branches = input.getBranches();
+        for(IfBranch branch: branches) {
+            if(evalCondition(branch.getCondition(), branch.getActions())) {
+                LOG.debug("Branch: {} evaluated to true", branch);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean evalCondition(Condition condition, List<Action> actions) {
+        ConditionEvaluator<Condition> conditionEvaluator = evaluatorFactory.getEvaluator(condition);
+        boolean eval = conditionEvaluator.eval(condition);
 
         if(eval) {
-            LOG.debug("Condition: {} is true actions: {} will be executed", input.getCondition(), input.getActions());
-            evalActions(input.getActions());
+            LOG.debug("Condition: {} is true actions: {} will be executed", condition, actions);
+            evalActions(actions);
         }
 
         return eval;
@@ -49,7 +64,15 @@ public class IfBlockEvaluator implements BlockEvaluator<IfBlock> {
 
     @Override
     public Set<String> getDependentItems(IfBlock input) {
-        ConditionEvaluator<Condition> conditionEvaluator = evaluatorFactory.getEvaluator(input.getCondition());
-        return conditionEvaluator.getDependentItems(input.getCondition());
+        Set<String> dependentItems = new HashSet<>();
+        input.getBranches().forEach(b -> {
+            if(b.getCondition() != null) {
+                ConditionEvaluator<Condition> conditionEvaluator = evaluatorFactory.getEvaluator(b.getCondition());
+                dependentItems.addAll(conditionEvaluator.getDependentItems(b.getCondition()));
+            }
+        });
+
+
+        return dependentItems;
     }
 }
