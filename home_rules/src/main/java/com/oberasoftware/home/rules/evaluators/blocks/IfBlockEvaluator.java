@@ -42,8 +42,14 @@ public class IfBlockEvaluator implements BlockEvaluator<IfBlock> {
     }
 
     private boolean evalCondition(Condition condition, List<Action> actions) {
-        ConditionEvaluator<Condition> conditionEvaluator = evaluatorFactory.getEvaluator(condition);
-        boolean eval = conditionEvaluator.eval(condition);
+        boolean eval = false;
+        if(condition != null) {
+            ConditionEvaluator<Condition> conditionEvaluator = evaluatorFactory.getEvaluator(condition);
+            eval = conditionEvaluator.eval(condition);
+        } else {
+            LOG.debug("Reached the else statement, evaluating");
+            eval = true;
+        }
 
         if(eval) {
             LOG.debug("Condition: {} is true actions: {} will be executed", condition, actions);

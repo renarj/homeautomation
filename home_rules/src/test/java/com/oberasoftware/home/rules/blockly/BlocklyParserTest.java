@@ -114,5 +114,16 @@ public class BlocklyParserTest {
 
         assertThat(conditionBranch.getCondition(), notNullValue());
         assertThat(elseBranch.getCondition(), nullValue());
+
+        List<Action> actions = elseBranch.getActions();
+        assertThat(actions.size(), is(1));
+
+        Action action = Iterables.getFirst(actions, null);
+        assertThat(action, notNullValue());
+        assertThat(action instanceof SwitchAction, is(true));
+
+        SwitchAction switchAction = (SwitchAction) action;
+        assertThat(switchAction.getItemId(), is("486fd173-b3ea-417f-b46c-e7d3579f59e1"));
+        assertThat(switchAction.getState(), is(SwitchCommand.STATE.OFF));
     }
 }

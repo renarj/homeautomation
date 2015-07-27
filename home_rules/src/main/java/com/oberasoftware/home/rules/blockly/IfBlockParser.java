@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import static com.oberasoftware.home.rules.blockly.XMLUtils.findElementWithAttribute;
 import static com.oberasoftware.home.rules.blockly.XMLUtils.findFirstBlock;
-import static com.oberasoftware.home.rules.blockly.XMLUtils.findFirstElement;
 
 /**
  * @author Renze de Vries
@@ -81,7 +80,7 @@ public class IfBlockParser implements FragmentParser<IfBlock> {
     }
 
     private IfBranch getBranch(Element node, String ifBranchName, String statementName) throws BlocklyParseException {
-        Element doStatement = findFirstElement(node, "statement").orElseThrow(() ->
+        Element doStatement = findElementWithAttribute(node, "statement", "name", statementName).orElseThrow(() ->
                 new BlocklyParseException("No DO statement specified"));
         Element statementBlock = findFirstBlock(doStatement)
                 .orElseThrow(() -> new BlocklyParseException("No statement block specified"));

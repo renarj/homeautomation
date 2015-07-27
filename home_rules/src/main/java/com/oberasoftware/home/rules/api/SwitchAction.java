@@ -36,4 +36,12 @@ public class SwitchAction implements ItemAction {
     public void setState(SwitchCommand.STATE state) {
         this.state = state;
     }
+
+    @Override
+    public String toString() {
+        return "SwitchAction{" +
+                "itemId='" + itemId + '\'' +
+                ", state=" + state +
+                '}';
+    }
 }
