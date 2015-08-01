@@ -51,4 +51,6 @@ public class ValueEventHandler implements EventHandler {
         LOG.debug("Updating state of group: {}", event.getItemId());
         stateManager.updateItemState(event.getItemId(), label, value);
     }
+
+
 }

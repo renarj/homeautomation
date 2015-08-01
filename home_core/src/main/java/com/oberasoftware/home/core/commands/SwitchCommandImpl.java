@@ -32,4 +32,23 @@ public class SwitchCommandImpl implements SwitchCommand {
                 ", itemId='" + itemId + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SwitchCommandImpl that = (SwitchCommandImpl) o;
+
+        if (!itemId.equals(that.itemId)) return false;
+        return state == that.state;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = itemId.hashCode();
+        result = 31 * result + state.hashCode();
+        return result;
+    }
 }

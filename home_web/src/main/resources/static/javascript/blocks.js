@@ -12,7 +12,7 @@ Blockly.Blocks['rule'] = {
     }
 };
 
-Blockly.Blocks['triggerDevice'] = {
+Blockly.Blocks['deviceTrigger'] = {
     init: function() {
         this.appendDummyInput()
             .appendField("Device Change");
@@ -22,6 +22,36 @@ Blockly.Blocks['triggerDevice'] = {
         this.setTooltip('');
     }
 };
+
+Blockly.Blocks['systemTrigger'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("System Start");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setColour(240);
+        this.setTooltip('');
+    }
+};
+
+Blockly.Blocks['dayTimeTrigger'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("Time Trigger");
+        this.appendDummyInput()
+            .appendField("Hour")
+            .appendField(new Blockly.FieldTextInput(""), "hour");
+        this.appendDummyInput()
+            .appendField("Minute")
+            .appendField(new Blockly.FieldTextInput(""), "minute");
+
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setColour(240);
+        this.setTooltip('');
+    }
+};
+
 
 Blockly.Blocks['onoff'] = {
     init: function() {
@@ -33,6 +63,43 @@ Blockly.Blocks['onoff'] = {
         this.setTooltip('');
     }
 };
+
+Blockly.Blocks['label'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([["power", "power"], ["temperature", "temperature"], ["movement", "movement"], ["luminance", "luminance"]]), "label");
+        this.setInputsInline(true);
+        this.setOutput(true, "String");
+        this.setColour(330);
+        this.setTooltip('');
+    }
+};
+
+Blockly.Blocks['label_text'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("Custom Label:")
+            .appendField(new Blockly.FieldTextInput(""), "label");
+        this.setInputsInline(true);
+        this.setOutput(true, "String");
+        this.setColour(330);
+        this.setTooltip('');
+    }
+};
+
+Blockly.Blocks['text_value'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("Text:")
+            .appendField(new Blockly.FieldTextInput(""), "label");
+        this.setInputsInline(true);
+        this.setOutput(true, "String");
+        this.setColour(330);
+        this.setTooltip('');
+    }
+};
+
+
 Blockly.Blocks['movement'] = {
     init: function() {
         this.appendDummyInput()
@@ -44,21 +111,40 @@ Blockly.Blocks['movement'] = {
     }
 };
 
-
-Blockly.Blocks['devicevalue'] = {
+Blockly.Blocks['getItemValue'] = {
     init: function() {
         this.appendValueInput("item")
             .setCheck("String")
-            .appendField("Device:");
-        this.appendDummyInput()
-            .appendField("Value:")
-            .appendField(new Blockly.FieldDropdown([["power", "power"], ["temperature", "temperature"], ["movement", "movement"], ["luminance", "luminance"]]), "label");
+            .appendField("Get Item:");
+        this.appendValueInput("label")
+            .appendField("Label:")
+
         this.setInputsInline(true);
         this.setOutput(true);
         this.setColour(255);
-        this.setTooltip('Returns the value of a Device');
+        this.setTooltip('Returns the value of an item');
     }
 };
+
+Blockly.Blocks['setItemValue'] = {
+    init: function() {
+        this.appendValueInput("item")
+            .setCheck("String")
+            .appendField("Set Item:");
+        this.appendValueInput("label")
+            .appendField("Label:");
+        this.appendValueInput("value")
+            .appendField("to Value:");
+
+        this.setInputsInline(true);
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setColour(165);
+        this.setTooltip('Sets the value of an item');
+    }
+};
+
+
 Blockly.Blocks['switch_item'] = {
     init: function() {
         this.appendValueInput("item")

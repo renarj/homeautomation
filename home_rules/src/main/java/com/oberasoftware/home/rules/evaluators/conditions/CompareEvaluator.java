@@ -2,9 +2,9 @@ package com.oberasoftware.home.rules.evaluators.conditions;
 
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.api.types.Value;
-import com.oberasoftware.home.rules.api.CompareCondition;
+import com.oberasoftware.home.rules.api.logic.CompareCondition;
 import com.oberasoftware.home.rules.api.Operator;
-import com.oberasoftware.home.rules.api.ResolvableValue;
+import com.oberasoftware.home.rules.api.values.ResolvableValue;
 import com.oberasoftware.home.rules.evaluators.EvalException;
 import com.oberasoftware.home.rules.evaluators.EvaluatorFactory;
 import com.oberasoftware.home.rules.evaluators.values.ValueEvaluator;

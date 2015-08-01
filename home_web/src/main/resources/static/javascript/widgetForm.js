@@ -140,13 +140,21 @@ $(document).ready(function() {
         }
     });
 
+    $("#widgetLabel").change(function() {
+        var label = this.value;
+        if(label == "custom") {
+            $("#widgetCustomValueType").removeClass("hide");
+        } else {
+            $("#widgetCustomValueType").addClass("hide");
+        }
+    });
+
     $("#createUIItemForm").submit(function(event) {
         console.log("Creating UI Item")
         event.preventDefault();
 
         var name = $("#itemName").val();
         var description = $("#itemDescription").val();
-        var container = $("#containerId").val();
         var widget = $("#widgetList").find('option:selected').val();
         var deviceId = $("#deviceList").find('option:selected').val();
         var groupId = $("#groupList").find('option:selected').val();
@@ -164,13 +172,16 @@ $(document).ready(function() {
 
         var item = {
             "name" : name,
-            "description" : description,
             "uiType" : widget,
             "containerId" : container,
             "itemId" : itemId
         };
         if(widget == "label" || widget == "graph") {
             var label = $("#widgetLabel").find('option:selected').val();
+            if(label == "custom") {
+                label = $("#customLabel").val();
+            }
+
             var unit = $("#widgetLabelUnitType").find('option:selected').text();
             console.log("We have a label: " + label + " and unit: " + unit);
 
@@ -188,9 +199,11 @@ $(document).ready(function() {
             $('#dataModal').modal('hide')
 
             $("#itemName").val("");
-            $("#itemDescription").val("");
             $("#containerId").val("");
-            $("#widgetList").val("none");
+            $("#widgetList").val("switch");
+            $("#widgetLabel").val("none");
+            $("#widgetLabelUnitType").val("none");
+
             $("#deviceList").empty();
             $("#pluginList").empty();
             $("#controllerList").empty();

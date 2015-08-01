@@ -15,7 +15,6 @@ import java.util.Map;
 public class UIItemImpl implements UIItem {
     private String id;
     private String name;
-    private String description;
     private String uiType;
 
     private String containerId;
@@ -26,11 +25,10 @@ public class UIItemImpl implements UIItem {
 
     private Map<String, String> properties = new HashMap<>();
 
-    public UIItemImpl(String id, String name, String containerId, String description, String uiType, String itemId, Map<String, String> properties, long weight) {
+    public UIItemImpl(String id, String name, String containerId, String uiType, String itemId, Map<String, String> properties, long weight) {
         this.id = id;
         this.name = name;
         this.containerId = containerId;
-        this.description = description;
         this.uiType = uiType;
         this.itemId = itemId;
         this.properties = properties;
@@ -83,16 +81,6 @@ public class UIItemImpl implements UIItem {
 
     @Override
     @JasDBProperty
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    @JasDBProperty
     public String getUiType() {
         return uiType;
     }
@@ -130,7 +118,6 @@ public class UIItemImpl implements UIItem {
         return "UIItem{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", uiType='" + uiType + '\'' +
                 ", containerId='" + containerId + '\'' +
                 ", itemId='" + itemId + '\'' +

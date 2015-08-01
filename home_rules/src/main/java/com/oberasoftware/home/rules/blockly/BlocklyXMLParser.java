@@ -1,6 +1,7 @@
 package com.oberasoftware.home.rules.blockly;
 
-import com.oberasoftware.home.rules.api.Rule;
+import com.oberasoftware.home.rules.api.general.Rule;
+import com.oberasoftware.home.rules.blockly.general.RuleBlockParser;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class BlocklyXMLParser implements BlocklyParser {
     private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 
     @Autowired
-    private RuleFragmentParser ruleBlockParser;
+    private RuleBlockParser ruleBlockParser;
 
     @Override
     public Rule toRule(String blocklyXml) throws BlocklyParseException {

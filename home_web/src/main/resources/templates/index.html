@@ -118,10 +118,6 @@
                                 <input class="form-control" id="itemName" type="text"/>
                             </div>
                             <div class="form-group">
-                                <label for="itemDescription">Description</label>
-                                <input class="form-control" id="itemDescription" type="text"/>
-                            </div>
-                            <div class="form-group">
                                 <label for="sourceItem">Item Type</label>
                                 <select class="form-control" id="sourceItem">
                                     <option value="device">Device</option>
@@ -167,7 +163,12 @@
                                     <option value="temperature">Temperature</option>
                                     <option value="luminance">Luminance</option>
                                     <option value="battery">Battery</option>
+                                    <option value="custom">Custom</option>
                                 </select>
+                            </div>
+                            <div class="form-group hide" id="widgetCustomValueType">
+                                <label for="customLabel">Custom Label</label>
+                                <input class="form-control" id="customLabel" type="text"/>
                             </div>
                             <div class="form-group hide" id="widgetUnitTypeDiv">
                                 <label for="widgetLabelUnitType">Value Unit type</label>

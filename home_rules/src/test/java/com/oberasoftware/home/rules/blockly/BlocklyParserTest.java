@@ -1,33 +1,20 @@
 package com.oberasoftware.home.rules.blockly;
 
-import com.google.common.collect.Iterables;
-import com.google.common.io.CharSource;
-import com.google.common.io.Resources;
 import com.oberasoftware.home.api.commands.SwitchCommand;
-import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.rules.RuleConfiguration;
-import com.oberasoftware.home.rules.api.Action;
-import com.oberasoftware.home.rules.api.CompareCondition;
-import com.oberasoftware.home.rules.api.DeviceTrigger;
-import com.oberasoftware.home.rules.api.IfBlock;
-import com.oberasoftware.home.rules.api.IfBranch;
-import com.oberasoftware.home.rules.api.ItemValue;
 import com.oberasoftware.home.rules.api.Operator;
-import com.oberasoftware.home.rules.api.Rule;
-import com.oberasoftware.home.rules.api.StaticValue;
-import com.oberasoftware.home.rules.api.SwitchAction;
+import com.oberasoftware.home.rules.api.general.Rule;
+import com.oberasoftware.home.rules.api.general.SwitchItem;
+import com.oberasoftware.home.rules.builder.ConditionBuilder;
+import com.oberasoftware.home.rules.builder.RuleBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.nio.charset.Charset;
-import java.util.List;
-
+import static com.oberasoftware.home.rules.blockly.BlocklyHelper.parseRule;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -42,88 +29,72 @@ public class BlocklyParserTest {
 
     @Test
     public void testParseSimpleRule() throws Exception {
-        CharSource s = Resources.asCharSource(this.getClass().getResource("/simple_luminance_rule.xml"), Charset.defaultCharset());
-        String blocklyRuleXML = s.read();
+        Rule rule = parseRule(blocklyParser, "/simple_luminance_rule.xml");
 
-        Rule rule = blocklyParser.toRule(blocklyRuleXML);
-        assertThat(rule, notNullValue());
-        assertThat(rule.getName(), is("Activate Lights After Dark"));
+        Rule expectedRule = RuleBuilder.create("Activate Lights After Dark")
+                .triggerOnDeviceChange()
+                .when(ConditionBuilder.create()
+                        .itemValue("75f1c663-b7df-4036-8a2d-5e3d95f6a596", "luminance")
+                        .compare(Operator.SMALLER_THAN, 10))
+                .thenDo(new SwitchItem("0000001e-0661-7a39-0000-014e5fa2231e", SwitchCommand.STATE.ON))
+                .build();
 
-        assertThat(rule.getTrigger(), notNullValue());
-        assertThat(rule.getTrigger() instanceof DeviceTrigger, is(true));
-
-
-        assertThat(rule.getBlock(), notNullValue());
-        assertThat(rule.getBlock() instanceof IfBlock, is(true));
-
-        IfBlock ifBlock = (IfBlock) rule.getBlock();
-        assertThat(ifBlock.getBranches().size(), is(1));
-
-        IfBranch firstBranch = Iterables.getFirst(ifBlock.getBranches(), null);
-        assertThat(firstBranch, notNullValue());
-
-        List<Action> actions = firstBranch.getActions();
-        assertThat(actions.size(), is(1));
-
-        assertThat(firstBranch.getCondition(), notNullValue());
-        assertThat(firstBranch.getCondition() instanceof CompareCondition, is(true));
-
-        CompareCondition compareCondition = (CompareCondition) firstBranch.getCondition();
-        assertThat(compareCondition.getLeftValue(), notNullValue());
-        assertThat(compareCondition.getRightValue(), notNullValue());
-        assertThat(compareCondition.getOperator(), is(Operator.SMALLER_THAN_EQUALS));
-
-        assertThat(compareCondition.getLeftValue() instanceof ItemValue, is(true));
-        ItemValue itemValue = (ItemValue) compareCondition.getLeftValue();
-        assertThat(itemValue.getItemId(), is("75f1c663-b7df-4036-8a2d-5e3d95f6a596"));
-        assertThat(itemValue.getLabel(), is("luminance"));
-
-        assertThat(compareCondition.getRightValue() instanceof StaticValue, is(true));
-        StaticValue staticValue = (StaticValue) compareCondition.getRightValue();
-        assertThat(staticValue.getType(), is(VALUE_TYPE.NUMBER));
-        assertThat(staticValue.getValue(), is(10l));
-
-        Action action = Iterables.getFirst(actions, null);
-        assertThat(action, notNullValue());
-        assertThat(action instanceof SwitchAction, is(true));
-
-        SwitchAction switchAction = (SwitchAction) action;
-        assertThat(switchAction.getItemId(), is("0000001e-0661-7a39-0000-014e5fa2231e"));
-        assertThat(switchAction.getState(), is(SwitchCommand.STATE.ON));
+        assertRule(rule, expectedRule);
     }
 
     @Test
     public void testParseIfElse() throws Exception {
-        CharSource s = Resources.asCharSource(this.getClass().getResource("/simple_ifelse_rule.xml"), Charset.defaultCharset());
-        String blocklyRuleXML = s.read();
+        Rule rule = parseRule(blocklyParser, "/simple_ifelse_rule.xml");
 
-        Rule rule = blocklyParser.toRule(blocklyRuleXML);
+        Rule expectedRule = RuleBuilder.create("testRule")
+                .triggerOnDeviceChange()
+                .when(ConditionBuilder.create()
+                        .itemValue("4407eace-7bb1-43ac-aefd-da4cae9fc97a", "temperature")
+                        .compare(Operator.SMALLER_THAN_EQUALS, 20l))
+                .thenDo(new SwitchItem("486fd173-b3ea-417f-b46c-e7d3579f59e1", SwitchCommand.STATE.ON))
+                .orElseDo(new SwitchItem("486fd173-b3ea-417f-b46c-e7d3579f59e1", SwitchCommand.STATE.OFF)).build();
+        assertRule(rule, expectedRule);
+    }
 
-        assertThat(rule.getBlock(), notNullValue());
-        assertThat(rule.getBlock() instanceof IfBlock, is(true));
+    @Test
+    public void testParseComplexRule() throws Exception {
+        Rule rule = parseRule(blocklyParser, "/moveafterlight_rule.xml");
 
-        IfBlock ifBlock = (IfBlock) rule.getBlock();
-        assertThat(ifBlock.getBranches().size(), is(2));
+        Rule expectedRule = RuleBuilder.create("Light off After Dark and No Movement")
+                .triggerOnDeviceChange()
+                    .when(ConditionBuilder.create().and(
+                            ConditionBuilder.create()
+                                    .itemValue("1a950cf2-b721-418b-8744-11b7d1c476ca", "luminance")
+                                    .compare(Operator.SMALLER_THAN_EQUALS, 10)
+                            , ConditionBuilder.create().itemValue("1a950cf2-b721-418b-8744-11b7d1c476ca", "movement")
+                                    .compare(Operator.EQUALS, "on")
+                    )).thenDo(
+                        new SwitchItem("28da1433-f601-4b8d-a0f9-7dae61e83ad9", SwitchCommand.STATE.ON),
+                        new SwitchItem("0000001e-0661-7a39-0000-014e5fa2231f", SwitchCommand.STATE.ON))
+                    .orElseDo(new SwitchItem("0000001e-0661-7a39-0000-014e5fa2232b", SwitchCommand.STATE.OFF))
+                .build();
 
-        List<IfBranch> branches = ifBlock.getBranches();
-        IfBranch conditionBranch = branches.get(0);
-        IfBranch elseBranch = branches.get(1);
+        assertRule(rule, expectedRule);
+    }
 
-        assertThat(conditionBranch, notNullValue());
-        assertThat(elseBranch, notNullValue());
+    @Test
+    public void testParseSetValueRule() throws Exception {
+        Rule actual = parseRule(blocklyParser, "/update_power_start.xml");
 
-        assertThat(conditionBranch.getCondition(), notNullValue());
-        assertThat(elseBranch.getCondition(), nullValue());
+        Rule expectedRule = RuleBuilder.create("Update Power Start")
+                .triggerAtTime(0, 0)
+                .triggerOnSystemChange()
+                .setItemState("6d1a20a5-7347-41cf-bdc7-4f6df2035b24", "PowerStart")
+                    .fromItem("6d1a20a5-7347-41cf-bdc7-4f6df2035b24", "KWH")
+                .build();
+        assertRule(actual, expectedRule);
+    }
 
-        List<Action> actions = elseBranch.getActions();
-        assertThat(actions.size(), is(1));
 
-        Action action = Iterables.getFirst(actions, null);
-        assertThat(action, notNullValue());
-        assertThat(action instanceof SwitchAction, is(true));
-
-        SwitchAction switchAction = (SwitchAction) action;
-        assertThat(switchAction.getItemId(), is("486fd173-b3ea-417f-b46c-e7d3579f59e1"));
-        assertThat(switchAction.getState(), is(SwitchCommand.STATE.OFF));
+    private void assertRule(Rule actual, Rule expected) {
+        assertThat(actual.getId(), is(expected.getId()));
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getBlock(), is(expected.getBlock()));
+        assertThat(actual.getTriggers(), is(expected.getTriggers()));
     }
 }

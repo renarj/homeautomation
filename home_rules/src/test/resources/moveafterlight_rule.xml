@@ -1,0 +1,86 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+    <block type="rule" id="10" x="181" y="16">
+        <field name="rule_name">Light off After Dark and No Movement</field>
+        <statement name="ruleTrigger">
+            <block type="deviceTrigger" id="32"></block>
+        </statement>
+        <statement name="ruleStatement">
+            <block type="controls_if" id="15">
+                <mutation else="1"></mutation>
+                <value name="IF0">
+                    <block type="logic_operation" id="37">
+                        <field name="OP">AND</field>
+                        <value name="A">
+                            <block type="logic_compare" id="286">
+                                <field name="OP">LTE</field>
+                                <value name="A">
+                                    <block type="getItemValue" id="72">
+                                        <value name="item">
+                                            <block type="Device.1a950cf2-b721-418b-8744-11b7d1c476ca" id="124"></block>
+                                        </value>
+                                        <value name="label">
+                                            <block type="label" id="262">
+                                                <field name="label">luminance</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                </value>
+                                <value name="B">
+                                    <block type="math_number" id="309">
+                                        <field name="NUM">10</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                        <value name="B">
+                            <block type="logic_compare" id="291">
+                                <field name="OP">EQ</field>
+                                <value name="A">
+                                    <block type="getItemValue" id="167">
+                                        <value name="item">
+                                            <block type="Device.1a950cf2-b721-418b-8744-11b7d1c476ca" id="223"></block>
+                                        </value>
+                                        <value name="label">
+                                            <block type="label" id="272">
+                                                <field name="label">movement</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                </value>
+                                <value name="B">
+                                    <block type="movement" id="348">
+                                        <field name="NAME">detected</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+                <statement name="DO0">
+                    <block type="switch_item" id="358">
+                        <field name="state">on</field>
+                        <value name="item">
+                            <block type="Device.28da1433-f601-4b8d-a0f9-7dae61e83ad9" id="398"></block>
+                        </value>
+                        <next>
+                            <block type="switch_item" id="368">
+                                <field name="state">on</field>
+                                <value name="item">
+                                    <block type="Group.0000001e-0661-7a39-0000-014e5fa2231f" id="428"></block>
+                                </value>
+                            </block>
+                        </next>
+                    </block>
+                </statement>
+                <statement name="ELSE">
+                    <block type="switch_item" id="29">
+                        <field name="state">off</field>
+                        <value name="item">
+                            <block type="Group.0000001e-0661-7a39-0000-014e5fa2232b" id="433"></block>
+                        </value>
+                    </block>
+                </statement>
+            </block>
+        </statement>
+    </block>
+</xml>

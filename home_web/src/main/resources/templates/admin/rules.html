@@ -76,18 +76,24 @@
 </div>
 
 <xml id="toolbox" style="display: none">
-    <category name="Logic" expanded="true">
+    <category name="Automation">
+        <block type="rule"></block>
+        <block type="devicevalue"></block>
+        <block type="setDeviceValue"></block>
+
+        <block type="label_text"></block>
+        <block type="label"></block>
+
+        <block type="text_value"></block>
+        <block type="onoff"></block>
+        <block type="movement"></block>
+        <block type="switch_item"></block>
+    </category>
+    <category name="Logic">
         <block type="controls_if"></block>
         <block type="logic_compare"></block>
         <block type="logic_operation"></block>
         <block type="math_number"></block>
-
-        <block type="devicevalue"></block>
-        <block type="switch_item"></block>
-
-        <block type="rule"></block>
-        <block type="onoff"></block>
-        <block type="movement"></block>
     </category>
     <category name="Devices" id="ItemToolbox">
     </category>
@@ -95,6 +101,7 @@
     </category>
     <category name="Triggers" id="Triggers">
         <block type="triggerDevice"></block>
+        <block type="dayTimeTrigger"></block>
     </category>
 </xml>
 

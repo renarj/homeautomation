@@ -1,6 +1,6 @@
 package com.oberasoftware.home.rules.blockly;
 
-import com.oberasoftware.home.rules.api.Rule;
+import com.oberasoftware.home.rules.api.general.Rule;
 
 /**
  * @author Renze de Vries

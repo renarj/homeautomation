@@ -10,7 +10,7 @@ import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.core.model.storage.RuleItemImpl;
 import com.oberasoftware.home.rules.RuleEngine;
-import com.oberasoftware.home.rules.api.Rule;
+import com.oberasoftware.home.rules.api.general.Rule;
 import com.oberasoftware.home.rules.blockly.BlocklyParseException;
 import com.oberasoftware.home.rules.blockly.BlocklyParser;
 import nl.renarj.core.utilities.StringUtils;

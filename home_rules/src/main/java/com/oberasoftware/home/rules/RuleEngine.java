@@ -6,7 +6,7 @@ import com.oberasoftware.home.api.events.DeviceEvent;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.rules.api.Block;
-import com.oberasoftware.home.rules.api.Rule;
+import com.oberasoftware.home.rules.api.general.Rule;
 import com.oberasoftware.home.rules.evaluators.EvalException;
 import com.oberasoftware.home.rules.evaluators.EvaluatorFactory;
 import com.oberasoftware.home.rules.evaluators.blocks.BlockEvaluator;

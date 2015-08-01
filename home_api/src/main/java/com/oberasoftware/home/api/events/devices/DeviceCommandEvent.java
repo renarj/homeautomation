@@ -25,6 +25,25 @@ public class DeviceCommandEvent implements ItemEvent {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DeviceCommandEvent that = (DeviceCommandEvent) o;
+
+        if (!itemId.equals(that.itemId)) return false;
+        return command.equals(that.command);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = itemId.hashCode();
+        result = 31 * result + command.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "DeviceCommandEvent{" +
                 "itemId='" + itemId + '\'' +

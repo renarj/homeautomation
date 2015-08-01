@@ -1,11 +1,10 @@
 package com.oberasoftware.home.rules.evaluators.blocks;
 
-import com.oberasoftware.home.rules.api.Action;
+import com.oberasoftware.home.rules.api.Block;
 import com.oberasoftware.home.rules.api.Condition;
-import com.oberasoftware.home.rules.api.IfBlock;
-import com.oberasoftware.home.rules.api.IfBranch;
+import com.oberasoftware.home.rules.api.logic.IfBlock;
+import com.oberasoftware.home.rules.api.logic.IfBranch;
 import com.oberasoftware.home.rules.evaluators.EvaluatorFactory;
-import com.oberasoftware.home.rules.evaluators.actions.ActionEvaluator;
 import com.oberasoftware.home.rules.evaluators.conditions.ConditionEvaluator;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class IfBlockEvaluator implements BlockEvaluator<IfBlock> {
     public Boolean eval(IfBlock input) {
         List<IfBranch> branches = input.getBranches();
         for(IfBranch branch: branches) {
-            if(evalCondition(branch.getCondition(), branch.getActions())) {
+            if(evalCondition(branch.getCondition(), branch.getStatements())) {
                 LOG.debug("Branch: {} evaluated to true", branch);
 
                 return true;
@@ -41,8 +40,8 @@ public class IfBlockEvaluator implements BlockEvaluator<IfBlock> {
         return false;
     }
 
-    private boolean evalCondition(Condition condition, List<Action> actions) {
-        boolean eval = false;
+    private boolean evalCondition(Condition condition, List<Block> statements) {
+        boolean eval;
         if(condition != null) {
             ConditionEvaluator<Condition> conditionEvaluator = evaluatorFactory.getEvaluator(condition);
             eval = conditionEvaluator.eval(condition);
@@ -52,16 +51,16 @@ public class IfBlockEvaluator implements BlockEvaluator<IfBlock> {
         }
 
         if(eval) {
-            LOG.debug("Condition: {} is true actions: {} will be executed", condition, actions);
-            evalActions(actions);
+            LOG.debug("Condition: {} is true actions: {} will be executed", condition, statements);
+            evalStatements(statements);
         }
 
         return eval;
     }
 
-    private void evalActions(List<Action> actions) {
-        actions.forEach(a -> {
-            ActionEvaluator<Action> evaluator =evaluatorFactory.getEvaluator(a);
+    private void evalStatements(List<Block> statements) {
+        statements.forEach(a -> {
+            BlockEvaluator<Block> evaluator = evaluatorFactory.getEvaluator(a);
 
             boolean eval = evaluator.eval(a);
             LOG.debug("Action: {} evaluated: {}", a, eval);
