@@ -1,9 +1,9 @@
 package com.oberasoftware.home.hue;
 
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
+import com.oberasoftware.home.api.events.OnOffValue;
 import com.oberasoftware.home.api.events.devices.DeviceValueEvent;
-import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.core.types.ValueImpl;
@@ -69,13 +69,15 @@ public class HueLightMonitor {
         String deviceId = light.getIdentifier();
         PHLightState lightState = light.getLastKnownLightState();
 
-        bus.publish(new OnOffValueEvent(bus.getControllerId(),
-                HueExtension.HUE_ID, deviceId, lightState.isOn()));
+        Value onOffValue = new OnOffValue(lightState.isOn());
+
+        bus.publish(new DeviceValueEventImpl(bus.getControllerId(),
+                HueExtension.HUE_ID, deviceId, onOffValue, OnOffValue.LABEL));
 
         int brightness = lightState.getBrightness();
         int correctedScale = (int)((double)brightness/255 * 100);
         Value value = new ValueImpl(VALUE_TYPE.NUMBER, correctedScale);
-        DeviceValueEvent valueEvent = new DeviceNumericValueEvent(bus.getControllerId(),
+        DeviceValueEvent valueEvent = new DeviceValueEventImpl(bus.getControllerId(),
                 HueExtension.HUE_ID, deviceId, value, "value");
         bus.publish(valueEvent);
     }

@@ -3,6 +3,6 @@ package com.oberasoftware.home.api.commands;
 /**
  * @author renarj
  */
-public interface DeviceCommand extends Command {
+public interface ItemCommand extends Command {
     String getItemId();
 }

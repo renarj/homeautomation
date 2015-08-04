@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.oberasoftware.base.event.Event;
 import com.oberasoftware.home.api.commands.SwitchCommand;
-import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
+import com.oberasoftware.home.api.events.devices.ItemCommandEvent;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.model.Status;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
@@ -119,8 +119,8 @@ public class RuleEngineTest {
         assertThat(publishedEvents.size(), is(1));
 
         Event event = publishedEvents.get(0);
-        assertThat(event instanceof DeviceCommandEvent, is(true));
-        DeviceCommandEvent switchCommand = (DeviceCommandEvent) event;
+        assertThat(event instanceof ItemCommandEvent, is(true));
+        ItemCommandEvent switchCommand = (ItemCommandEvent) event;
         assertThat(switchCommand.getItemId(), is(SWITCHABLE_DEVICE_ID));
         assertThat(((SwitchCommand)switchCommand.getCommand()).getState(), is(SwitchCommand.STATE.ON));
     }
@@ -160,8 +160,8 @@ public class RuleEngineTest {
         assertThat(publishedEvents.size(), is(1));
 
         Event event = publishedEvents.get(0);
-        assertThat(event instanceof DeviceCommandEvent, is(true));
-        DeviceCommandEvent switchCommand = (DeviceCommandEvent) event;
+        assertThat(event instanceof ItemCommandEvent, is(true));
+        ItemCommandEvent switchCommand = (ItemCommandEvent) event;
         assertThat(switchCommand.getItemId(), is("LightId"));
         assertThat(((SwitchCommand)switchCommand.getCommand()).getState(), is(SwitchCommand.STATE.ON));
 

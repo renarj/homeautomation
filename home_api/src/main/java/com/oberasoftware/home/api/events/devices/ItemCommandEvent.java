@@ -1,17 +1,17 @@
 package com.oberasoftware.home.api.events.devices;
 
-import com.oberasoftware.home.api.commands.DeviceCommand;
+import com.oberasoftware.home.api.commands.ItemCommand;
 import com.oberasoftware.home.api.events.ItemEvent;
 
 /**
  * @author renarj
  */
-public class DeviceCommandEvent implements ItemEvent {
+public class ItemCommandEvent implements ItemEvent {
 
     private final String itemId;
-    private final DeviceCommand command;
+    private final ItemCommand command;
 
-    public DeviceCommandEvent(String itemId, DeviceCommand command) {
+    public ItemCommandEvent(String itemId, ItemCommand command) {
         this.itemId = itemId;
         this.command = command;
     }
@@ -20,7 +20,7 @@ public class DeviceCommandEvent implements ItemEvent {
         return itemId;
     }
 
-    public DeviceCommand getCommand() {
+    public ItemCommand getCommand() {
         return command;
     }
 
@@ -29,7 +29,7 @@ public class DeviceCommandEvent implements ItemEvent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DeviceCommandEvent that = (DeviceCommandEvent) o;
+        ItemCommandEvent that = (ItemCommandEvent) o;
 
         if (!itemId.equals(that.itemId)) return false;
         return command.equals(that.command);
@@ -45,7 +45,7 @@ public class DeviceCommandEvent implements ItemEvent {
 
     @Override
     public String toString() {
-        return "DeviceCommandEvent{" +
+        return "ItemCommandEvent{" +
                 "itemId='" + itemId + '\'' +
                 ", command=" + command +
                 '}';

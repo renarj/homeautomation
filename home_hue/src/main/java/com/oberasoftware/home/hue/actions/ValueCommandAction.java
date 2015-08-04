@@ -1,9 +1,9 @@
 package com.oberasoftware.home.hue.actions;
 
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.commands.DeviceValueCommand;
-import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
-import com.oberasoftware.home.api.events.groups.GroupNumericValue;
+import com.oberasoftware.home.api.commands.ItemValueCommand;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
+import com.oberasoftware.home.api.events.items.ItemNumericValue;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.model.storage.GroupItem;
 import com.oberasoftware.home.api.model.storage.HomeEntity;
@@ -37,7 +37,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> {
+public class ValueCommandAction implements HueCommandAction<ItemValueCommand> {
     private static final Logger LOG = getLogger(ValueCommandAction.class);
 
     @Autowired
@@ -47,7 +47,7 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
     private AutomationBus automationBus;
 
     @Override
-    public void receive(GroupItem groupItem, List<DeviceItem> items, DeviceValueCommand command) {
+    public void receive(GroupItem groupItem, List<DeviceItem> items, ItemValueCommand command) {
         PHBridge bridge = hueConnector.getSdk().getSelectedBridge();
 
         PHGroup group = GroupHelper.getOrCreateGroup(groupItem, hueConnector.getBridge(), items);
@@ -64,8 +64,9 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
             PHLight light = lights.get(firstLight);
             LOG.debug("Determined first light in group for determining capabilities: {}", light);
 
-            bridge.setLightStateForGroup(group.getIdentifier(), getTargetState(v ->
-                    automationBus.publish(new GroupNumericValue(groupItem.getId(), deviceItemIds, v.value, v.label)),
+            bridge.setLightStateForGroup(group.getIdentifier(),
+                    getTargetState(v -> deviceItemIds
+                                    .forEach(i -> automationBus.publish(new ItemNumericValue(i, v.value, v.label))),
                     light, command));
         } else {
             LOG.warn("Detected a Philips Hue group without lights");
@@ -73,7 +74,7 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
     }
 
     @Override
-    public void receive(DeviceItem item, DeviceValueCommand command) {
+    public void receive(DeviceItem item, ItemValueCommand command) {
         LOG.debug("Received a value command: {} for item: {}", command, item);
 
         PHBridge bridge = hueConnector.getSdk().getSelectedBridge();
@@ -83,9 +84,9 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
 
         LOG.debug("Received a Value command for bulb: {} desired brightness level: {}", item.getDeviceId(), command.getValues());
         if(light.isPresent()) {
-            bridge.updateLightState(light.get(), getTargetState(v ->
-                    automationBus.publish(new DeviceNumericValueEvent(item.getControllerId(), item.getPluginId(), item.getDeviceId(), v.value, v.label)),
-                    light.get(), command));
+            bridge.updateLightState(light.get(),
+                    getTargetState(v -> automationBus.publish(new DeviceValueEventImpl(item.getControllerId(),
+                            item.getPluginId(), item.getDeviceId(), v.value, v.label)), light.get(), command));
         }
     }
 
@@ -99,7 +100,7 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
         }
     }
 
-    private PHLightState getTargetState(Consumer<LocalValue> valueAction, PHLight light, DeviceValueCommand command) {
+    private PHLightState getTargetState(Consumer<LocalValue> valueAction, PHLight light, ItemValueCommand command) {
         PHLightState st = new PHLightState();
         st.setOn(true);
         Optional<Integer> brightness = getNumberValue(command, "value", true);
@@ -144,7 +145,7 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
         state.setY(xy[1]);
     }
 
-    private Optional<String> getValue(DeviceValueCommand command, String property) {
+    private Optional<String> getValue(ItemValueCommand command, String property) {
         Optional<Value> optionalValue = Optional.ofNullable(command.getValue(property));
         if(optionalValue.isPresent()) {
             return Optional.of(optionalValue.get().asString());
@@ -153,7 +154,7 @@ public class ValueCommandAction implements HueCommandAction<DeviceValueCommand> 
         }
     }
 
-    private Optional<Integer> getNumberValue(DeviceValueCommand command, String property, boolean correctScale) {
+    private Optional<Integer> getNumberValue(ItemValueCommand command, String property, boolean correctScale) {
         Optional<Value> optionalValue = Optional.ofNullable(command.getValue(property));
         if(optionalValue.isPresent()) {
             Value value = optionalValue.get();

@@ -5,7 +5,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.core.types.ValueImpl;
 import org.slf4j.Logger;
@@ -71,8 +71,8 @@ public class NestConnector {
                     double temp = (Double) c.child("ambient_temperature_c").getValue();
                     Long humidity = (Long) c.child("humidity").getValue();
 
-                    automationBus.publish(new DeviceNumericValueEvent(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.DECIMAL, temp), "Temperature"));
-                    automationBus.publish(new DeviceNumericValueEvent(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.NUMBER, humidity), "Humidity"));
+                    automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.DECIMAL, temp), "Temperature"));
+                    automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.NUMBER, humidity), "Humidity"));
                 });
             }
 

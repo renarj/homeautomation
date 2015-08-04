@@ -1,7 +1,7 @@
 package com.oberasoftware.home.service.commands.converters;
 
 import com.oberasoftware.home.api.commands.BasicCommand;
-import com.oberasoftware.home.api.commands.DeviceValueCommand;
+import com.oberasoftware.home.api.commands.ItemValueCommand;
 import com.oberasoftware.home.api.commands.converters.CommandConverter;
 import com.oberasoftware.home.api.commands.converters.ConverterType;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
@@ -25,12 +25,12 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class ValueCommandConverter implements CommandConverter<BasicCommand, DeviceValueCommand> {
+public class ValueCommandConverter implements CommandConverter<BasicCommand, ItemValueCommand> {
     private static final Logger LOG = getLogger(ValueCommandConverter.class);
 
     @Override
     @ConverterType(commandType = "value")
-    public DeviceValueCommand map(BasicCommand source) {
+    public ItemValueCommand map(BasicCommand source) {
         Map<String, String> properties = source.getProperties();
         String itemId = source.getItemId();
 

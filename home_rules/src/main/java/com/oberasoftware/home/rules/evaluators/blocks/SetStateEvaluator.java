@@ -1,8 +1,8 @@
 package com.oberasoftware.home.rules.evaluators.blocks;
 
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.commands.DeviceCommand;
-import com.oberasoftware.home.api.events.devices.DeviceCommandEvent;
+import com.oberasoftware.home.api.commands.ItemCommand;
+import com.oberasoftware.home.api.events.devices.ItemCommandEvent;
 import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.core.commands.ValueCommandImpl;
 import com.oberasoftware.home.rules.api.general.SetState;
@@ -37,9 +37,9 @@ public class SetStateEvaluator implements BlockEvaluator<SetState> {
         Map<String, Value> values = new HashMap<>();
         values.put(targetItem.getLabel(), valueEvaluator.eval(input.getResolvableValue()));
 
-        DeviceCommand deviceCommand = new ValueCommandImpl(targetItem.getItemId(), values);
+        ItemCommand itemCommand = new ValueCommandImpl(targetItem.getItemId(), values);
 
-        automationBus.publish(new DeviceCommandEvent(targetItem.getItemId(), deviceCommand));
+        automationBus.publish(new ItemCommandEvent(targetItem.getItemId(), itemCommand));
 
         return true;
     }

@@ -5,14 +5,14 @@ import com.oberasoftware.home.api.types.Value;
 /**
  * @author renarj
  */
-public class DeviceNumericValueEvent implements DeviceValueEvent {
+public class DeviceValueEventImpl implements DeviceValueEvent {
     private final String controllerId;
     private final String pluginId;
     private final String deviceId;
     private final Value value;
     private final String label;
 
-    public DeviceNumericValueEvent(String controllerId, String pluginId, String deviceId, Value value, String label) {
+    public DeviceValueEventImpl(String controllerId, String pluginId, String deviceId, Value value, String label) {
         this.controllerId = controllerId;
         this.pluginId = pluginId;
         this.deviceId = deviceId;
@@ -47,7 +47,7 @@ public class DeviceNumericValueEvent implements DeviceValueEvent {
 
     @Override
     public String toString() {
-        return "DeviceNumericValueEvent{" +
+        return "DeviceValueEventImpl{" +
                 "controllerId='" + controllerId + '\'' +
                 ", pluginId='" + pluginId + '\'' +
                 ", deviceId='" + deviceId + '\'' +

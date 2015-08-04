@@ -4,8 +4,10 @@ import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.Command;
 import com.oberasoftware.home.api.commands.SwitchCommand;
 import com.oberasoftware.home.api.commands.handlers.DeviceCommandHandler;
-import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
+import com.oberasoftware.home.api.events.OnOffValue;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
+import com.oberasoftware.home.api.types.Value;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,8 +31,8 @@ public class ExampleCommandHandler implements DeviceCommandHandler {
         if(command instanceof SwitchCommand) {
             SwitchCommand switchCommand = (SwitchCommand) command;
 
-            automationBus.publish(new OnOffValueEvent(automationBus.getControllerId(), "example", item.getDeviceId(),
-                    switchCommand.getState() == SwitchCommand.STATE.ON));
+            Value value = new OnOffValue(switchCommand.getState() == SwitchCommand.STATE.ON);
+            automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "example", item.getDeviceId(),value, OnOffValue.LABEL));
         }
 
     }

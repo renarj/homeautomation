@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.core.types.ValueImpl;
@@ -82,7 +82,7 @@ public class YoulessConnector implements Runnable {
                 long wattage = getWattage(response);
                 LOG.debug("Retrieved wattage from youless: {}", wattage);
 
-                automationBus.publish(new DeviceNumericValueEvent(automationBus.getControllerId(), "youless", youlessIp, new ValueImpl(VALUE_TYPE.NUMBER, wattage), "power"));
+                automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "youless", youlessIp, new ValueImpl(VALUE_TYPE.NUMBER, wattage), "power"));
             } else {
                 String errorResponse = getResponseAsString(urlConnection.getErrorStream());
                 LOG.error("Error: {} retrieving data from youless: {}", urlConnection.getResponseCode(), errorResponse);

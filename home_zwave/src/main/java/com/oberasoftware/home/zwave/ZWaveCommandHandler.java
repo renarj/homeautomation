@@ -2,7 +2,7 @@ package com.oberasoftware.home.zwave;
 
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.Command;
-import com.oberasoftware.home.api.commands.DeviceValueCommand;
+import com.oberasoftware.home.api.commands.ItemValueCommand;
 import com.oberasoftware.home.api.commands.SwitchCommand;
 import com.oberasoftware.home.api.commands.handlers.DeviceCommandHandler;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
@@ -55,8 +55,8 @@ public class ZWaveCommandHandler implements DeviceCommandHandler {
             } finally {
                 automationBus.publish(new SwitchEvent(nodeId, endpointId, desiredState == ON));
             }
-        } else if(command instanceof DeviceValueCommand) {
-            DeviceValueCommand valueCommand = (DeviceValueCommand) command;
+        } else if(command instanceof ItemValueCommand) {
+            ItemValueCommand valueCommand = (ItemValueCommand) command;
             String[] idParts = item.getDeviceId().split("-");
             int nodeId = Integer.parseInt(idParts[0]);
             int endpointId = Integer.parseInt(idParts[1]);

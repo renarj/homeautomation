@@ -6,7 +6,7 @@ import com.oberasoftware.home.api.model.storage.GroupItem;
  * @author Renze de Vries
  */
 public interface GroupCommand extends Command {
-    DeviceCommand getCommand();
+    ItemCommand getCommand();
 
     GroupItem getGroup();
 }

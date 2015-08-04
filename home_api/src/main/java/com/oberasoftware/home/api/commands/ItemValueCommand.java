@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author renarj
  */
-public interface DeviceValueCommand extends DeviceCommand {
+public interface ItemValueCommand extends ItemCommand {
 
     Value getValue(String property);
 

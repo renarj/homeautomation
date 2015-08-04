@@ -1,6 +1,6 @@
 package com.oberasoftware.home.core.commands;
 
-import com.oberasoftware.home.api.commands.DeviceCommand;
+import com.oberasoftware.home.api.commands.ItemCommand;
 import com.oberasoftware.home.api.commands.GroupCommand;
 import com.oberasoftware.home.api.model.storage.GroupItem;
 
@@ -9,16 +9,16 @@ import com.oberasoftware.home.api.model.storage.GroupItem;
  */
 public class GroupCommandImpl implements GroupCommand {
 
-    private final DeviceCommand command;
+    private final ItemCommand command;
     private final GroupItem groupItem;
 
-    public GroupCommandImpl(DeviceCommand command, GroupItem groupItem) {
+    public GroupCommandImpl(ItemCommand command, GroupItem groupItem) {
         this.command = command;
         this.groupItem = groupItem;
     }
 
     @Override
-    public DeviceCommand getCommand() {
+    public ItemCommand getCommand() {
         return command;
     }
 

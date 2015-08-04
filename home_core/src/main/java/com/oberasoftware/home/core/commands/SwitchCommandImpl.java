@@ -1,6 +1,11 @@
 package com.oberasoftware.home.core.commands;
 
 import com.oberasoftware.home.api.commands.SwitchCommand;
+import com.oberasoftware.home.api.events.OnOffValue;
+import com.oberasoftware.home.api.types.Value;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author renarj
@@ -31,6 +36,19 @@ public class SwitchCommandImpl implements SwitchCommand {
                 "state=" + state +
                 ", itemId='" + itemId + '\'' +
                 '}';
+    }
+
+    @Override
+    public Value getValue(String property) {
+        return getValues().get(property);
+    }
+
+    @Override
+    public Map<String, Value> getValues() {
+        Map<String, Value> valueMap = new HashMap<>();
+        valueMap.put(OnOffValue.LABEL, new OnOffValue(state == STATE.ON));
+
+        return valueMap;
     }
 
     @Override

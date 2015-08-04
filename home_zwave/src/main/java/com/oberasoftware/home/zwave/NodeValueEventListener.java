@@ -3,9 +3,9 @@ package com.oberasoftware.home.zwave;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
+import com.oberasoftware.home.api.events.OnOffValue;
 import com.oberasoftware.home.api.events.devices.DeviceValueEvent;
-import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.core.types.ValueImpl;
@@ -41,7 +41,7 @@ public class NodeValueEventListener implements EventHandler {
         double value = event.getValue().doubleValue();
         String nodeId = getNodeId(event);
 
-        DeviceValueEvent valueEvent = new DeviceNumericValueEvent(getControllerId(), getZwaveId(), nodeId,
+        DeviceValueEvent valueEvent = new DeviceValueEventImpl(getControllerId(), getZwaveId(), nodeId,
                 new ValueImpl(VALUE_TYPE.DECIMAL, value), label);
         LOG.debug("Sending value event: {}", valueEvent);
         automationBus.publish(valueEvent);
@@ -51,17 +51,20 @@ public class NodeValueEventListener implements EventHandler {
     public void receive(SwitchEvent event) {
         String nodeId = getNodeId(event);
         LOG.debug("Received a switch event: {}", event);
-        automationBus.publish(new OnOffValueEvent(getControllerId(), getZwaveId(), nodeId, event.isOn()));
+        OnOffValue value = new OnOffValue(event.isOn());
+        automationBus.publish(new DeviceValueEventImpl(getControllerId(), getZwaveId(), nodeId, value, OnOffValue.LABEL));
     }
 
     @EventSubscribe
     public void receive(SwitchLevelEvent event) {
         String nodeId = getNodeId(event);
         LOG.debug("Received a switch level event: {}", event);
-        automationBus.publish(new OnOffValueEvent(getControllerId(), getZwaveId(), nodeId, event.getValue() != 0));
+
+        OnOffValue onOffValue = new OnOffValue(event.getValue() != 0);
+        automationBus.publish(new DeviceValueEventImpl(getControllerId(), getZwaveId(), nodeId, onOffValue, OnOffValue.LABEL));
 
         Value value = new ValueImpl(VALUE_TYPE.NUMBER, event.getValue());
-        DeviceValueEvent valueEvent = new DeviceNumericValueEvent(getControllerId(), getZwaveId(), nodeId, value, "value");
+        DeviceValueEvent valueEvent = new DeviceValueEventImpl(getControllerId(), getZwaveId(), nodeId, value, "value");
 
         LOG.debug("Sending value event: {}", valueEvent);
         automationBus.publish(valueEvent);
@@ -72,7 +75,7 @@ public class NodeValueEventListener implements EventHandler {
         String label = event.getScale().getLabel().toLowerCase();
         double value = event.getValue().doubleValue();
         String nodeId = getNodeId(event);
-        DeviceValueEvent valueEvent = new DeviceNumericValueEvent(getControllerId(), getZwaveId(), nodeId,
+        DeviceValueEvent valueEvent = new DeviceValueEventImpl(getControllerId(), getZwaveId(), nodeId,
                 new ValueImpl(VALUE_TYPE.DECIMAL, value), label);
         LOG.debug("Sending value event: {}", valueEvent);
         automationBus.publish(valueEvent);
@@ -87,7 +90,7 @@ public class NodeValueEventListener implements EventHandler {
     public void receive(BatteryEvent event) throws Exception {
         String nodeId = getNodeId(event);
 
-        DeviceValueEvent valueEvent = new DeviceNumericValueEvent(getControllerId(), getZwaveId(),
+        DeviceValueEvent valueEvent = new DeviceValueEventImpl(getControllerId(), getZwaveId(),
                 nodeId, new ValueImpl(VALUE_TYPE.NUMBER, event.getBatteryLevel()), "battery");
         LOG.debug("Received battery event: {}", valueEvent);
 
@@ -98,7 +101,8 @@ public class NodeValueEventListener implements EventHandler {
     public void receive(BinarySensorEvent event) throws Exception {
         String nodeId = getNodeId(event);
 
-        DeviceValueEvent valueEvent = new OnOffValueEvent(getControllerId(), getZwaveId(), nodeId, event.isTriggered());
+        OnOffValue value = new OnOffValue(event.isTriggered());
+        DeviceValueEvent valueEvent = new DeviceValueEventImpl(getControllerId(), getZwaveId(), nodeId, value, OnOffValue.LABEL);
         LOG.debug("Received a binary sensor event: {}", valueEvent);
 
         automationBus.publish(valueEvent);

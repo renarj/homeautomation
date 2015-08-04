@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.handlers.CommandHandler;
-import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.extensions.SpringExtension;
 import com.oberasoftware.home.api.model.Device;
@@ -96,7 +96,7 @@ public class ExamplePlugin implements DeviceExtension, SpringExtension {
     public void activate(Optional<PluginItem> pluginItem) {
         Random rnd = new Random();
         SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> automationBus.publish(
-                        new DeviceNumericValueEvent(automationBus.getControllerId(), getId(), "TempSensor", new ValueImpl(VALUE_TYPE.NUMBER, rnd.nextInt(35)), "temperature")),
+                        new DeviceValueEventImpl(automationBus.getControllerId(), getId(), "TempSensor", new ValueImpl(VALUE_TYPE.NUMBER, rnd.nextInt(35)), "temperature")),
                 0l, 1l, TimeUnit.MINUTES);
 //
 //        SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> automationBus.publish(
