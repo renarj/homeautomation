@@ -27,19 +27,19 @@ public class GroupController {
     private GroupManager groupManager;
 
     @RequestMapping(value = "/")
-    public List<GroupItem> findAllGroups() {
-        return groupManager.getGroups();
+    public List<? extends GroupItem> findAllGroups() {
+        return groupManager.getItems();
     }
 
     @RequestMapping(value = "/groups(groupId)")
     public GroupItem findGroup(@PathVariable String groupId) {
-        return groupManager.getGroup(groupId);
+        return groupManager.getItem(groupId);
     }
 
 
     @RequestMapping(value = "/groups/controller({controllerId})")
-    public List<GroupItem> findGroupsByController(@PathVariable String controllerId) {
-        return groupManager.getGroups(controllerId);
+    public List<? extends GroupItem> findGroupsByController(@PathVariable String controllerId) {
+        return groupManager.getItems(controllerId);
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")

@@ -3,11 +3,15 @@ package com.oberasoftware.home.rules.api.trigger;
 /**
  * @author Renze de Vries
  */
-public class DayTimeTrigger implements Trigger {
+public class DayTimeTrigger extends CronTrigger {
+    private static final String CRON_FORMAT = "0 %d %d 1/1 * ? *";
+
     private int hour;
     private int minute;
 
     public DayTimeTrigger(int hour, int minute) {
+        super(String.format(CRON_FORMAT, minute, hour));
+
         this.hour = hour;
         this.minute = minute;
     }
@@ -35,6 +39,7 @@ public class DayTimeTrigger implements Trigger {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         DayTimeTrigger that = (DayTimeTrigger) o;
 
@@ -45,7 +50,8 @@ public class DayTimeTrigger implements Trigger {
 
     @Override
     public int hashCode() {
-        int result = hour;
+        int result = super.hashCode();
+        result = 31 * result + hour;
         result = 31 * result + minute;
         return result;
     }
@@ -55,6 +61,6 @@ public class DayTimeTrigger implements Trigger {
         return "DayTimeTrigger{" +
                 "hour=" + hour +
                 ", minute=" + minute +
-                '}';
+                "} " + super.toString();
     }
 }

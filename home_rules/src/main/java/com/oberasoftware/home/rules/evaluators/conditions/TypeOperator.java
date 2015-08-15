@@ -5,7 +5,7 @@ import com.oberasoftware.home.api.types.Value;
 /**
  * @author Renze de Vries
  */
-public interface Comparator {
+public interface TypeOperator {
     boolean equals(Value left, Value right);
 
     boolean largerThan(Value left, Value right);
@@ -15,4 +15,8 @@ public interface Comparator {
     boolean smallerThan(Value left, Value right);
 
     boolean smallerThanEquals(Value left, Value right);
+
+    Value plus(Value left, Value right);
+
+    Value minus(Value left, Value right);
 }

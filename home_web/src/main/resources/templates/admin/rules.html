@@ -78,8 +78,8 @@
 <xml id="toolbox" style="display: none">
     <category name="Automation">
         <block type="rule"></block>
-        <block type="devicevalue"></block>
-        <block type="setDeviceValue"></block>
+        <block type="getItemValue"></block>
+        <block type="setItemValue"></block>
 
         <block type="label_text"></block>
         <block type="label"></block>
@@ -94,13 +94,17 @@
         <block type="logic_compare"></block>
         <block type="logic_operation"></block>
         <block type="math_number"></block>
+        <block type="math_arithmetic"></block>
     </category>
     <category name="Devices" id="ItemToolbox">
     </category>
     <category name="Groups" id="GroupToolbox">
     </category>
+    <category name="Virtual Items" id="VirtualToolbox">
+    </category>
     <category name="Triggers" id="Triggers">
-        <block type="triggerDevice"></block>
+        <block type="deviceTrigger"></block>
+        <block type="systemTrigger"></block>
         <block type="dayTimeTrigger"></block>
     </category>
 </xml>

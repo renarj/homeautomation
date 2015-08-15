@@ -3,11 +3,11 @@ package com.oberasoftware.home.api.storage;
 import com.oberasoftware.home.api.model.storage.Container;
 import com.oberasoftware.home.api.model.storage.ControllerItem;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
-import com.oberasoftware.home.api.model.storage.GroupItem;
 import com.oberasoftware.home.api.model.storage.Item;
 import com.oberasoftware.home.api.model.storage.PluginItem;
 import com.oberasoftware.home.api.model.storage.RuleItem;
 import com.oberasoftware.home.api.model.storage.UIItem;
+import com.oberasoftware.home.api.model.storage.VirtualItem;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,9 +42,9 @@ public interface HomeDAO {
 
     List<DeviceItem> findDevices();
 
-    List<GroupItem> findGroups();
+    <T extends VirtualItem> List<T> findVirtualItems(Class<T> type);
 
-    List<GroupItem> findGroups(String controllerId);
+    <T extends VirtualItem> List<T> findVirtualItems(Class<T> type, String controllerId);
 
     List<RuleItem> findRules();
 

@@ -110,7 +110,7 @@ public class RuleEngineTest {
         itemState.updateIfChanged(LUMINANCE_LABEL, new StateItemImpl(LUMINANCE_LABEL, new ValueImpl(VALUE_TYPE.NUMBER, 1l)));
         mockStateManager.addState(itemState);
 
-        ruleEngine.process(rule);
+        ruleEngine.register(rule);
 
 
         ruleEngine.evalRule(ruleId);
@@ -152,7 +152,7 @@ public class RuleEngineTest {
         itemState.updateIfChanged("on-off", new StateItemImpl("on-off", new ValueImpl(VALUE_TYPE.STRING, "on")));
         mockStateManager.addState(itemState);
 
-        ruleEngine.process(rule);
+        ruleEngine.register(rule);
 
         ruleEngine.evalRule(ruleId);
 
@@ -166,4 +166,5 @@ public class RuleEngineTest {
         assertThat(((SwitchCommand)switchCommand.getCommand()).getState(), is(SwitchCommand.STATE.ON));
 
     }
+
 }

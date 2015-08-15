@@ -8,6 +8,7 @@ import com.oberasoftware.home.rules.api.general.SwitchItem;
 import com.oberasoftware.home.rules.builder.ConditionBuilder;
 import com.oberasoftware.home.rules.builder.RuleBuilder;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,6 +27,9 @@ public class BlocklyParserTest {
 
     @Autowired
     private BlocklyParser blocklyParser;
+
+    @org.junit.Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testParseSimpleRule() throws Exception {
@@ -78,16 +82,23 @@ public class BlocklyParserTest {
     }
 
     @Test
-    public void testParseSetValueRule() throws Exception {
+    public void testParseStartValue() throws Exception {
         Rule actual = parseRule(blocklyParser, "/update_power_start.xml");
 
         Rule expectedRule = RuleBuilder.create("Update Power Start")
                 .triggerAtTime(0, 0)
                 .triggerOnSystemChange()
                 .setItemState("6d1a20a5-7347-41cf-bdc7-4f6df2035b24", "PowerStart")
-                    .fromItem("6d1a20a5-7347-41cf-bdc7-4f6df2035b24", "KWH")
+                .fromItem("6d1a20a5-7347-41cf-bdc7-4f6df2035b24", "KWH")
                 .build();
         assertRule(actual, expectedRule);
+    }
+
+    @Test
+    public void testParseMath() throws Exception {
+        Rule actual = parseRule(blocklyParser, "/simple_math.xml");
+
+
     }
 
 

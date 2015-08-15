@@ -67,7 +67,7 @@ public class BlocklyRuleEngineTest {
         mockStateManager.addState(itemState);
 
 
-        ruleEngine.process(rule);
+        ruleEngine.register(rule);
 
         ruleEngine.evalRule(ruleId);
 
@@ -89,7 +89,7 @@ public class BlocklyRuleEngineTest {
         mockStateManager.addState(itemState);
 
 
-        ruleEngine.process(rule);
+        ruleEngine.register(rule);
 
         ruleEngine.evalRule(ruleId);
 
@@ -108,7 +108,7 @@ public class BlocklyRuleEngineTest {
         itemState.updateIfChanged("KWH", new StateItemImpl("KWH", new ValueImpl(VALUE_TYPE.NUMBER, 12345)));
         mockStateManager.addState(itemState);
 
-        ruleEngine.process(rule);
+        ruleEngine.register(rule);
 
         ruleEngine.evalRule(ruleId);
 
@@ -122,4 +122,32 @@ public class BlocklyRuleEngineTest {
 
         assertThat(Iterables.getFirst(publishedEvents, null), is(commandEvent));
     }
+
+    @Test
+    public void testStateMathOperation() throws Exception {
+        Rule rule = parseRule(blocklyParser, "/simple_math.xml");
+        String ruleId = UUID.randomUUID().toString();
+        rule.setId(ruleId);
+
+        String itemId = "6d1a20a5-7347-41cf-bdc7-4f6df2035b24";
+        StateImpl itemState = new StateImpl(itemId, Status.ACTIVE);
+        itemState.updateIfChanged("energy", new StateItemImpl("energy", new ValueImpl(VALUE_TYPE.NUMBER, 100)));
+        itemState.updateIfChanged("PowerStart", new StateItemImpl("PowerStart", new ValueImpl(VALUE_TYPE.NUMBER, 55)));
+        mockStateManager.addState(itemState);
+
+        ruleEngine.register(rule);
+
+        ruleEngine.evalRule(ruleId);
+
+        List<Event> publishedEvents = mockAutomationBus.getPublishedEvents();
+        assertThat(publishedEvents.size(), is(1));
+        Map<String, Value> values = new HashMap<>();
+        values.put("PowerUsed", new ValueImpl(VALUE_TYPE.NUMBER, 45l));
+        ItemCommand command = new ValueCommandImpl(itemId, values);
+        ItemCommandEvent commandEvent = new ItemCommandEvent(itemId, command);
+
+        assertThat(Iterables.getFirst(publishedEvents, null), is(commandEvent));
+
+    }
+
 }

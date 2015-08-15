@@ -6,6 +6,7 @@ import com.oberasoftware.home.rules.api.values.ResolvableValue;
 import com.oberasoftware.home.rules.blockly.BlockParser;
 import com.oberasoftware.home.rules.blockly.BlockParserFactory;
 import com.oberasoftware.home.rules.blockly.BlocklyParseException;
+import com.oberasoftware.home.rules.blockly.values.ItemValueParser;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,8 +38,8 @@ public class SetItemValueParser implements BlockParser<SetState> {
         Element labelBlock = findFirstBlock(labelValue)
                 .orElseThrow(() -> new BlocklyParseException("No label block defined"));
         String type = labelBlock.getAttribute("type");
-        BlockParser<String> blockParser = blockParserFactory.getParser(type);
-        String label = blockParser.parse(labelBlock);
+        BlockParser<ResolvableValue> blockParser = blockParserFactory.getParser(type);
+        String label = ItemValueParser.getLabelValue(blockParser.parse(labelBlock));
         LOG.debug("Found device label criteria: {}", label);
 
         Element itemElement = findElementWithAttribute(node, "value", "name", "item")

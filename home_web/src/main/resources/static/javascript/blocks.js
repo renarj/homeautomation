@@ -67,7 +67,7 @@ Blockly.Blocks['onoff'] = {
 Blockly.Blocks['label'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([["power", "power"], ["temperature", "temperature"], ["movement", "movement"], ["luminance", "luminance"]]), "label");
+            .appendField(new Blockly.FieldDropdown([["power", "power"], ["energy", "energy"], ["temperature", "temperature"], ["movement", "movement"], ["luminance", "luminance"]]), "label");
         this.setInputsInline(true);
         this.setOutput(true, "String");
         this.setColour(330);

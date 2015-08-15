@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
@@ -54,11 +55,20 @@ public class RuleManagerImpl implements RuleManager {
         homeDAO.findRules().forEach(r -> {
             try {
                 LOG.debug("Registering rule: {}", r);
-                ruleEngine.process(toRule(r));
+                ruleEngine.register(toRule(r));
+
+                LOG.debug("Triggered rule engine start event");
+                ruleEngine.onStarted();
             } catch (HomeAutomationException e) {
                 LOG.error("Could not load rule: " + r.toString(), e);
             }
         });
+    }
+
+    @PreDestroy
+    public void onShutdown() {
+        LOG.debug("Triggered rule engine stopping event");
+        ruleEngine.onStopping();
     }
 
     @Override
@@ -79,7 +89,7 @@ public class RuleManagerImpl implements RuleManager {
         try {
             RuleItem item = centralDatastore.store(storeItem);
             LOG.debug("Stored rule: {} triggering rule engine", item);
-            ruleEngine.process(toRule(item));
+            ruleEngine.register(toRule(item));
 
             return item;
         } catch (DataStoreException e) {
@@ -119,7 +129,7 @@ public class RuleManagerImpl implements RuleManager {
             return new RuleItemImpl(ruleItem.getId(), rule.getName(), ruleItem.getControllerId(), json, ruleItem.getProperties());
         }
 
-        LOG.debug("Could not process blockly xml data, ignoring");
+        LOG.debug("Could not register blockly xml data, ignoring");
         return ruleItem;
     }
 

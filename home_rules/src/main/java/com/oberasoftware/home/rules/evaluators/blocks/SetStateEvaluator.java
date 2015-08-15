@@ -1,5 +1,6 @@
 package com.oberasoftware.home.rules.evaluators.blocks;
 
+import com.google.common.collect.Sets;
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.ItemCommand;
 import com.oberasoftware.home.api.events.devices.ItemCommandEvent;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Renze de Vries
@@ -42,5 +44,14 @@ public class SetStateEvaluator implements BlockEvaluator<SetState> {
         automationBus.publish(new ItemCommandEvent(targetItem.getItemId(), itemCommand));
 
         return true;
+    }
+
+    @Override
+    public Set<String> getDependentItems(SetState input) {
+        input.getItemValue().getItemId();
+
+        Set<String> dependentItems = Sets.newHashSet(evaluatorFactory.getEvaluator(input.getResolvableValue()).getDependentItems(input.getResolvableValue()));
+        dependentItems.add(input.getItemValue().getItemId());
+        return dependentItems;
     }
 }

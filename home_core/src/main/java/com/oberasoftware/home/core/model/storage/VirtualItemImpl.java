@@ -2,6 +2,7 @@ package com.oberasoftware.home.core.model.storage;
 
 import com.oberasoftware.home.api.model.storage.VirtualItem;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
+import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
 
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 /**
  * @author Renze de Vries
  */
+@JasDBEntity(bagName = "virtualitems")
 public class VirtualItemImpl implements VirtualItem {
     private String id;
     private String name;

@@ -61,7 +61,13 @@ public class UIController {
 
     @RequestMapping(value = "/items", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public UIItem createItem(@RequestBody UIItemImpl item) {
-        return uiManager.store(item);
+        try {
+            return uiManager.store(item);
+        } catch(Exception e) {
+            LOG.error("", e);
+
+            throw e;
+        }
     }
 
     @RequestMapping(value = "/items({itemId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")

@@ -65,7 +65,7 @@ public class ItemCommandEventHandler implements EventHandler {
             if(groupItemImpl.isPresent()) {
                 LOG.debug("Received a group command: {} for group: {}", event, groupItemImpl.get().getName());
 
-                //return a new event, automation bus will process this
+                //return a new event, automation bus will register this
                 return new GroupCommandImpl(command, groupItemImpl.get());
             } else {
                 LOG.warn("Could not find deviceItem information for itemId: {}", command.getItemId());

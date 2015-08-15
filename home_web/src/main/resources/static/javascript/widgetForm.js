@@ -7,15 +7,19 @@ $(document).ready(function() {
         loadControllers();
     });
 
-    function showGroup() {
-        $("#group").removeClass("hide");
+    function showVirtual(labelText) {
+        $("#virtual").removeClass("hide");
         $("#controller").addClass("hide");
+        $("#virtualLabel").text(labelText);
         $("#plugin").addClass("hide");
         $("#device").addClass("hide");
     }
 
     function showDevice() {
-        $("#group").addClass("hide");
+        $("#widgetValueTypeDiv").addClass("hide");
+        $("#widgetUnitTypeDiv").addClass("hide");
+
+        $("#virtual").addClass("hide");
         $("#controller").removeClass("hide");
         $("#plugin").removeClass("hide");
         $("#device").removeClass("hide");
@@ -69,9 +73,12 @@ $(document).ready(function() {
         if(selectedSource == "device") {
             showDevice();
             loadControllers();
-        } else {
-            showGroup();
+        } else if(selectedSource == "group") {
+            showVirtual("Group");
             loadGroups();
+        } else if(selectedSource == "virtual") {
+            showVirtual("Virtual Item");
+            loadVirtualItems();
         }
     });
 
@@ -79,7 +86,21 @@ $(document).ready(function() {
         console.log("Retrieving Groups");
         $.get("/groups/", function(data){
             if(!isEmpty(data)) {
-                var list = $("#groupList");
+                var list = $("#virtualList");
+                list.empty();
+
+                $.each(data, function (i, g) {
+                    list.append(new Option(g.name, g.id));
+                })
+            }
+        })
+    }
+
+    function loadVirtualItems() {
+        console.log("Retrieving Virtual Items");
+        $.get("/virtualitems/", function(data){
+            if(!isEmpty(data)) {
+                var list = $("#virtualList");
                 list.empty();
 
                 $.each(data, function (i, g) {
@@ -154,19 +175,18 @@ $(document).ready(function() {
         event.preventDefault();
 
         var name = $("#itemName").val();
-        var description = $("#itemDescription").val();
+        var container = $("#containerId").val();
         var widget = $("#widgetList").find('option:selected').val();
         var deviceId = $("#deviceList").find('option:selected').val();
-        var groupId = $("#groupList").find('option:selected').val();
+        var virtualItemId = $("#virtualList").find('option:selected').val();
         var selectedSource = $("#sourceItem").find('option:selected').val();
 
         var itemId = deviceId;
-        if(selectedSource == "group") {
-            itemId = groupId;
+        if(selectedSource == "group" || selectedSource == "virtual") {
+            itemId = virtualItemId;
         }
 
         console.log("Creating ui item name: " + name);
-        console.log("Creating ui item description: " + description);
         console.log("Creating ui item container: " + container);
         console.log("Creating ui item widget: " + widget);
 
@@ -192,6 +212,8 @@ $(document).ready(function() {
         }
 
         var jsonData = JSON.stringify(item);
+
+        console.log("Posting: " + jsonData)
 
         $.ajax({url: "/ui/items", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
             console.log("Posted UI Item successfully");

@@ -20,8 +20,8 @@ import java.util.Set;
 @Component
 public class CompareEvaluator implements ConditionEvaluator<CompareCondition> {
 
-    private static final NumberComparator NUMBER_COMPARATOR = new NumberComparator();
-    private static final StringComparator STRING_COMPARATOR = new StringComparator();
+    private static final NumberTypeOperator NUMBER_COMPARATOR = new NumberTypeOperator();
+    private static final StringTypeOperator STRING_COMPARATOR = new StringTypeOperator();
 
     @Autowired
     private EvaluatorFactory evaluatorFactory;
@@ -66,18 +66,18 @@ public class CompareEvaluator implements ConditionEvaluator<CompareCondition> {
         }
     }
 
-    private boolean runComparator(Operator operator, Value left, Value right, Comparator comparator) {
+    private boolean runComparator(Operator operator, Value left, Value right, TypeOperator typeOperator) {
         switch(operator) {
             case EQUALS:
-                return comparator.equals(left, right);
+                return typeOperator.equals(left, right);
             case LARGER_THAN:
-                return comparator.largerThan(left, right);
+                return typeOperator.largerThan(left, right);
             case LARGER_THAN_EQUALS:
-                return comparator.largerThanEquals(left, right);
+                return typeOperator.largerThanEquals(left, right);
             case SMALLER_THAN:
-                return comparator.smallerThan(left, right);
+                return typeOperator.smallerThan(left, right);
             case SMALLER_THAN_EQUALS:
-                return comparator.smallerThanEquals(left, right);
+                return typeOperator.smallerThanEquals(left, right);
             default:
                 throw new EvalException("Unsupport operator: " + operator);
         }

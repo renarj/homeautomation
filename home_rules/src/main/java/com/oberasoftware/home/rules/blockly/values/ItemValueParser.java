@@ -1,7 +1,9 @@
 package com.oberasoftware.home.rules.blockly.values;
 
+import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.rules.api.values.ItemValue;
 import com.oberasoftware.home.rules.api.values.ResolvableValue;
+import com.oberasoftware.home.rules.api.values.StaticValue;
 import com.oberasoftware.home.rules.blockly.BlockParser;
 import com.oberasoftware.home.rules.blockly.BlockParserFactory;
 import com.oberasoftware.home.rules.blockly.BlocklyParseException;
@@ -36,8 +38,8 @@ public class ItemValueParser implements BlockParser<ResolvableValue> {
         Element labelBlock = findFirstBlock(labelValue)
                 .orElseThrow(() -> new BlocklyParseException("No label block defined"));
         String type = labelBlock.getAttribute("type");
-        BlockParser<String> blockParser = blockParserFactory.getParser(type);
-        String label = blockParser.parse(labelBlock);
+        BlockParser<ResolvableValue> blockParser = blockParserFactory.getParser(type);
+        String label = getLabelValue(blockParser.parse(labelBlock));
         LOG.debug("Found device label criteria: {}", label);
 
         Element itemElement = findElementWithAttribute(node, "value", "name", "item")
@@ -49,5 +51,16 @@ public class ItemValueParser implements BlockParser<ResolvableValue> {
         LOG.debug("Found itemId: {}", itemId);
 
         return new ItemValue(itemId, label);
+    }
+
+    public static String getLabelValue(ResolvableValue resolvableValue) throws BlocklyParseException {
+        if(resolvableValue instanceof StaticValue) {
+            StaticValue staticValue = (StaticValue) resolvableValue;
+            if(staticValue.getType() == VALUE_TYPE.STRING) {
+                return (String) staticValue.getValue();
+            }
+        }
+
+        throw new BlocklyParseException("Unable to retrieve label value");
     }
 }

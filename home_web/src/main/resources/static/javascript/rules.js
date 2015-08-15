@@ -66,6 +66,7 @@ var workspace = Blockly.inject(blocklyDiv,
 
 var itemToolbox = $("#ItemToolbox");
 var groupToolbox = $("#GroupToolbox");
+var virtualToolbox = $("#VirtualToolbox");
 
 var onresize = function(e) {
     // Compute the absolute coordinates and dimensions of blocklyArea.
@@ -111,6 +112,18 @@ $.when(
             createItemBlock(blockId, name);
 
             appendToToolbox(groupToolbox, blockId);
+        })
+    }),
+    $.get("/virtualitems/", function(data) {
+        $.each(data, function(i, row) {
+            console.log("Found a item: " + row.id)
+            var groupId = row.id;
+            var name = row.name;
+            var blockId = "Item." + groupId;
+
+            createItemBlock(blockId, name);
+
+            appendToToolbox(virtualToolbox, blockId);
         })
     })
 ).then(function(resp1, resp2){
