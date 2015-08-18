@@ -35,7 +35,7 @@ public class StateImpl implements State {
 
     @Override
     public StateItem getStateItem(String label) {
-        return stateItems.get(label);
+        return stateItems.get(label.toLowerCase());
     }
 
     @Override
@@ -44,12 +44,14 @@ public class StateImpl implements State {
     }
 
     public boolean updateIfChanged(String label, StateItem stateItem) {
+        String normalisedLabel = label.toLowerCase();
+
         boolean updated = true;
-        if(stateItems.containsKey(label)) {
+        if(stateItems.containsKey(normalisedLabel)) {
             //if the existing item is different than new item it is updated
-            updated = !stateItems.get(label).equals(stateItem);
+            updated = !stateItems.get(normalisedLabel).equals(stateItem);
         }
-        this.stateItems.put(label, stateItem);
+        this.stateItems.put(normalisedLabel, stateItem);
         return updated;
     }
 

@@ -1,0 +1,38 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+    <block type="rule" id="13" x="148" y="15">
+        <field name="rule_name">Update Power Start</field>
+        <statement name="ruleTrigger">
+            <block type="dayTimeTrigger" id="29">
+                <field name="hour">0</field>
+                <field name="minute">0</field>
+                <next>
+                    <block type="systemTrigger" id="21"></block>
+                </next>
+            </block>
+        </statement>
+        <statement name="ruleStatement">
+            <block type="setItemValue" id="43">
+                <value name="item">
+                    <block type="Device.6d1a20a5-7347-41cf-bdc7-4f6df2035b24" id="79"></block>
+                </value>
+                <value name="label">
+                    <block type="label_text" id="126">
+                        <field name="label">PowerStart</field>
+                    </block>
+                </value>
+                <value name="value">
+                    <block type="getItemValue" id="89">
+                        <value name="item">
+                            <block type="Device.6d1a20a5-7347-41cf-bdc7-4f6df2035b24" id="115"></block>
+                        </value>
+                        <value name="label">
+                            <block type="label_text" id="125">
+                                <field name="label">KWH</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+            </block>
+        </statement>
+    </block>
+</xml>

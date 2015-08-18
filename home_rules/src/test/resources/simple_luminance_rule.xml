@@ -1,0 +1,42 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block type="rule" id="80" x="129" y="212">
+    <field name="rule_name">Activate Lights After Dark</field>
+    <statement name="ruleTrigger">
+        <block type="deviceTrigger" id="93"></block>
+    </statement>
+    <statement name="ruleStatement">
+        <block type="controls_if" id="107">
+            <value name="IF0">
+                <block type="logic_compare" id="121">
+                    <field name="OP">LT</field>
+                    <value name="A">
+                        <block type="getItemValue" id="90">
+                            <value name="item">
+                                <block type="Device.75f1c663-b7df-4036-8a2d-5e3d95f6a596" id="200"></block>
+                            </value>
+                            <value name="label">
+                                <block type="label" id="174">
+                                    <field name="label">luminance</field>
+                                </block>
+                            </value>
+                        </block>
+                    </value>
+                    <value name="B">
+                        <block type="math_number" id="126">
+                            <field name="NUM">10</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+            <statement name="DO0">
+                <block type="switch_item" id="215">
+                    <field name="state">on</field>
+                    <value name="item">
+                        <block type="Group.0000001e-0661-7a39-0000-014e5fa2231e" id="205"></block>
+                    </value>
+                </block>
+            </statement>
+        </block>
+    </statement>
+</block>
+</xml>

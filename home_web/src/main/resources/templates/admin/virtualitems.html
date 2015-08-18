@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="includes/header :: header">
+</head>
+<body>
+<script th:src="@{/javascript/virtualitems.js}" src="/static/javascript/virtualitems.js"></script>
+
+<div class="container-fluid">
+    <div th:replace="includes/header :: navigation (selectTab='admin')"></div>
+
+    <div th:replace="includes/header :: adminTabs (selectTab='virtualitems')"></div>
+
+    <!-- Modal for data insertion -->
+    <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="addGroupLabel" aria-hidden="true">
+        <form role="form" id="itemForm" action="#" method="post">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="addGroupLabel">Add a Virtual Item</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="itemName">Name</label>
+                            <input class="form-control" id="itemName" type="text"/>
+                        </div>
+                        <input type="hidden" th:value="${selectedController}" id="controllerId"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Controllers</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group" th:each="controller: ${controllers}">
+                        <a href="#" th:href="@{'/web/admin/virtualitems/'+${controller.controllerId}}" class="list-group-item" th:classappend="${selectedController != null and selectedController == controller.controllerId} ? 'active'" th:text="${controller.controllerId}">Text</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8" th:if="${selectedController}">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <h3 class="panel-title pull-left">Items</h3>
+                    <div class="btn-group pull-right">
+                        <a href="#" data-toggle="modal" data-target="#dataModal" data-id="" class="btn btn-default btn-sm addItem" title="Add an item"><span class="glyphicon glyphicon-plus"></span></a>
+
+                    </div>
+                </div>
+                <div class="panel-body" id="groups">
+                    <div class="well clearfix" th:each="item : ${items}">
+                        <h3 class="panel-title pull-left" th:text="'Item: ' + ${item.name}"></h3>
+                        <div class="btn btn-group pull-right">
+                            <a href="#" th:attr="itemId=${item.id}" class="btn btn-default btn-sm removeItem" title="Delete Item"><span class="glyphicon glyphicon-trash"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="includes/header :: footer"></div>
+</div>
+</body>
+</html>

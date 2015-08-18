@@ -1,0 +1,51 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block type="rule" id="80" x="129" y="212">
+    <field name="rule_name">testRule</field>
+    <statement name="ruleTrigger">
+        <block type="deviceTrigger" id="93"></block>
+    </statement>
+    <statement name="ruleStatement">
+        <block type="controls_if" id="107">
+            <mutation else="1"></mutation>
+            <value name="IF0">
+                <block type="logic_compare" id="121">
+                    <field name="OP">LTE</field>
+                    <value name="A">
+                        <block type="getItemValue" id="90">
+                            <value name="item">
+                                <block type="Device.4407eace-7bb1-43ac-aefd-da4cae9fc97a" id="200"></block>
+                            </value>
+                            <value name="label">
+                                <block type="label" id="254">
+                                    <field name="label">temperature</field>
+                                </block>
+                            </value>
+                        </block>
+                    </value>
+                    <value name="B">
+                        <block type="math_number" id="126">
+                            <field name="NUM">20</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+            <statement name="DO0">
+                <block type="switch_item" id="215">
+                    <field name="state">on</field>
+                    <value name="item">
+                        <block type="Device.486fd173-b3ea-417f-b46c-e7d3579f59e1" id="45"></block>
+                    </value>
+                </block>
+            </statement>
+            <statement name="ELSE">
+                <block type="switch_item" id="259">
+                    <field name="state">off</field>
+                    <value name="item">
+                        <block type="Device.486fd173-b3ea-417f-b46c-e7d3579f59e1" id="45"></block>
+                    </value>
+                </block>
+            </statement>
+        </block>
+    </statement>
+</block>
+</xml>

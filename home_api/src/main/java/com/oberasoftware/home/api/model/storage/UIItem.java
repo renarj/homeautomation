@@ -12,8 +12,6 @@ public interface UIItem extends Item {
 
     String getName();
 
-    String getDescription();
-
     String getUiType();
 
     String getItemId();

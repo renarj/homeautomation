@@ -42,7 +42,7 @@ public class StateManagerImpl implements StateManager {
         itemStates.putIfAbsent(itemId, new StateImpl(itemId, Status.UNKNOWN));
         StateImpl state = itemStates.get(itemId);
 
-        return  state.updateIfChanged(label, new StateItemImpl(label, value));
+        return state.updateIfChanged(label, new StateItemImpl(label, value));
     }
 
 

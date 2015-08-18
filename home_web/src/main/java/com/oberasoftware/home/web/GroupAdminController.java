@@ -40,7 +40,7 @@ public class GroupAdminController {
     @RequestMapping("/{controllerId}")
     public String getGroups(@PathVariable String controllerId, Model model) {
         List<ControllerItem> controllers = itemManager.findControllers();
-        List<GroupItem> groupItems = groupManager.getGroups(controllerId);
+        List<? extends GroupItem> groupItems = groupManager.getItems(controllerId);
         List<PluginItem> plugins = itemManager.findPlugins(controllerId);
         List<WebPluginItem> webPluginItems = plugins.stream()
                 .map(p -> new WebPluginItem(p, itemManager.findDevices(controllerId, p.getPluginId())))

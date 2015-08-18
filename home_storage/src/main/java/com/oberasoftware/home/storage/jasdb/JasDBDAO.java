@@ -2,20 +2,9 @@ package com.oberasoftware.home.storage.jasdb;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import com.oberasoftware.home.api.model.storage.Container;
-import com.oberasoftware.home.api.model.storage.ControllerItem;
-import com.oberasoftware.home.api.model.storage.DeviceItem;
-import com.oberasoftware.home.api.model.storage.GroupItem;
-import com.oberasoftware.home.api.model.storage.Item;
-import com.oberasoftware.home.api.model.storage.PluginItem;
-import com.oberasoftware.home.api.model.storage.UIItem;
+import com.oberasoftware.home.api.model.storage.*;
 import com.oberasoftware.home.api.storage.HomeDAO;
-import com.oberasoftware.home.core.model.storage.ContainerImpl;
-import com.oberasoftware.home.core.model.storage.ControllerItemImpl;
-import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
-import com.oberasoftware.home.core.model.storage.GroupItemImpl;
-import com.oberasoftware.home.core.model.storage.PluginItemImpl;
-import com.oberasoftware.home.core.model.storage.UIItemImpl;
+import com.oberasoftware.home.core.model.storage.*;
 import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.query.QueryBuilder;
@@ -47,7 +36,7 @@ public class JasDBDAO implements HomeDAO {
     private JasDBSessionFactory sessionFactory;
 
     @Override
-    public <T extends Item> Optional<T> findItem(Class<T> type, String id) {
+    public <T extends HomeEntity> Optional<T> findItem(Class<T> type, String id) {
         try {
             DBSession session = sessionFactory.createSession();
             EntityManager entityManager = session.getEntityManager();
@@ -75,9 +64,9 @@ public class JasDBDAO implements HomeDAO {
     }
 
     @Override
-    public List<Container> findRootContainers() {
+    public List<Container> findDashboardContainers(String dashboardId) {
         return newArrayList(findItems(ContainerImpl.class, new ImmutableMap.Builder<String, String>()
-                .put("parentContainerId", "").build()));
+                .put("dashboardId", dashboardId).build()));
     }
 
     @Override
@@ -90,6 +79,12 @@ public class JasDBDAO implements HomeDAO {
     public List<Container> findContainers(String parentId) {
         return newArrayList(findItems(ContainerImpl.class, new ImmutableMap.Builder<String, String>()
                 .put("parentContainerId", parentId).build()));
+    }
+
+    @Override
+    public List<Dashboard> findDashboards() {
+        return newArrayList(findItems(DashboardImpl.class, new ImmutableMap.Builder<String, String>()
+                .build(), newArrayList("weight")));
     }
 
     @Override
@@ -149,15 +144,27 @@ public class JasDBDAO implements HomeDAO {
     }
 
     @Override
-    public List<GroupItem> findGroups() {
-        return newArrayList(findItems(GroupItemImpl.class, new HashMap<>()));
+    public <T extends VirtualItem> List<T> findVirtualItems(Class<T> type) {
+        return newArrayList(findItems(type, new HashMap<>()));
     }
 
     @Override
-    public List<GroupItem> findGroups(String controllerId) {
-        return newArrayList(findItems(GroupItemImpl.class, new ImmutableMap.Builder<String, String>()
+    public <T extends VirtualItem> List<T> findVirtualItems(Class<T> type, String controllerId) {
+        return newArrayList(findItems(type, new ImmutableMap.Builder<String, String>()
                 .put("controllerId", controllerId)
                 .build()));
+    }
+
+    @Override
+    public List<RuleItem> findRules(String controllerId) {
+        return newArrayList(findItems(RuleItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId)
+                .build()));
+    }
+
+    @Override
+    public List<RuleItem> findRules() {
+        return newArrayList(findItems(RuleItemImpl.class, new HashMap<>()));
     }
 
     private <T> T findItem(Class<T> type, Map<String, String> properties) {

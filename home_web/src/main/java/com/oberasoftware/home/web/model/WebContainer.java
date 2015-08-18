@@ -12,7 +12,7 @@ public class WebContainer extends ContainerImpl {
     private final List<UIItem> items;
 
     public WebContainer(ContainerImpl container, List<UIItem> items) {
-        super(container.getId(), container.getName(), container.getParentContainerId());
+        super(container.getId(), container.getName(), container.getDashboardId(), container.getParentContainerId());
         this.items = items;
     }
 

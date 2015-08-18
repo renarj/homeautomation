@@ -7,15 +7,19 @@ $(document).ready(function() {
         loadControllers();
     });
 
-    function showGroup() {
-        $("#group").removeClass("hide");
+    function showVirtual(labelText) {
+        $("#virtual").removeClass("hide");
         $("#controller").addClass("hide");
+        $("#virtualLabel").text(labelText);
         $("#plugin").addClass("hide");
         $("#device").addClass("hide");
     }
 
     function showDevice() {
-        $("#group").addClass("hide");
+        $("#widgetValueTypeDiv").addClass("hide");
+        $("#widgetUnitTypeDiv").addClass("hide");
+
+        $("#virtual").addClass("hide");
         $("#controller").removeClass("hide");
         $("#plugin").removeClass("hide");
         $("#device").removeClass("hide");
@@ -43,6 +47,20 @@ $(document).ready(function() {
         $("#" + containerId).remove();
     });
 
+    $(document).on("click", ".removeDashboard", function (event) {
+        event.preventDefault();
+        var dashboardId = $("#dashboards").attr("dashboardId");
+
+        $.ajax({url: "/dashboards/(" + dashboardId + ")", type: "DELETE", contentType: "application/json; charset=utf-8", success: function(data) {
+            console.log("Removed dashboard successfully");
+
+            renderDashboardsLinks();
+            renderDefaultDashboard();
+        }});
+
+    });
+
+
     function loadControllers() {
         $.get("/data/controllers", function(data){
             if(!isEmpty(data)) {
@@ -69,9 +87,12 @@ $(document).ready(function() {
         if(selectedSource == "device") {
             showDevice();
             loadControllers();
-        } else {
-            showGroup();
+        } else if(selectedSource == "group") {
+            showVirtual("Group");
             loadGroups();
+        } else if(selectedSource == "virtual") {
+            showVirtual("Virtual Item");
+            loadVirtualItems();
         }
     });
 
@@ -79,7 +100,21 @@ $(document).ready(function() {
         console.log("Retrieving Groups");
         $.get("/groups/", function(data){
             if(!isEmpty(data)) {
-                var list = $("#groupList");
+                var list = $("#virtualList");
+                list.empty();
+
+                $.each(data, function (i, g) {
+                    list.append(new Option(g.name, g.id));
+                })
+            }
+        })
+    }
+
+    function loadVirtualItems() {
+        console.log("Retrieving Virtual Items");
+        $.get("/virtualitems/", function(data){
+            if(!isEmpty(data)) {
+                var list = $("#virtualList");
                 list.empty();
 
                 $.each(data, function (i, g) {
@@ -140,37 +175,47 @@ $(document).ready(function() {
         }
     });
 
+    $("#widgetLabel").change(function() {
+        var label = this.value;
+        if(label == "custom") {
+            $("#widgetCustomValueType").removeClass("hide");
+        } else {
+            $("#widgetCustomValueType").addClass("hide");
+        }
+    });
+
     $("#createUIItemForm").submit(function(event) {
         console.log("Creating UI Item")
         event.preventDefault();
 
         var name = $("#itemName").val();
-        var description = $("#itemDescription").val();
         var container = $("#containerId").val();
         var widget = $("#widgetList").find('option:selected').val();
         var deviceId = $("#deviceList").find('option:selected').val();
-        var groupId = $("#groupList").find('option:selected').val();
+        var virtualItemId = $("#virtualList").find('option:selected').val();
         var selectedSource = $("#sourceItem").find('option:selected').val();
 
         var itemId = deviceId;
-        if(selectedSource == "group") {
-            itemId = groupId;
+        if(selectedSource == "group" || selectedSource == "virtual") {
+            itemId = virtualItemId;
         }
 
         console.log("Creating ui item name: " + name);
-        console.log("Creating ui item description: " + description);
         console.log("Creating ui item container: " + container);
         console.log("Creating ui item widget: " + widget);
 
         var item = {
             "name" : name,
-            "description" : description,
             "uiType" : widget,
             "containerId" : container,
             "itemId" : itemId
         };
         if(widget == "label" || widget == "graph") {
             var label = $("#widgetLabel").find('option:selected').val();
+            if(label == "custom") {
+                label = $("#customLabel").val();
+            }
+
             var unit = $("#widgetLabelUnitType").find('option:selected').text();
             console.log("We have a label: " + label + " and unit: " + unit);
 
@@ -182,15 +227,19 @@ $(document).ready(function() {
 
         var jsonData = JSON.stringify(item);
 
+        console.log("Posting: " + jsonData)
+
         $.ajax({url: "/ui/items", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
             console.log("Posted UI Item successfully");
 
             $('#dataModal').modal('hide')
 
             $("#itemName").val("");
-            $("#itemDescription").val("");
             $("#containerId").val("");
-            $("#widgetList").val("none");
+            $("#widgetList").val("switch");
+            $("#widgetLabel").val("none");
+            $("#widgetLabelUnitType").val("none");
+
             $("#deviceList").empty();
             $("#pluginList").empty();
             $("#controllerList").empty();
@@ -198,7 +247,7 @@ $(document).ready(function() {
 
             renderWidget(container, data);
         }})
-    })
+    });
 
     function isEmpty(str) {
         return (!str || 0 === str.length);

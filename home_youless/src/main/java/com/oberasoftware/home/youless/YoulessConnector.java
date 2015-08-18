@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.home.api.AutomationBus;
-import com.oberasoftware.home.api.events.devices.DeviceNumericValueEvent;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
 import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.types.VALUE_TYPE;
 import com.oberasoftware.home.core.types.ValueImpl;
@@ -80,9 +80,11 @@ public class YoulessConnector implements Runnable {
             if(urlConnection.getResponseCode() < 400) {
                 String response = getResponseAsString(urlConnection.getInputStream());
                 long wattage = getWattage(response);
+                long kwh = getKWH(response);
                 LOG.debug("Retrieved wattage from youless: {}", wattage);
 
-                automationBus.publish(new DeviceNumericValueEvent(automationBus.getControllerId(), "youless", youlessIp, new ValueImpl(VALUE_TYPE.NUMBER, wattage), "power"));
+                automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "youless", youlessIp, new ValueImpl(VALUE_TYPE.NUMBER, wattage), "power"));
+                automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "youless", youlessIp, new ValueImpl(VALUE_TYPE.NUMBER, kwh), "energy"));
             } else {
                 String errorResponse = getResponseAsString(urlConnection.getErrorStream());
                 LOG.error("Error: {} retrieving data from youless: {}", urlConnection.getResponseCode(), errorResponse);
@@ -92,6 +94,21 @@ public class YoulessConnector implements Runnable {
             LOG.error("", e);
         }
 
+    }
+
+    private Long getKWH(String response) throws HomeAutomationException {
+        try {
+            JsonNode root = OBJECT_MAPPER.readTree(response);
+            String kwhText = root.findValue("cnt").textValue();
+            int seperatorIndex = kwhText.indexOf(",");
+            if(seperatorIndex > 0) {
+                kwhText = kwhText.substring(0, seperatorIndex);
+            }
+
+            return Long.parseLong(kwhText);
+        } catch (IOException e) {
+            throw new HomeAutomationException("Unable to read wattage", e);
+        }
     }
 
     private Long getWattage(String response) throws HomeAutomationException {

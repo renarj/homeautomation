@@ -54,6 +54,8 @@
     <ul class="nav nav-tabs" th:fragment="adminTabs (selectTab)">
         <li role="presentation" th:classappend="${selectTab == 'devices'} ? 'active'"><a href="#" th:href="@{'/web/admin/devices'}">Devices</a></li>
         <li role="presentation" th:classappend="${selectTab == 'groups'} ? 'active'"><a href="#" th:href="@{'/web/admin/groups'}">Groups</a></li>
+        <li role="presentation" th:classappend="${selectTab == 'rules'} ? 'active'"><a href="#" th:href="@{'/web/admin/rules'}">Rules</a></li>
+        <li role="presentation" th:classappend="${selectTab == 'virtualitems'} ? 'active'"><a href="#" th:href="@{'/web/admin/virtualitems'}">Virtual Items</a></li>
     </ul>
 
 

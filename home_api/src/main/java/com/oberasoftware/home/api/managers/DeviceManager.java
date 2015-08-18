@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface DeviceManager {
     DeviceItem registerDevice(String pluginId, Device device) throws HomeAutomationException;
 
-    DeviceItem findDevice(String deviceId);
+    DeviceItem findDevice(String itemId);
 
     List<DeviceItem> getDevices();
 

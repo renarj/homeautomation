@@ -1,0 +1,49 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+    <block type="rule" id="75" x="280" y="391">
+        <field name="rule_name">Change on New Meter Value</field>
+        <statement name="ruleTrigger">
+            <block type="deviceTrigger" id="79"></block>
+        </statement>
+        <statement name="ruleStatement">
+            <block type="setItemValue" id="30">
+                <value name="item">
+                    <block type="Item.6d1a20a5-7347-41cf-bdc7-4f6df2035b24" id="105"></block>
+                </value>
+                <value name="label">
+                    <block type="label_text" id="129">
+                        <field name="label">PowerUsed</field>
+                    </block>
+                </value>
+                <value name="value">
+                    <block type="math_arithmetic" id="6">
+                        <field name="OP">MINUS</field>
+                        <value name="A">
+                            <block type="getItemValue" id="45">
+                                <value name="item">
+                                    <block type="Device.6d1a20a5-7347-41cf-bdc7-4f6df2035b24" id="155"></block>
+                                </value>
+                                <value name="label">
+                                    <block type="label" id="236">
+                                        <field name="label">energy</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                        <value name="B">
+                            <block type="getItemValue" id="55">
+                                <value name="item">
+                                    <block type="Item.6d1a20a5-7347-41cf-bdc7-4f6df2035b24" id="221"></block>
+                                </value>
+                                <value name="label">
+                                    <block type="label_text" id="195">
+                                        <field name="label">PowerStart</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+            </block>
+        </statement>
+    </block>
+</xml>

@@ -3,7 +3,7 @@ package com.oberasoftware.home.service.events;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.events.devices.DeviceValueEvent;
-import com.oberasoftware.home.api.events.groups.GroupValueEvent;
+import com.oberasoftware.home.api.events.items.ItemValueEvent;
 import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.StateManager;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
@@ -34,19 +34,19 @@ public class ValueEventHandler implements EventHandler {
         LOG.debug("Received a device value event: {}", event);
 
         Optional<DeviceItem> optionalItem = deviceManager.findDeviceItem(event.getControllerId(), event.getPluginId(), event.getDeviceId());
-        if(optionalItem.isPresent()) {
+        if (optionalItem.isPresent()) {
+            LOG.debug("Updating state for device: {}", optionalItem);
             stateManager.updateDeviceState(optionalItem.get(), event.getLabel(), event.getValue());
+        } else {
+            LOG.warn("Received state for unknow device: {}", event);
         }
     }
 
     @EventSubscribe
-    public void receive(GroupValueEvent event) {
-        LOG.debug("Received a group value event: {}", event);
+    public void receive(ItemValueEvent event) {
+        LOG.debug("Received an item value event: {}", event);
         String label = event.getLabel();
         Value value = event.getValue();
-
-        LOG.debug("Updating state of individual devices");
-        event.getItemIds().forEach(d -> stateManager.updateItemState(d, label, value));
 
         LOG.debug("Updating state of group: {}", event.getItemId());
         stateManager.updateItemState(event.getItemId(), label, value);

@@ -38,12 +38,17 @@
             <artifactId>home_web</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_rules</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.oberasoftware</groupId>-->
-            <!--<artifactId>home_exampledevice</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_exampledevice</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 
         <!--<dependency>-->
@@ -52,17 +57,17 @@
             <!--<version>${project.version}</version>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
-            <artifactId>home_hue</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.oberasoftware</groupId>-->
+            <!--<artifactId>home_hue</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
-            <artifactId>home_influxdb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.oberasoftware</groupId>-->
+            <!--<artifactId>home_influxdb</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <!--<dependency>-->
             <!--<groupId>com.oberasoftware</groupId>-->
             <!--<artifactId>home_nest</artifactId>-->

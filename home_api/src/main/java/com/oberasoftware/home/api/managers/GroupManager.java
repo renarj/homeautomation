@@ -8,16 +8,8 @@ import java.util.List;
 /**
  * @author Renze de Vries
  */
-public interface GroupManager {
-    List<GroupItem> getGroups();
-
-    List<GroupItem> getGroups(String controllerId);
+public interface GroupManager extends GenericItemManager<GroupItem> {
 
     List<DeviceItem> getDevices(String groupId);
 
-    GroupItem getGroup(String groupId);
-
-    GroupItem store(GroupItem groupItem);
-
-    void delete(String groupId);
 }

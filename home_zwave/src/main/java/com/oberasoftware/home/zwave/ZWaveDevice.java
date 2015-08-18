@@ -70,7 +70,7 @@ public class ZWaveDevice implements Device {
         if(nodeInformationEventOptional.isPresent()) {
             NodeIdentifyEvent nodeInformationEvent = nodeInformationEventOptional.get();
 
-            deviceProperties.put("batteryDevice", Boolean.toString(nodeInformationEvent.isListening()));
+            deviceProperties.put("batteryDevice", Boolean.toString(!nodeInformationEvent.isListening()));
             deviceProperties.put("routingDevice", Boolean.toString(nodeInformationEvent.isRouting()));
             deviceProperties.put("deviceVersion", Integer.toString(nodeInformationEvent.getVersion()));
         }

@@ -2,11 +2,12 @@ package com.oberasoftware.home.hue.actions;
 
 import com.oberasoftware.home.api.AutomationBus;
 import com.oberasoftware.home.api.commands.SwitchCommand;
-import com.oberasoftware.home.api.events.devices.OnOffValueEvent;
-import com.oberasoftware.home.api.events.groups.GroupOnOffValueEvent;
+import com.oberasoftware.home.api.events.OnOffValue;
+import com.oberasoftware.home.api.events.devices.DeviceValueEventImpl;
+import com.oberasoftware.home.api.events.items.ItemNumericValue;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.model.storage.GroupItem;
-import com.oberasoftware.home.api.model.storage.HomeEntity;
+import com.oberasoftware.home.api.types.Value;
 import com.oberasoftware.home.hue.HueConnector;
 import com.oberasoftware.home.hue.HueExtension;
 import com.philips.lighting.model.PHBridge;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -48,7 +48,9 @@ public class SwitchCommandAction implements HueCommandAction<SwitchCommand> {
         if(light.isPresent()) {
             bridge.updateLightState(light.get(), getTargetState(switchCommand));
 
-            automationBus.publish(new OnOffValueEvent(automationBus.getControllerId(), HueExtension.HUE_ID, item.getDeviceId(), switchCommand.getState() == SwitchCommand.STATE.ON));
+            OnOffValue value = new OnOffValue(switchCommand.getState() == SwitchCommand.STATE.ON);
+
+            automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), HueExtension.HUE_ID, item.getDeviceId(),value, OnOffValue.LABEL));
         }
     }
 
@@ -61,8 +63,8 @@ public class SwitchCommandAction implements HueCommandAction<SwitchCommand> {
 
         bridge.setLightStateForGroup(group.getIdentifier(), getTargetState(command));
 
-        List<String> itemIds = items.stream().map(HomeEntity::getId).collect(Collectors.toList());
-        automationBus.publish(new GroupOnOffValueEvent(groupItem.getId(), itemIds, command.getState() == SwitchCommand.STATE.ON));
+        Value value = new OnOffValue(command.getState() == SwitchCommand.STATE.ON);
+        items.forEach(i -> automationBus.publish(new ItemNumericValue(i.getId(), value, OnOffValue.LABEL)));
     }
 
     private PHLightState getTargetState(SwitchCommand switchCommand) {

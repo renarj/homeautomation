@@ -3,7 +3,6 @@ package com.oberasoftware.home.storage.jasdb;
 import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.model.storage.Container;
 import com.oberasoftware.home.api.model.storage.HomeEntity;
-import com.oberasoftware.home.api.model.storage.Item;
 import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
@@ -82,7 +81,7 @@ public class JasDBCentralDatastore implements CentralDatastore {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Item> T store(Item entity) throws DataStoreException {
+    public <T extends HomeEntity> T store(HomeEntity entity) throws DataStoreException {
         LOG.debug("Storing entity: {}", entity);
         createOrUpdate(entity);
 
