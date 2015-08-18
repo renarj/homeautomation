@@ -32,8 +32,8 @@ public class UIManagerImpl implements UIManager {
     private HomeDAO homeDAO;
 
     @Override
-    public List<Container> getRootContainers() {
-        return homeDAO.findRootContainers();
+    public List<Container> getDashboardContainers(String dashboardId) {
+        return homeDAO.findDashboardContainers(dashboardId);
     }
 
     @Override

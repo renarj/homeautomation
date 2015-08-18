@@ -13,8 +13,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @RestController
 @RequestMapping("/command")
-public class CommandController {
-    private static final Logger LOG = getLogger(CommandController.class);
+public class CommandRestController {
+    private static final Logger LOG = getLogger(CommandRestController.class);
 
     @Autowired
     private AutomationBus automationBus;

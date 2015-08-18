@@ -9,7 +9,7 @@ import java.util.List;
  * @author renarj
  */
 public interface UIManager {
-    List<Container> getRootContainers();
+    List<Container> getDashboardContainers(String dashboardId);
 
     List<Container> getAllContainers();
 

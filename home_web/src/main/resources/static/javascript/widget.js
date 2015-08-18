@@ -78,12 +78,78 @@ function handleStateUpdate(state) {
     })
 }
 
-function renderContainers() {
-    $.get("/ui/containers", function(data) {
+function tabChange(e) {
+    e.preventDefault();
+
+    var currentDashboard = $("#dashboards").attr("dashboardId");
+    $("#dashlink_" + currentDashboard).removeClass('active');
+
+    var targetDashboardId = this.getAttribute('dashboardId');
+    $("#dashlink_" + targetDashboardId).addClass('active');
+
+    console.log("Tab change target dash: " + targetDashboardId);
+
+    renderDashboard(targetDashboardId);
+}
+
+function tabAdd(e) {
+    e.preventDefault();
+
+    $("#createContainerForm").attr("mode", "dashboard");
+    $("#addContainerLabel").text("Add a dashboard");
+
+    $("#containerModal").modal('show');
+
+    console.log("Adding tab");
+}
+
+function renderDashboardsLinks() {
+    $.get("/dashboards/", function(data) {
+        var dashboardTabs = $('#dashboards');
+        dashboardTabs.empty();
+
+        $.each(data, function(i, item) {
+            var tabClass = "notActive";
+            if(i == 0) {
+                tabClass = "active";
+            }
+
+            var data = {"dashboardId": item.id, "dashboardName": item.name, "weight": item.weight, "tabClass" : tabClass};
+            dashboardTabs.append(renderTemplate("tabTemplate", data));
+        });
+
+        dashboardTabs.append("<li role=\"presentation\"><a class=\"addTab\" href=\"#add\"><span class=\"glyphicon glyphicon-plus\"></span></a></li>");
+
+        $(".tab").click(tabChange);
+        $(".addTab").click(tabAdd);
+    });
+}
+
+function renderDefaultDashboard() {
+    $.get("/dashboards/default", function(data) {
+        console.log("Default dashboard: " + data.id);
+
+        renderDashboardWithName(data.name, data.id);
+    });
+}
+
+function renderDashboard(dashboardId) {
+    console.log("Rendering dashboard: " + dashboardId);
+    $.get("/dashboards/(" + dashboardId + ")", function(data) {
+        renderDashboardWithName(data.name, data.id);
+    });
+}
+
+function renderDashboardWithName(name, dashboardId) {
+    $("#dashboardTitle").text("Dashboard: " + name);
+    $("#dashboards").attr("dashboardId", dashboardId);
+    $("#container").empty();
+
+    $.get("/ui/dashboard(" + dashboardId + ")/containers", function(data) {
         $.each(data, function(i, item) {
             renderContainer(item);
         })
-    })
+    });
 }
 
 function renderContainerById(containerId) {
@@ -102,7 +168,7 @@ function renderContainer(item) {
     var data = {
         "containerId" : containerId,
         "name" : name
-    }
+    };
 
     var rendered = renderTemplate("containerTemplate", data);
     $("#container").append(rendered);
@@ -416,7 +482,8 @@ function isEmpty(str) {
 
 
 $(document).ready(function() {
-    renderContainers();
+    renderDashboardsLinks();
+    renderDefaultDashboard();
 
     connect();
 });

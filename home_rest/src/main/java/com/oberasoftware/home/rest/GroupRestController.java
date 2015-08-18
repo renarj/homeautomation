@@ -20,8 +20,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @RestController
 @RequestMapping("/groups")
-public class GroupController {
-    private static final Logger LOG = getLogger(GroupController.class);
+public class GroupRestController {
+    private static final Logger LOG = getLogger(GroupRestController.class);
 
     @Autowired
     private GroupManager groupManager;

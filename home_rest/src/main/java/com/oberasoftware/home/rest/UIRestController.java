@@ -23,8 +23,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @RestController
 @RequestMapping("/ui")
-public class UIController {
-    private static final Logger LOG = getLogger(UIController.class);
+public class UIRestController {
+    private static final Logger LOG = getLogger(UIRestController.class);
 
     @Autowired
     private UIManager uiManager;
@@ -32,6 +32,11 @@ public class UIController {
     @RequestMapping("/containers({containerId})")
     public Container getContainer(@PathVariable String containerId) {
         return uiManager.getContainer(containerId);
+    }
+
+    @RequestMapping("/containers")
+    public List<Container> getContainers() {
+        return uiManager.getAllContainers();
     }
 
     @RequestMapping("/containers({containerId})/children")
@@ -44,9 +49,9 @@ public class UIController {
         uiManager.deleteContainer(containerId);
     }
 
-    @RequestMapping("/containers")
-    public List<Container> getContainers() {
-        return uiManager.getRootContainers();
+    @RequestMapping("/dashboard({dashboardId})/containers")
+    public List<Container> getDashboardContainers(@PathVariable String dashboardId) {
+        return uiManager.getDashboardContainers(dashboardId);
     }
 
     @RequestMapping("/containers({containerId})/items")

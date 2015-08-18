@@ -96,10 +96,20 @@
         </div>
     </div>
 </script>
+<script id="tabTemplate" type="x-tmpl-mustache">
+    <li role="presentation" class="{{tabClass}}" id="dashlink_{{dashboardId}}">
+        <a dashboardId="{{dashboardId}}" class="tab" weight="{{weight}}" href="#">{{dashboardName}}</a>
+    </li>
+</script>
+
 
 <div class="container-fluid">
 
     <div th:replace="includes/header :: navigation (selectTab='dashboard')"></div>
+
+    <ul class="nav nav-tabs" id="dashboards">
+    </ul>
+
     <div class="row">
         <div class="col-md-12">
 
@@ -219,10 +229,11 @@
         </div>
 
 
-        <div class="panel panel-default">
+        <div class="panel panel-default" id="dashboard">
             <div class="panel-heading clearfix">
-                <h3 class="panel-title pull-left">Locations</h3>
+                <h3 class="panel-title pull-left" id="dashboardTitle"></h3>
                 <div class="btn-group pull-right">
+                    <a href="#" class="btn btn-default btn-sm removeDashboard" title="Delete Dashboard"><span class="glyphicon glyphicon-trash"></span></a>
                     <a href="#" data-toggle="modal" data-target="#containerModal" data-id="" class="btn btn-default btn-sm addContainer" title="Add a Container"><span class="glyphicon glyphicon-plus"></span></a>
                 </div>
             </div>

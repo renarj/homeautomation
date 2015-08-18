@@ -47,6 +47,20 @@ $(document).ready(function() {
         $("#" + containerId).remove();
     });
 
+    $(document).on("click", ".removeDashboard", function (event) {
+        event.preventDefault();
+        var dashboardId = $("#dashboards").attr("dashboardId");
+
+        $.ajax({url: "/dashboards/(" + dashboardId + ")", type: "DELETE", contentType: "application/json; charset=utf-8", success: function(data) {
+            console.log("Removed dashboard successfully");
+
+            renderDashboardsLinks();
+            renderDefaultDashboard();
+        }});
+
+    });
+
+
     function loadControllers() {
         $.get("/data/controllers", function(data){
             if(!isEmpty(data)) {

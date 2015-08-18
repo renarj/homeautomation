@@ -20,8 +20,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @RestController
 @RequestMapping("/timeseries")
-public class TimeSeriesController {
-    private static final Logger LOG = getLogger(TimeSeriesController.class);
+public class TimeSeriesRestController {
+    private static final Logger LOG = getLogger(TimeSeriesRestController.class);
 
     private static final int DEFAULT_TIME_SCALE = 6;
 

@@ -20,8 +20,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @RestController
 @RequestMapping("/virtualitems")
-public class VirtualItemController {
-    private static final Logger LOG = getLogger(VirtualItemController.class);
+public class VirtualItemRestController {
+    private static final Logger LOG = getLogger(VirtualItemRestController.class);
 
     @Autowired
     private VirtualItemManager virtualItemManager;

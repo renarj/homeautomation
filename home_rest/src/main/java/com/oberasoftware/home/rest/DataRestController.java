@@ -25,8 +25,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @RestController
 @RequestMapping("/data")
-public class DataController {
-    private static final Logger LOG = getLogger(DataController.class);
+public class DataRestController {
+    private static final Logger LOG = getLogger(DataRestController.class);
 
     @Autowired
     private DeviceManager deviceManager;

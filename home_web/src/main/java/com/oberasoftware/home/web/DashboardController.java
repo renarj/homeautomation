@@ -7,11 +7,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author renarj
  */
 @Controller
-@RequestMapping("/web")
+@RequestMapping("/")
 public class DashboardController {
-    @RequestMapping
+    @RequestMapping("/web")
     public String getIndex() {
         return "index";
     }
+
+    @RequestMapping
+    public String getRoot() {
+        return "redirect:/web";
+    }
+
 
 }

@@ -20,8 +20,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @RestController
 @RequestMapping("/rules")
-public class RulesController {
-    private static final Logger LOG = getLogger(RulesController.class);
+public class RulesRestController {
+    private static final Logger LOG = getLogger(RulesRestController.class);
 
     @Autowired
     private RuleManager ruleManager;

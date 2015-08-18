@@ -13,13 +13,15 @@ public class ContainerImpl implements Container {
 
     private String id;
     private String name;
+    private String dashboardId;
 
     private String parentContainerId;
 
-    public ContainerImpl(String id, String name, String parentContainerId) {
+    public ContainerImpl(String id, String name, String dashboardId, String parentContainerId) {
         this.id = id;
         this.name = name;
         this.parentContainerId = parentContainerId;
+        this.dashboardId = dashboardId;
     }
 
     public ContainerImpl() {
@@ -44,6 +46,16 @@ public class ContainerImpl implements Container {
 
     public void setParentContainerId(String parentContainerId) {
         this.parentContainerId = parentContainerId;
+    }
+
+    @Override
+    @JasDBProperty
+    public String getDashboardId() {
+        return dashboardId;
+    }
+
+    public void setDashboardId(String dashboardId) {
+        this.dashboardId = dashboardId;
     }
 
     @Override
