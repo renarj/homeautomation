@@ -5,6 +5,8 @@ import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
 
+import java.util.Map;
+
 /**
  * @author renarj
  */
@@ -14,12 +16,14 @@ public class ContainerImpl implements Container {
     private String id;
     private String name;
     private String dashboardId;
+    private Map<String, String> properties;
 
     private String parentContainerId;
 
-    public ContainerImpl(String id, String name, String dashboardId, String parentContainerId) {
+    public ContainerImpl(String id, String name, String dashboardId, String parentContainerId, Map<String, String> properties) {
         this.id = id;
         this.name = name;
+        this.properties = properties;
         this.parentContainerId = parentContainerId;
         this.dashboardId = dashboardId;
     }
@@ -69,10 +73,22 @@ public class ContainerImpl implements Container {
     }
 
     @Override
+    @JasDBProperty
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    @Override
     public String toString() {
-        return "Container{" +
+        return "ContainerImpl{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", dashboardId='" + dashboardId + '\'' +
+                ", properties=" + properties +
                 ", parentContainerId='" + parentContainerId + '\'' +
                 '}';
     }

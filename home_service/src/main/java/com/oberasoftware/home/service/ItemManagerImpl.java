@@ -42,7 +42,7 @@ public class ItemManagerImpl implements ItemManager {
             Optional<ControllerItem> controllerItem = homeDAO.findController(controllerId);
             if (!controllerItem.isPresent()) {
                 LOG.debug("Initial startup, new controller detected registering in central datastore");
-                return centralDatastore.store(new ControllerItemImpl(generateId(), controllerId));
+                return centralDatastore.store(new ControllerItemImpl(generateId(), controllerId, new HashMap<>()));
             } else {
                 LOG.debug("Controller: {} was already registered", controllerId);
                 return controllerItem.get();

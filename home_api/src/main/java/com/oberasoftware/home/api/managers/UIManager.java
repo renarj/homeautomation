@@ -1,7 +1,8 @@
 package com.oberasoftware.home.api.managers;
 
 import com.oberasoftware.home.api.model.storage.Container;
-import com.oberasoftware.home.api.model.storage.UIItem;
+import com.oberasoftware.home.api.model.storage.MutableItem;
+import com.oberasoftware.home.api.model.storage.Widget;
 
 import java.util.List;
 
@@ -17,9 +18,11 @@ public interface UIManager {
 
     Container getContainer(String containerId);
 
-    List<UIItem> getItems(String containerId);
+    List<Widget> getItems(String containerId);
 
-    void setWeight(String itemId, long weight);
+    void setWidgetProperty(String itemId, String property, String value);
+
+    void setContainerProperty(String itemId, String property, String value);
 
     void setParentContainer(String itemId, String parentContainerId);
 
@@ -27,7 +30,5 @@ public interface UIManager {
 
     void deleteWidget(String itemId);
 
-    UIItem store(UIItem item);
-
-    Container store(Container container);
+    <T extends MutableItem> T store(T item);
 }

@@ -4,16 +4,19 @@ import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.exceptions.RuntimeHomeAutomationException;
 import com.oberasoftware.home.api.managers.UIManager;
 import com.oberasoftware.home.api.model.storage.Container;
-import com.oberasoftware.home.api.model.storage.UIItem;
+import com.oberasoftware.home.api.model.storage.MutableItem;
+import com.oberasoftware.home.api.model.storage.Widget;
 import com.oberasoftware.home.api.storage.CentralDatastore;
 import com.oberasoftware.home.api.storage.HomeDAO;
 import com.oberasoftware.home.core.model.storage.ContainerImpl;
-import com.oberasoftware.home.core.model.storage.UIItemImpl;
+import com.oberasoftware.home.core.model.storage.WidgetImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -57,33 +60,45 @@ public class UIManagerImpl implements UIManager {
     }
 
     @Override
-    public List<UIItem> getItems(String containerId) {
-        return homeDAO.findUIItems(containerId);
+    public List<Widget> getItems(String containerId) {
+        return homeDAO.findWidgets(containerId);
     }
 
     @Override
-    public void setWeight(String itemId, long weight) {
+    public void setWidgetProperty(String itemId, String property, String value) {
+        setItemProperty(WidgetImpl.class, itemId, property, value);
+    }
+
+    @Override
+    public void setContainerProperty(String itemId, String property, String value) {
+        setItemProperty(ContainerImpl.class, itemId, property, value);
+    }
+
+    private <T extends MutableItem> void setItemProperty(Class<T> type, String itemId, String property, String value) {
         centralDatastore.beginTransaction();
         try {
-            Optional<UIItemImpl> item = homeDAO.findItem(UIItemImpl.class, itemId);
-            if (item.isPresent()) {
-                UIItemImpl uiItem = item.get();
-                uiItem.setWeight(weight);
-                store(uiItem);
+            Optional<T> optionalItem = homeDAO.findItem(type, itemId);
+            if(optionalItem.isPresent()) {
+                T item = optionalItem.get();
+                Map<String, String> properties = new HashMap<>(item.getProperties());
+                properties.put(property, value);
+
+                item.setProperties(properties);
+                store(item);
             }
+
         } finally {
             centralDatastore.commitTransaction();
         }
     }
 
-
     @Override
     public void setParentContainer(String itemId, String parentContainerId) {
         centralDatastore.beginTransaction();
         try {
-            Optional<UIItemImpl> item = homeDAO.findItem(UIItemImpl.class, itemId);
+            Optional<WidgetImpl> item = homeDAO.findItem(WidgetImpl.class, itemId);
             if (item.isPresent()) {
-                UIItemImpl uiItem = item.get();
+                WidgetImpl uiItem = item.get();
                 uiItem.setContainerId(parentContainerId);
                 store(uiItem);
             }
@@ -100,7 +115,7 @@ public class UIManagerImpl implements UIManager {
             List<Container> children = getChildren(containerId);
             children.forEach(c -> deleteContainer(c.getId()));
 
-            getItems(containerId).forEach(i -> delete(UIItemImpl.class, i.getId()));
+            getItems(containerId).forEach(i -> delete(WidgetImpl.class, i.getId()));
             delete(ContainerImpl.class, containerId);
         } finally {
             centralDatastore.commitTransaction();
@@ -109,7 +124,7 @@ public class UIManagerImpl implements UIManager {
 
     @Override
     public void deleteWidget(String itemId) {
-        delete(UIItemImpl.class, itemId);
+        delete(WidgetImpl.class, itemId);
     }
 
     private void delete(Class<?> type, String itemId) {
@@ -125,21 +140,16 @@ public class UIManagerImpl implements UIManager {
     }
 
     @Override
-    public UIItem store(UIItem item) {
+    public <T extends MutableItem> T store(T item) {
+        centralDatastore.beginTransaction();
         try {
             return centralDatastore.store(item);
         } catch (DataStoreException e) {
-            LOG.error("", e);
-        }
-        return null;
-    }
-
-    @Override
-    public Container store(Container container) {
-        try {
-            return centralDatastore.store(container);
-        } catch (DataStoreException e) {
-            LOG.error("", e);
+            LOG.error("Unable to store item", e);
+        } catch(Exception ex) {
+            LOG.error("", ex);
+        } finally {
+            centralDatastore.commitTransaction();
         }
         return null;
     }

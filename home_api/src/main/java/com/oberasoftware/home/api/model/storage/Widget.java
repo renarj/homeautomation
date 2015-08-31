@@ -1,20 +1,16 @@
 package com.oberasoftware.home.api.model.storage;
 
-import java.util.Map;
-
 /**
  * @author Renze de Vries
  */
-public interface UIItem extends Item {
+public interface Widget extends MutableItem {
     long getWeight();
 
     String getContainerId();
 
     String getName();
 
-    String getUiType();
+    String getWidgetType();
 
     String getItemId();
-
-    Map<String, String> getProperties();
 }

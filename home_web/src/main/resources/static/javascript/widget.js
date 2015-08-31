@@ -51,7 +51,7 @@ function handleStateUpdate(state) {
 
         } else {
             //most likely a raw value on a label
-            console.log("Checking for label for item: " + itemId + " with label: " + label)
+            console.log("Checking for label for item: " + itemId + " with label: " + label);
             var valueLabel = $("label[itemId=" + itemId + "][labelId=" + label + "]");
 
             var rawValue = stateItem.value.value;
@@ -73,7 +73,6 @@ function handleStateUpdate(state) {
                     series[0].addPoint([time, rawValue]);
                 });
             }
-
         }
     })
 }
@@ -156,7 +155,6 @@ function renderContainerById(containerId) {
     $.get("/ui/containers(" + containerId + ")", function(data) {
         renderContainer(data);
     })
-
 }
 
 function renderContainer(item) {
@@ -169,10 +167,21 @@ function renderContainer(item) {
         "containerId" : containerId,
         "name" : name
     };
+    var layout = item.properties.layout;
+    var templateName = "containerTemplateList";
+    if(layout == "grid") {
+        templateName = "containerTemplateGrid";
+    }
 
-    var rendered = renderTemplate("containerTemplate", data);
+    var rendered = renderTemplate(templateName, data);
     $("#container").append(rendered);
     var container = $("ul[containerId=" + containerId + "]");
+    handleReordering(container);
+
+    renderContainerItems(containerId);
+}
+
+function handleReordering(container) {
     container.disableSelection();
     container.sortable({
         revert: true,
@@ -180,12 +189,14 @@ function renderContainer(item) {
         update: function( event, ui ) {
             console.log("Parent: " + $(this).attr("containerId"));
 
+            var column = $(this).attr("column");
+
             $(this).children("li").each(function(index) {
                 var widgetId = $(this).attr("id");
                 console.log("Widget: " + widgetId + " position: " + index);
 
-                $.ajax({url: "/ui/items(" + widgetId + ")/setWeight(" + index + ")", type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
-
+                $.ajax({url: "/ui/items/(" + widgetId + ")/setProperty(index," + index + ")", type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
+                $.ajax({url: "/ui/items/(" + widgetId + ")/setProperty(column," + column + ")", type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
             });
         },
         receive: function( event, ui ) {
@@ -194,11 +205,9 @@ function renderContainer(item) {
 
             console.log("Setting Parent: " + containerId + " for widget: " + widgetId);
 
-            $.ajax({url: "/ui/items(" + widgetId + ")/setParent(" + containerId + ")", type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
+            $.ajax({url: "/ui/items/(" + widgetId + ")/setParent(" + containerId + ")", type: "POST", data: {}, dataType: "json", contentType: "application/json; charset=utf-8"});
         }
     });
-
-    renderContainerItems(containerId);
 }
 
 function renderContainerItems(containerId) {
@@ -211,7 +220,7 @@ function renderContainerItems(containerId) {
 
 function renderWidget(containerId, item) {
     console.log("Rendering widget: " + item.id + " in container: " + containerId);
-    var widgetType = item.uiType;
+    var widgetType = item.widgetType;
     switch (widgetType.toLowerCase()) {
         case "switch":
             renderSwitch(item, containerId);
@@ -240,10 +249,10 @@ function renderColorPicker(containerId, item) {
         "widgetId": item.id,
         "name": item.name,
         "itemId": item.itemId,
-        "weight" : item.weight
-    }
+        "index" : item.properties.index
+    };
 
-    renderWidgetTemplate("colorTemplate", data, item.id, containerId);
+    renderWidgetTemplate("colorTemplate", data, item, containerId);
 
     var cPicker = $("input[name=" + item.itemId + "_color]");
 
@@ -264,7 +273,7 @@ function handleColorChange(picker, color) {
         "properties" : {
             "rgb" : color.toHexString()
         }
-    }
+    };
     var jsonData = JSON.stringify(data);
     console.log("Sending command: " + jsonData);
 
@@ -285,10 +294,10 @@ function renderGraph(containerId, item) {
         "itemId": item.itemId,
         "name": item.name,
         "label": label,
-        "weight" : item.weight
-    }
+        "index" : item.properties.index
+    };
 
-    renderWidgetTemplate("graphTemplate", data, item.id, containerId);
+    renderWidgetTemplate("graphTemplate", data, item, containerId);
 
     var widget = $("#" + item.id);
     widget.highcharts({
@@ -349,16 +358,17 @@ function renderGraph(containerId, item) {
 }
 
 function renderSlider(item, containerId) {
-    console.log("Rendering dimmer for item: " + item.name)
+    console.log("Rendering dimmer for item: " + item.name);
 
     var data = {
         "widgetId": item.id,
         "name": item.name,
         "itemId": item.itemId,
-        "weight" : item.weight
-    }
+        "weight" : item.weight,
+        "index" : item.properties.index
+    };
 
-    renderWidgetTemplate("sliderTemplate", data, item.id, containerId);
+    renderWidgetTemplate("sliderTemplate", data, item, containerId);
 
     var iDimmer = $("input[name=" + item.itemId + "_slider]");
     iDimmer.slider();
@@ -375,28 +385,29 @@ function handleSlideEvent(slideEvt) {
         "properties" : {
             "value" : val
         }
-    }
+    };
     var jsonData = JSON.stringify(data);
     console.log("Sending command: " + jsonData);
 
-    $.ajax({url: "/command/send", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
+    $.ajax({url: "/command/send", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", done: function() {
         console.log("Posted Command successfully");
     }})
 
 }
 
 function renderSwitch(item, containerId) {
-    console.log("Rendering switch for item: " + item.name)
+    console.log("Rendering switch for item: " + item.name);
 
     var data = {
         "widgetId": item.id,
         "name": item.name,
         "itemId": item.itemId,
         "label": "on-off",
-        "weight" : item.weight
-    }
+        "weight" : item.weight,
+        "index" : item.properties.index
+    };
 
-    renderWidgetTemplate("switchTemplate", data, item.id, containerId);
+    renderWidgetTemplate("switchTemplate", data, item, containerId);
 
     var iSwitch = $("input[name=" + item.itemId + "_switch]");
     iSwitch.bootstrapSwitch();
@@ -417,17 +428,17 @@ function handleSwitchEvent(event, state) {
         "properties" : {
             "value" : command
         }
-    }
+    };
     var jsonData = JSON.stringify(data);
     console.log("Sending command: " + jsonData);
 
-    $.ajax({url: "/command/send", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
+    $.ajax({url: "/command/send", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", done: function() {
         console.log("Posted Command successfully");
     }})
 }
 
 function renderLabel(item, containerId) {
-    console.log("Rendering label widget for item: " + item.name)
+    console.log("Rendering label widget for item: " + item.name);
 
     var label = item.properties.label;
     var unit = item.properties.unit;
@@ -439,18 +450,18 @@ function renderLabel(item, containerId) {
         "itemId": item.itemId,
         "label": label,
         "unit": unit,
-        "weight" : item.weight
-    }
+        "index" : item.properties.index
+    };
 
-    renderWidgetTemplate("labelTemplate", data, item.id, containerId)
+    renderWidgetTemplate("labelTemplate", data, item, containerId);
 
     //lets get the initial state for the widget
     forceUpdateDeviceState(item.itemId);
 }
 
-function renderWidgetTemplate(templateName, data, itemId, containerId) {
+function renderWidgetTemplate(templateName, data, item, containerId) {
     var rendered = renderTemplate(templateName, data);
-    appendContainer(rendered, itemId, containerId)
+    appendContainer(rendered, item.id, item.properties.column, item.properties.index, containerId)
 }
 
 function renderTemplate(templateName, data) {
@@ -467,12 +478,64 @@ function forceUpdateDeviceState(itemId) {
     });
 }
 
-function appendContainer(widgetHtml, elementId, containerId) {
-    if ($("#" + elementId).length > 0) {
+function appendContainer(widgetHtml, index, columnId, widgetId, containerId) {
+    if ($("#" + widgetId).length > 0) {
         //widget already exists
     } else {
-        var container = $("ul[containerId=" + containerId + "]");
-        container.append(widgetHtml);
+        var container = $("div[containerId=" + containerId + "]");
+        var mode = container.attr("mode");
+        if(mode == "list") {
+            var list = $("ul[containerId=" + containerId + "]");
+
+            console.log("Drawing a list widget");
+            //list.append(widgetHtml);
+
+            insertInColumn(widgetHtml, index, list);
+        } else if(mode == "grid") {
+            console.log("Drawing in a grid");
+
+            //var currentColumn = container.attr("currentColumn");
+            var column = $("ul[containerId=" + containerId + "][column=" + columnId + "]");
+            //column.append(widgetHtml);
+
+            insertInColumn(widgetHtml, index, column);
+
+            var nextColumn = column.attr("next");
+            container.attr("currentColumn", nextColumn);
+        }
+    }
+}
+
+function insertInColumn(widgetHtml, index, column) {
+    //var childWidgets = column.children("li");
+    column.append(widgetHtml);
+
+    column.sort(function(a,b){
+        return a.attr("index") > b.attr("index");
+    })
+}
+
+
+
+function getCurrentColumn(containerId) {
+    var container = $("div[containerId=" + containerId + "]");
+    var mode = container.attr("mode");
+    if(mode == "grid") {
+        return container.attr("currentColumn");
+    } else {
+        return 0;
+    }
+}
+
+function getCurrentWidgetSize(containerId, columnId) {
+    var container = $("div[containerId=" + containerId + "]");
+    var mode = container.attr("mode");
+    if(mode == "grid") {
+        var column = $("ul[containerId=" + containerId + "][column=" + columnId + "]");
+        return column.children("li").length;
+    } else {
+        var list = $("ul[containerId=" + containerId + "]");
+        return list.children("li").length;
     }
 }
 

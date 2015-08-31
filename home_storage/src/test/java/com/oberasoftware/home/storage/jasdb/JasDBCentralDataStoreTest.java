@@ -3,7 +3,7 @@ package com.oberasoftware.home.storage.jasdb;
 import com.oberasoftware.home.api.exceptions.DataStoreException;
 import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.core.model.storage.DeviceItemImpl;
-import com.oberasoftware.home.core.model.storage.UIItemImpl;
+import com.oberasoftware.home.core.model.storage.WidgetImpl;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
@@ -78,9 +78,9 @@ public class JasDBCentralDataStoreTest {
         String id1 = UUID.randomUUID().toString();
         String id2 = UUID.randomUUID().toString();
 
-        centralDatastore.store(new UIItemImpl(id1, "UI Item 1", "container1", "switch", "jsdlfjsd", new HashMap<>(), 0));
-        centralDatastore.store(new UIItemImpl(id2, "UI Item 2", "container1", "switch", "jsdlfjsd", new HashMap<>(), 0));
+        centralDatastore.store(new WidgetImpl(id1, "UI Item 1", "container1", "switch", "jsdlfjsd", new HashMap<>(), 0));
+        centralDatastore.store(new WidgetImpl(id2, "UI Item 2", "container1", "switch", "jsdlfjsd", new HashMap<>(), 0));
 
-        assertThat(jasDBDAO.findUIItems("containe1").size(), is(2));
+        assertThat(jasDBDAO.findWidgets("container1").size(), is(2));
     }
 }

@@ -1,6 +1,7 @@
 package com.oberasoftware.home.service;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -10,6 +11,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HomeAutomationTest {
     @Test
+    @Ignore
     public void testHomeAutomation() {
         new HomeAutomation().start(new String[]{});
 

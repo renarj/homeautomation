@@ -2,18 +2,13 @@ package com.oberasoftware.home.rest;
 
 import com.oberasoftware.home.api.managers.UIManager;
 import com.oberasoftware.home.api.model.storage.Container;
+import com.oberasoftware.home.api.model.storage.Widget;
 import com.oberasoftware.home.core.model.storage.ContainerImpl;
-import com.oberasoftware.home.api.model.storage.UIItem;
-import com.oberasoftware.home.core.model.storage.UIItemImpl;
+import com.oberasoftware.home.core.model.storage.WidgetImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -55,35 +50,18 @@ public class UIRestController {
     }
 
     @RequestMapping("/containers({containerId})/items")
-    public List<UIItem> getItems(@PathVariable String containerId) {
-        try {
-            return uiManager.getItems(containerId);
-        } catch(Exception e) {
-            LOG.error("", e);
-            return new ArrayList<>();
-        }
+    public List<Widget> getItems(@PathVariable String containerId) {
+        return uiManager.getItems(containerId);
     }
 
     @RequestMapping(value = "/items", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public UIItem createItem(@RequestBody UIItemImpl item) {
-        try {
-            return uiManager.store(item);
-        } catch(Exception e) {
-            LOG.error("", e);
-
-            throw e;
-        }
+    public Widget createItem(@RequestBody WidgetImpl item) {
+        return uiManager.store(item);
     }
 
     @RequestMapping(value = "/items({itemId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
     public void deleteItem(@PathVariable String itemId) {
         uiManager.deleteWidget(itemId);
-    }
-
-    @RequestMapping(value = "/items({itemId})/setWeight({weight})", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public void setItemWeight(@PathVariable String itemId, @PathVariable long weight) {
-        LOG.debug("Setting item: {} weight: {}", itemId, weight);
-        uiManager.setWeight(itemId, weight);
     }
 
     @RequestMapping(value = "/items/({itemId})/setParent({containerId})", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
@@ -92,6 +70,11 @@ public class UIRestController {
         uiManager.setParentContainer(itemId, containerId);
     }
 
+    @RequestMapping(value = "/items/({itemId})/setProperty({property},{value})", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    public void setProperty(@PathVariable String itemId, @PathVariable String property, @PathVariable String value) {
+        LOG.debug("Setting item: {} property: {} to value: {}", itemId, property, value);
+        uiManager.setWidgetProperty(itemId, property, value);
+    }
 
     @RequestMapping(value = "/containers", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public Container createContainer(@RequestBody ContainerImpl container) {

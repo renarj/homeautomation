@@ -7,56 +7,59 @@
 <script th:src="@{/javascript/widgetForm.js}" src="/static/javascript/widgetForm.js"></script>
 <script th:src="@{/javascript/dashboard.js}" src="/static/javascript/dashboard.js"></script>
 <script id="labelTemplate" type="x-tmpl-mustache">
-    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
+    <li class="well well-sm widget" index="{{index}}" id="{{widgetId}}">
         <div class="row">
-            <div class="col-xs-4">
+            <div class="col-xs-3">
                 <label>{{name}}</label>
             </div>
             <div class="col-xs-3">&nbsp;</div>
-            <div class="col-xs-3">
+            <div class="col-xs-2">
                 <label itemId="{{itemId}}" labelId="{{label}}">{{value}}</label>
             </div>
             <div class="col-xs-1">
                 <label>{{unit}}</label>
             </div>
-            <div class="col-xs-1">
+            <div class="col-xs-1">&nbsp;</div>
+            <div class="col-xs-2">
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
     </li>
 </script>
 <script id="graphTemplate" type="x-tmpl-mustache">
-    <li class="well well-sm widget graph" id="{{widgetId}}" itemId="{{itemId}}" weight="{{weight}}" labelId="{{label}}">
+    <li class="well well-sm widget graph" index="{{index}}" id="{{widgetId}}" itemId="{{itemId}}" labelId="{{label}}">
     </li>
 </script>
 
 <script id="switchTemplate" type="x-tmpl-mustache">
-    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
+    <li class="well well-sm widget" index="{{index}}" id="{{widgetId}}">
         <div class="row">
-            <div class="col-xs-4">
+            <div class="col-xs-3">
                 <label>{{name}}</label>
             </div>
-            <div class="col-xs-5">&nbsp;</div>
-            <div class="col-xs-2">
+            <div class="col-xs-3">&nbsp;</div>
+            <div class="col-xs-3">
                 <input type="checkbox" data-size="small" itemId="{{itemId}}" labelId="{{label}}" name="{{itemId}}_switch"/>
             </div>
-            <div class="col-xs-1">
+            <div class="col-xs-1">&nbsp;</div>
+            <div class="col-xs-2">
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
     </li>
 </script>
 <script id="colorTemplate" type="x-tmpl-mustache">
-    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
+    <li class="well well-sm widget" index="{{index}}" id="{{widgetId}}">
         <div class="row">
-            <div class="col-xs-4">
+            <div class="col-xs-3">
                 <label>{{name}}</label>
             </div>
             <div class="col-xs-3">&nbsp;</div>
-            <div class="col-xs-4">
+            <div class="col-xs-3">
                 <input type="text" name="{{itemId}}_color" itemId="{{itemId}}"/>
             </div>
-            <div class="col-xs-1">
+            <div class="col-xs-1">&nbsp;</div>
+            <div class="col-xs-2">
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
@@ -64,22 +67,23 @@
 </script>
 
 <script id="sliderTemplate" type="x-tmpl-mustache">
-    <li class="well well-sm widget" id="{{widgetId}}" weight="{{weight}}">
+    <li class="well well-sm widget" index="{{index}}" id="{{widgetId}}">
         <div class="row">
-            <div class="col-xs-4">
+            <div class="col-xs-3">
                 <label>{{name}}</label>
             </div>
             <div class="col-xs-3">&nbsp;</div>
-            <div class="col-xs-4">
-                <input name="{{itemId}}_slider" itemId="{{itemId}}" data-slider-id='{{itemId}}' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+            <div class="col-xs-3">
+                <input style="width: 100%;" name="{{itemId}}_slider" itemId="{{itemId}}" data-slider-id='{{itemId}}' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
             </div>
-            <div class="col-xs-1">
+            <div class="col-xs-1">&nbsp;</div>
+            <div class="col-xs-2">
                 <a href="#" widgetId="{{widgetId}}" class="btn btn-default btn-sm removeWidget" title="Deleted widget"><span class="glyphicon glyphicon-trash"></span></a>
             </div>
         </div>
     </li>
 </script>
-<script id="containerTemplate" type="x-tmpl-mustache">
+<script id="containerTemplateGrid" type="x-tmpl-mustache">
     <div class="row" id="{{containerId}}">
         <div class="col-md-12">
             <div class="panel panel-primary">
@@ -90,7 +94,36 @@
                         <a href="#" data-toggle="modal" data-target="#dataModal" data-id="{{containerId}}" class="btn btn-default btn-sm addWidget" title="Add a Widget"><span class="glyphicon glyphicon-plus"></span></a>
                     </div>
                 </div>
-                <ul class="panel-body list-unstyled sortable" containerId="{{containerId}}">
+                <div class="row" currentColumn="1" containerId="{{containerId}}" mode="grid">
+                    <div class="col-md-4">
+                        <ul class="panel-body list-unstyled sortable" column="1" containerId="{{containerId}}" next="2">
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <ul class="panel-body list-unstyled sortable" column="2" containerId="{{containerId}}" next="3">
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <ul class="panel-body list-unstyled sortable" column="3" containerId="{{containerId}}" next="1">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="containerTemplateList" type="x-tmpl-mustache">
+    <div class="row" id="{{containerId}}" containerId="{{containerId}}" mode="list">
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading clearfix">
+                    <h3 class="panel-title pull-left">{{name}}</h3>
+                    <div class="btn btn-group pull-right">
+                        <a href="#" containerId="{{containerId}}" class="btn btn-default btn-sm removeContainer" title="Delete container"><span class="glyphicon glyphicon-trash"></span></a>
+                        <a href="#" data-toggle="modal" data-target="#dataModal" data-id="{{containerId}}" class="btn btn-default btn-sm addWidget" title="Add a Widget"><span class="glyphicon glyphicon-plus"></span></a>
+                    </div>
+                </div>
+                <ul class="panel-body list-unstyled sortable" column="0" containerId="{{containerId}}">
                 </ul>
             </div>
         </div>
@@ -216,6 +249,13 @@
                             <div class="form-group">
                                 <label for="containerName">Name</label>
                                 <input class="form-control" id="containerName" type="text"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="containerLayout">Layout</label>
+                                <select class="form-control" id="containerLayout">
+                                    <option value="list">List</option>
+                                    <option value="grid">Grid</option>
+                                </select>
                             </div>
                             <input type="hidden" value="" id="parentContainerId"/>
                         </div>

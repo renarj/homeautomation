@@ -1,6 +1,6 @@
 package com.oberasoftware.home.core.model.storage;
 
-import com.oberasoftware.home.api.model.storage.UIItem;
+import com.oberasoftware.home.api.model.storage.Widget;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
@@ -12,10 +12,10 @@ import java.util.Map;
  * @author renarj
  */
 @JasDBEntity(bagName = "widgets")
-public class UIItemImpl implements UIItem {
+public class WidgetImpl implements Widget {
     private String id;
     private String name;
-    private String uiType;
+    private String widgetType;
 
     private String containerId;
 
@@ -25,17 +25,17 @@ public class UIItemImpl implements UIItem {
 
     private Map<String, String> properties = new HashMap<>();
 
-    public UIItemImpl(String id, String name, String containerId, String uiType, String itemId, Map<String, String> properties, long weight) {
+    public WidgetImpl(String id, String name, String containerId, String widgetType, String itemId, Map<String, String> properties, long weight) {
         this.id = id;
         this.name = name;
         this.containerId = containerId;
-        this.uiType = uiType;
+        this.widgetType = widgetType;
         this.itemId = itemId;
         this.properties = properties;
         this.weight = weight;
     }
 
-    public UIItemImpl() {
+    public WidgetImpl() {
     }
 
     @Override
@@ -81,12 +81,12 @@ public class UIItemImpl implements UIItem {
 
     @Override
     @JasDBProperty
-    public String getUiType() {
-        return uiType;
+    public String getWidgetType() {
+        return widgetType;
     }
 
-    public void setUiType(String uiType) {
-        this.uiType = uiType;
+    public void setWidgetType(String widgetType) {
+        this.widgetType = widgetType;
     }
 
     @Override
@@ -115,10 +115,10 @@ public class UIItemImpl implements UIItem {
 
     @Override
     public String toString() {
-        return "UIItem{" +
+        return "Widget{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", uiType='" + uiType + '\'' +
+                ", widgetType='" + widgetType + '\'' +
                 ", containerId='" + containerId + '\'' +
                 ", itemId='" + itemId + '\'' +
                 '}';

@@ -57,12 +57,16 @@ $(document).ready(function() {
         var name = $("#containerName").val();
         var parentContainer = $("#parentContainerId").val();
         var dashboardId = $("#dashboards").attr("dashboardId");
+        var layout = $("#containerLayout").val();
         console.log("Creating container for dashboard: " + dashboardId);
 
         var container = {
             "name" : name,
             "dashboardId" : dashboardId,
-            "parentContainerId" : parentContainer
+            "parentContainerId" : parentContainer,
+            "properties" : {
+                "layout" : layout
+            }
         };
         var jsonData = JSON.stringify(container);
 

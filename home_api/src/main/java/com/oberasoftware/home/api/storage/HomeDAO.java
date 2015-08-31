@@ -25,7 +25,7 @@ public interface HomeDAO {
 
     List<Dashboard> findDashboards();
 
-    List<UIItem> findUIItems(String containerId);
+    List<Widget> findWidgets(String containerId);
 
     Optional<PluginItem> findPlugin(String controllerId, String pluginId);
 

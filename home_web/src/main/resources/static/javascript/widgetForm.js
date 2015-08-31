@@ -195,6 +195,9 @@ $(document).ready(function() {
         var virtualItemId = $("#virtualList").find('option:selected').val();
         var selectedSource = $("#sourceItem").find('option:selected').val();
 
+        var column = getCurrentColumn(container);
+        var widgetIndex = getCurrentWidgetSize(container, column) + 1;
+
         var itemId = deviceId;
         if(selectedSource == "group" || selectedSource == "virtual") {
             itemId = virtualItemId;
@@ -206,9 +209,13 @@ $(document).ready(function() {
 
         var item = {
             "name" : name,
-            "uiType" : widget,
+            "widgetType" : widget,
             "containerId" : container,
-            "itemId" : itemId
+            "itemId" : itemId,
+            "properties" : {
+                "column" : column,
+                "index" : widgetIndex
+            }
         };
         if(widget == "label" || widget == "graph") {
             var label = $("#widgetLabel").find('option:selected').val();
@@ -219,10 +226,8 @@ $(document).ready(function() {
             var unit = $("#widgetLabelUnitType").find('option:selected').text();
             console.log("We have a label: " + label + " and unit: " + unit);
 
-            item["properties"] = {
-                "label" : label,
-                "unit" : unit
-            }
+            item.properties.label = label;
+            item.properties.unit = unit;
         }
 
         var jsonData = JSON.stringify(item);
