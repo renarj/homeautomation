@@ -4,6 +4,7 @@ import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.api.events.DeviceEvent;
 import com.oberasoftware.home.api.managers.DeviceManager;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.rules.RuleEngine;
 import com.oberasoftware.home.rules.api.Block;
 import com.oberasoftware.home.rules.api.general.Rule;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -89,7 +91,10 @@ public class DeviceTriggerProcessor implements TriggerProcessor, EventHandler {
     @EventSubscribe
     public void receive(DeviceEvent event) throws Exception {
         LOG.debug("Received a device event: {}", event);
-        evaluateRules(deviceManager.findDeviceItem(event.getControllerId(), event.getPluginId(), event.getDeviceId()).get().getId());
+        Optional<DeviceItem> deviceItem = deviceManager.findDeviceItem(event.getControllerId(), event.getPluginId(), event.getDeviceId());
+        if(deviceItem.isPresent()) {
+            evaluateRules(deviceItem.get().getId());
+        }
     }
 
 }

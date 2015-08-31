@@ -70,7 +70,7 @@ public class BlocklyParserTest {
                             ConditionBuilder.create()
                                     .itemValue("1a950cf2-b721-418b-8744-11b7d1c476ca", "luminance")
                                     .compare(Operator.SMALLER_THAN_EQUALS, 10)
-                            , ConditionBuilder.create().itemValue("1a950cf2-b721-418b-8744-11b7d1c476ca", "movement")
+                            , ConditionBuilder.create().itemValue("1a950cf2-b721-418b-8744-11b7d1c476ca", "on-off")
                                     .compare(Operator.EQUALS, "on")
                     )).thenDo(
                         new SwitchItem("28da1433-f601-4b8d-a0f9-7dae61e83ad9", SwitchCommand.STATE.ON),

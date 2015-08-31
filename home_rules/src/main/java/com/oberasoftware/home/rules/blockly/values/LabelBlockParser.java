@@ -25,6 +25,12 @@ public class LabelBlockParser implements BlockParser<ResolvableValue> {
         Element labelElement = findFieldElement(node, "label")
                 .orElseThrow(() -> new BlocklyParseException("Could not find label element"));
 
-        return new StaticValue(labelElement.getTextContent(), VALUE_TYPE.STRING);
+        String labelText = labelElement.getTextContent();
+        if(labelText.equals("movement")) {
+            //we do this as movement is not an official label in haas
+            labelText = "on-off";
+        }
+
+        return new StaticValue(labelText, VALUE_TYPE.STRING);
     }
 }
