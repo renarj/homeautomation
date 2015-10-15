@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Renze de Vries
@@ -49,12 +50,14 @@ public class RulesAdminController {
     public String editRule(@PathVariable String controllerId, @PathVariable String ruleId, Model model) {
         List<ControllerItem> controllers = itemManager.findControllers();
         List<RuleItem> ruleItems = ruleManager.getRules(controllerId);
-        RuleItem selectedRule = ruleManager.getRule(ruleId);
+        Optional<RuleItem> selectedRule = ruleManager.getRule(ruleId);
 
         model.addAttribute("controllers", controllers);
         model.addAttribute("selectedController", controllerId);
-        model.addAttribute("selectedRule", ruleId);
-        model.addAttribute("rule", selectedRule);
+        if(selectedRule.isPresent()) {
+            model.addAttribute("selectedRule", ruleId);
+            model.addAttribute("rule", selectedRule.get());
+        }
         model.addAttribute("rules", ruleItems);
 
         return "admin/rules";

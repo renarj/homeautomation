@@ -5,11 +5,8 @@ import com.oberasoftware.home.api.model.storage.VirtualItem;
 import com.oberasoftware.home.core.model.storage.VirtualItemImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,6 +45,7 @@ public class VirtualItemRestController {
     }
 
     @RequestMapping(value = "/items({itemId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteItem(@PathVariable String itemId) {
         LOG.debug("Deleting Virtual Item: {}", itemId);
         try {

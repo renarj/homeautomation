@@ -4,6 +4,7 @@ import com.oberasoftware.home.api.exceptions.HomeAutomationException;
 import com.oberasoftware.home.api.model.storage.RuleItem;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Renze de Vries
@@ -17,5 +18,5 @@ public interface RuleManager {
 
     void delete(String ruleId);
 
-    RuleItem getRule(String ruleId);
+    Optional<RuleItem> getRule(String ruleId);
 }

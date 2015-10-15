@@ -43,7 +43,7 @@ $(document).ready(function() {
         var devices = [];
         groupDeviceContainer.children("li").each(function(index) {
             var deviceId = $(this).attr("deviceId");
-            console.log("Group has deviec: " + deviceId);
+            console.log("Group has device: " + deviceId);
             devices.push(deviceId);
         });
 

@@ -46,6 +46,11 @@
 
         <dependency>
             <groupId>com.oberasoftware</groupId>
+            <artifactId>home_nest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
             <artifactId>home_exampledevice</artifactId>
             <version>${project.version}</version>
         </dependency>

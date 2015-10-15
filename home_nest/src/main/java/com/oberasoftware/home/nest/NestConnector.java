@@ -71,8 +71,8 @@ public class NestConnector {
                     double temp = (Double) c.child("ambient_temperature_c").getValue();
                     Long humidity = (Long) c.child("humidity").getValue();
 
-                    automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.DECIMAL, temp), "Temperature"));
-                    automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.NUMBER, humidity), "Humidity"));
+                    automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.DECIMAL, temp), "temperature"));
+                    automationBus.publish(new DeviceValueEventImpl(automationBus.getControllerId(), "nest", deviceId, new ValueImpl(VALUE_TYPE.NUMBER, humidity), "humidity"));
                 });
             }
 

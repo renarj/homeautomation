@@ -5,11 +5,8 @@ import com.oberasoftware.home.api.model.storage.GroupItem;
 import com.oberasoftware.home.core.model.storage.GroupItemImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,6 +45,7 @@ public class GroupRestController {
     }
 
     @RequestMapping(value = "/groups({groupId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteGroup(@PathVariable String groupId) {
         LOG.debug("Deleting group: {}", groupId);
         groupManager.delete(groupId);

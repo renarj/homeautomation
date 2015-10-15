@@ -1,4 +1,17 @@
 $(document).ready(function() {
+    $(document).on("click", ".deleteRule", function(event) {
+        event.preventDefault();
+
+        var ruleId = $("#editRule").attr("ruleId");
+        console.log("Removing Rule: " + ruleId);
+
+        $.ajax({url: "/rules/(" + ruleId + ")", type: "DELETE", contentType: "application/json; charset=utf-8", success: function(data) {
+            console.log("Removed Rule successfully");
+
+            location.reload(true);
+        }});
+    });
+
     $(document).on("click", ".saveRule", function (event) {
         event.preventDefault();
 
@@ -30,6 +43,8 @@ $(document).ready(function() {
 
         $.ajax({url: "/rules/", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
             console.log("Posted Rule successfully");
+
+            location.reload(true);
         }, error: function(xhr, status, error) {
             console.log("Request error: " + error + " reason: " + xhr.responseText);
 

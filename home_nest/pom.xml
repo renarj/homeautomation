@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.firebase</groupId>
             <artifactId>firebase-client-jvm</artifactId>
-            <version>2.1.1</version>
+            <version>2.4.0</version>
         </dependency>
 
     </dependencies>

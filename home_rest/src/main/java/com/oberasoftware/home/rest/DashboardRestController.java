@@ -6,6 +6,7 @@ import com.oberasoftware.home.core.model.storage.DashboardImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class DashboardRestController {
     }
 
     @RequestMapping(value = "/({dashboardId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteDashboard(@PathVariable String dashboardId) {
         LOG.debug("Deleting Dashboard: {}", dashboardId);
         dashboardManager.delete(dashboardId);

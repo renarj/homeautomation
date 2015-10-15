@@ -115,9 +115,10 @@ public class RuleManagerImpl implements RuleManager {
     }
 
     @Override
-    public RuleItem getRule(String ruleId) {
+    public Optional<RuleItem> getRule(String ruleId) {
         Optional<RuleItemImpl> ruleItem = homeDAO.findItem(RuleItemImpl.class, ruleId);
-        return ruleItem.get();
+
+        return ruleItem.isPresent() ? Optional.of(ruleItem.get()) : Optional.empty();
     }
 
     private RuleItem preProcessRule(RuleItem ruleItem) throws BlocklyParseException {

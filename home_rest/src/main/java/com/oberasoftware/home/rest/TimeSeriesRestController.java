@@ -35,12 +35,15 @@ public class TimeSeriesRestController {
     @RequestMapping("/item({itemId})/label({label})")
     public List<DataPoint> findDeviceData(@PathVariable String itemId,
                                           @PathVariable String label) {
+        return findDeviceData(itemId, label, DEFAULT_TIME_SCALE);
+    }
+
+
+    @RequestMapping("/item({itemId})/label({label})/hours({time})")
+    public List<DataPoint> findDeviceData(@PathVariable String itemId,
+                                          @PathVariable String label, @PathVariable long time) {
         if(timeSeriesStore != null) {
-            try {
-                return timeSeriesStore.findDataPoints(bus.getControllerId(), itemId, label, DEFAULT_TIME_SCALE, TimeUnit.HOURS);
-            } catch(Exception e) {
-                LOG.error("", e);
-            }
+            return timeSeriesStore.findDataPoints(bus.getControllerId(), itemId, label, time, TimeUnit.HOURS);
         }
         return new ArrayList<>();
     }

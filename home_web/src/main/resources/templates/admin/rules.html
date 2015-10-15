@@ -33,36 +33,41 @@
 
     <div class="row" style="height: 100%;">
         <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Controllers</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="list-group" th:each="controller: ${controllers}">
-                        <a href="#" th:href="@{'/web/admin/rules/'+${controller.controllerId}}" class="list-group-item" th:classappend="${selectedController != null and selectedController == controller.controllerId} ? 'active'" th:text="${controller.controllerId}">Text</a>
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Controllers</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="list-group" th:each="controller: ${controllers}">
+                            <a href="#" th:href="@{'/web/admin/rules/'+${controller.controllerId}}" class="list-group-item" th:classappend="${selectedController != null and selectedController == controller.controllerId} ? 'active'" th:text="${controller.controllerId}">Text</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="row">
+            <div th:if="${selectedController}">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <h3 class="panel-title pull-left">Rules</h3>
+                        <div class="btn-group pull-right">
+                            <a th:href="@{'/web/admin/rules/' + ${selectedController} + '/new'}" href="#" class="btn btn-default btn-sm" title="New Rule"><span class="glyphicon glyphicon-plus"></span></a>
 
-        <div class="col-md-2" th:if="${selectedController}">
-            <div class="panel panel-default">
-                <div class="panel-heading clearfix">
-                    <h3 class="panel-title pull-left">Rules</h3>
-                    <div class="btn-group pull-right">
-                        <a th:href="@{'/web/admin/rules/' + ${selectedController} + '/new'}" href="#" class="btn btn-default btn-sm" title="New Rule"><span class="glyphicon glyphicon-plus"></span></a>
-
+                        </div>
                     </div>
-                </div>
-                <div class="panel-body" id="rules">
-                    <div class="list-group" th:each="rule: ${rules}">
-                        <a href="#" th:href="@{'/web/admin/rules/'+${selectedController}}+'/'+${rule.id}" class="list-group-item" th:classappend="${selectedRule != null and selectedRule == rule.id} ? 'active'" th:text="${rule.name}">Text</a>
+                    <div class="panel-body" id="rules">
+                        <div class="list-group" th:each="rule: ${rules}">
+                            <a href="#" th:href="@{'/web/admin/rules/'+${selectedController}}+'/'+${rule.id}" class="list-group-item" th:classappend="${selectedRule != null and selectedRule == rule.id} ? 'active'" th:text="${rule.name}">Text</a>
+                        </div>
                     </div>
                 </div>
             </div>
+            </div>
         </div>
-        <div class="col-md-8" style="height:100%;" th:if="${selectedRule != null or newRule != null}">
+
+        <div class="col-md-10" style="height:100%;" th:if="${selectedRule != null or newRule != null}">
             <div class="text-right" style="height: 3%;">
+                <button type="button" class="btn btn-default deleteRule" id="deleteRule">Delete</button>
                 <button type="button" class="btn btn-default resetRule" id="resetRule">Reset</button>
                 <button type="button" class="btn btn-primary saveRule" th:attr="controllerId=${selectedController}" id="saveRule">Save</button>
             </div>

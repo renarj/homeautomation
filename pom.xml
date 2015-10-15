@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.1.9.RELEASE</version>
+        <version>1.2.5.RELEASE</version>
     </parent>
 
     <groupId>com.oberasoftware</groupId>
@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <jasdb.version>1.1.2-SNAPSHOT</jasdb.version>
+        <jasdb.version>1.1.2</jasdb.version>
         <quartz.version>2.2.1</quartz.version>
     </properties>
 

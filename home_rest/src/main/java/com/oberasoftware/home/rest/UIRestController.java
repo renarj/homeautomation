@@ -7,6 +7,7 @@ import com.oberasoftware.home.core.model.storage.ContainerImpl;
 import com.oberasoftware.home.core.model.storage.WidgetImpl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class UIRestController {
     }
 
     @RequestMapping(value = "/containers({containerId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteContainer(@PathVariable String containerId) {
         uiManager.deleteContainer(containerId);
     }
@@ -60,6 +62,7 @@ public class UIRestController {
     }
 
     @RequestMapping(value = "/items({itemId})", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteItem(@PathVariable String itemId) {
         uiManager.deleteWidget(itemId);
     }
@@ -71,6 +74,7 @@ public class UIRestController {
     }
 
     @RequestMapping(value = "/items/({itemId})/setProperty({property},{value})", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
     public void setProperty(@PathVariable String itemId, @PathVariable String property, @PathVariable String value) {
         LOG.debug("Setting item: {} property: {} to value: {}", itemId, property, value);
         uiManager.setWidgetProperty(itemId, property, value);
