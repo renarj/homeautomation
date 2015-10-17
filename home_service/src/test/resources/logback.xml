@@ -15,6 +15,8 @@
 
     <logger name="com.oberasoftware.home.nest" level="debug"/>
 
+    <logger name="com.oberasoftware.home.mqtt" level="debug"/>
+
     <root level="OFF">
         <appender-ref ref="STDOUT"/>
     </root>

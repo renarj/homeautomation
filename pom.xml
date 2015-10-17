@@ -117,6 +117,7 @@
         <module>home_voice</module>
         <module>home_arduino</module>
         <module>home_rules</module>
+        <module>home_mqtt</module>
     </modules>
 
     <build>

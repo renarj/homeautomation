@@ -31,8 +31,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ExtensionManagerImpl implements ExtensionManager {
     private static final Logger LOG = getLogger(ExtensionManagerImpl.class);
 
-//    private ConcurrentMap<String, AutomationExtension> extensions = new ConcurrentHashMap<>();
-//
     @Autowired(required = false)
     private List<AutomationExtension> extensions;
 

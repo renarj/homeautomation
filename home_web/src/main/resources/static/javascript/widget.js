@@ -40,9 +40,13 @@ function handleStateUpdate(state) {
             }
         } else if(label == "value") {
             //slider value potentially
-            console.log("Setting slider value: " + stateItem.value.value + " for device: " + itemId)
             var iDimmer = $("input[name=" + itemId + "_slider]");
-            iDimmer.slider('setValue', stateItem.value.value);
+            if (iDimmer.length) {
+                console.log("Setting slider value: " + stateItem.value.value + " for device: " + itemId)
+                iDimmer.slider('setValue', stateItem.value.value);
+            } else {
+                setLabelValue(itemId, label, stateItem);
+            }
         } else if(label == "rgb") {
             console.log("Setting rgb: " + stateItem.value.value + " for device: " + itemId);
 
@@ -51,30 +55,41 @@ function handleStateUpdate(state) {
 
         } else {
             //most likely a raw value on a label
-            console.log("Checking for label for item: " + itemId + " with label: " + label);
-            var valueLabel = $("label[itemId=" + itemId + "][labelId=" + label + "]");
-
-            var rawValue = stateItem.value.value;
-            if (valueLabel) {
-                valueLabel.text(rawValue);
-            }
-
-            var graphs = $("li.graph[itemId=" + itemId + "][labelId=" + label + "]");
-            if(graphs) {
-                $.each(graphs, function(i, graph) {
-                    var widgetId = graph.getAttribute("id");
-                    console.log("Updating graph with id: " + widgetId);
-
-                    var widget = $("#" + widgetId);
-                    var series = widget.highcharts().series;
-                    var time = (new Date).getTime();
-
-                    console.log("Adding datapoint: " + time + " val: " + rawValue);
-                    series[0].addPoint([time, rawValue]);
-                });
-            }
+            setLabelValue(itemId, label, stateItem)
         }
     })
+}
+
+function setLabelValue(itemId, label, stateItem) {
+    console.log("Checking for label for item: " + itemId + " with label: " + label);
+    var valueLabel = $("label[itemId=" + itemId + "][labelId=" + label + "]");
+
+    var rawValue = stateItem.value.value;
+    if(isNumeric(rawValue)) {
+        rawValue = parseFloat(rawValue).toFixed(2);
+    }
+    if (valueLabel.length) {
+        valueLabel.text(rawValue);
+    }
+
+    var graphs = $("li.graph[itemId=" + itemId + "][labelId=" + label + "]");
+    if(graphs) {
+        $.each(graphs, function(i, graph) {
+            var widgetId = graph.getAttribute("id");
+            console.log("Updating graph with id: " + widgetId);
+
+            var widget = $("#" + widgetId);
+            var series = widget.highcharts().series;
+            var time = (new Date).getTime();
+
+            console.log("Adding datapoint: " + time + " val: " + rawValue);
+            series[0].addPoint([time, rawValue]);
+        });
+    }
+}
+
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 function tabChange(e) {
