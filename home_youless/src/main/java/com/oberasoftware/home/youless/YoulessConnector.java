@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,10 +33,10 @@ public class YoulessConnector implements Runnable {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    @Value("${youless.ip}")
+    @Value("${youless.ip:}")
     private String youlessIp;
 
-    @Value("${youless.checkinterval}")
+    @Value("${youless.checkinterval:30000}")
     private long interval;
 
     @Autowired
@@ -45,9 +46,13 @@ public class YoulessConnector implements Runnable {
     public void connect() {
         LOG.debug("Scheduling retrieval of wattage from Youless");
 
-        Thread thread = new Thread(this);
-        thread.setDaemon(true);
-        thread.start();
+        if(!StringUtils.isEmpty(youlessIp)) {
+            Thread thread = new Thread(this);
+            thread.setDaemon(true);
+            thread.start();
+        } else {
+            LOG.warn("Youless connector is present but not configured, ignoring");
+        }
     }
 
     public String getYoulessIp() {

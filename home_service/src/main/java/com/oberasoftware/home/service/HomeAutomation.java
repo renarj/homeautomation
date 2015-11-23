@@ -56,6 +56,7 @@ public class HomeAutomation {
             extensionManager.activateController(controllerId);
 
             extensionManager.activateExtensions();
+            LOG.info("HomeAutomation system Started and ready for duty");
         } catch (HomeAutomationException | RuntimeHomeAutomationException e) {
             LOG.error("Could not start the HomeAutomationSystem", e);
         }

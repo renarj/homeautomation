@@ -32,6 +32,10 @@
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
+        <repository>
+            <id>Eclipse Paho Repo</id>
+            <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -118,6 +122,7 @@
         <module>home_arduino</module>
         <module>home_rules</module>
         <module>home_mqtt</module>
+        <module>home_test</module>
     </modules>
 
     <build>
@@ -131,17 +136,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.springframework.boot</groupId>-->
-                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-                <!--<dependencies>-->
-                    <!--<dependency>-->
-                        <!--<groupId>org.springframework</groupId>-->
-                        <!--<artifactId>springloaded</artifactId>-->
-                        <!--<version>1.2.0.RELEASE</version>-->
-                    <!--</dependency>-->
-                <!--</dependencies>-->
-            <!--</plugin>-->
         </plugins>
     </build>
 

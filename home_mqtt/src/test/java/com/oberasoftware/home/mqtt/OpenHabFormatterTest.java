@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 public class OpenHabFormatterTest {
     @Test
     public void testParseTopic() {
-        OpenHabFormatter formatter = new OpenHabFormatter();
+        PathPatternFormatter formatter = new PathPatternFormatter();
         formatter.configure("/{controllerId}/out/{itemId}/{type}");
 
         MQTTMessage message = formatter.format("/openHAB/out/weatherState/state", "ON");

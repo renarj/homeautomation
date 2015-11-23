@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
 /**
  * @author Renze de Vries
  */
-@Component("OpenHabFormatter")
-public class OpenHabFormatter implements MQTTFormatter {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenHabFormatter.class);
+@Component("PathPatternFormatter")
+public class PathPatternFormatter implements MQTTFormatter {
+    private static final Logger LOG = LoggerFactory.getLogger(PathPatternFormatter.class);
 
     private String pattern;
     private Pattern regexPattern;

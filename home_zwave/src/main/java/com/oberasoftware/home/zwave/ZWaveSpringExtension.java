@@ -5,6 +5,7 @@ import com.oberasoftware.home.api.commands.handlers.CommandHandler;
 import com.oberasoftware.home.api.extensions.DeviceExtension;
 import com.oberasoftware.home.api.model.Device;
 import com.oberasoftware.home.api.model.storage.PluginItem;
+import com.oberasoftware.home.zwave.exceptions.ZWaveConfigurationException;
 import com.oberasoftware.home.zwave.exceptions.ZWaveException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,8 @@ public class ZWaveSpringExtension implements DeviceExtension {
         try {
             serialZWaveConnector.connect();
             zWaveController.initializeNetwork();
+        } catch(ZWaveConfigurationException e) {
+            LOG.warn("ZWave was not correctly configured: {}", e.getMessage());
         } catch (ZWaveException e) {
             LOG.error("Unable to initialize zwave plugin", e);
         }

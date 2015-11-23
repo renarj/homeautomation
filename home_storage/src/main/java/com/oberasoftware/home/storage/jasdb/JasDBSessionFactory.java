@@ -30,7 +30,7 @@ public class JasDBSessionFactory {
     @Value("${jasdb.post:7050}")
     private int jasdbPort;
 
-    @Value("${jasdb.instance}")
+    @Value("${jasdb.instance:default}")
     private String jasdbInstance;
 
 

@@ -9,38 +9,42 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>home_service</artifactId>
+    <artifactId>home_test</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>home_storage</artifactId>
+            <artifactId>home_service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>home_rest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
-            <artifactId>home_core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
-            <artifactId>home_web</artifactId>
+            <artifactId>home_influxdb</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>home_rules</artifactId>
+            <artifactId>home_hue</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_zwave</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_arduino</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_mqtt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home_youless</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

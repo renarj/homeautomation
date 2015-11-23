@@ -66,7 +66,9 @@ public class ExtensionManagerImpl implements ExtensionManager {
     @Override
     public void activateExtensions() throws HomeAutomationException {
         LOG.info("Activating all installed extensions");
-        extensions.forEach(this::activateExtension);
+        if(extensions != null) {
+            extensions.forEach(this::activateExtension);
+        }
     }
 
     private void activateExtension(AutomationExtension extension)  {
