@@ -1,6 +1,5 @@
 package com.oberasoftware.home.rest;
 
-import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.ItemManager;
 import com.oberasoftware.home.api.managers.StateManager;
 import com.oberasoftware.home.api.model.State;
@@ -29,9 +28,6 @@ public class DataRestController {
     private static final Logger LOG = getLogger(DataRestController.class);
 
     @Autowired
-    private DeviceManager deviceManager;
-
-    @Autowired
     private ItemManager itemManager;
 
     @Autowired
@@ -48,6 +44,17 @@ public class DataRestController {
                 .collect(Collectors.toList());
     }
 
+    @RequestMapping("/controllers({controllerId}/devices")
+    public List<RestItemDevice> getDevices(@PathVariable String controllerId) {
+        LOG.debug("Requested list of all devices");
+
+        List<DeviceItem> deviceItems = itemManager.findDevices(controllerId);
+        return deviceItems.stream()
+                .map(d -> new RestItemDevice(d, stateManager.getState(d.getId())))
+                .collect(Collectors.toList());
+    }
+
+
     @RequestMapping("/controllers({controllerId})/plugins")
     public List<PluginItem> getPlugins(@PathVariable String controllerId) {
         LOG.debug("Requested a list of all plugins for controller: {}", controllerId);
@@ -58,7 +65,7 @@ public class DataRestController {
     @RequestMapping("/controllers")
     public List<ControllerItem> getControllers() {
         LOG.debug("Requested a list of all controllers");
-        return itemManager.findControllers();//.stream().map(RestHomeController::new).collect(Collectors.toList());
+        return itemManager.findControllers();
     }
 
     @RequestMapping("/item({id})")
@@ -71,13 +78,4 @@ public class DataRestController {
         return stateManager.getState(itemId);
     }
 
-    @RequestMapping("/devices")
-    public List<RestItemDevice> getDevices() {
-        LOG.debug("Requested list of all devices");
-
-        List<DeviceItem> deviceItems = itemManager.findDevices();
-        return deviceItems.stream()
-                .map(d -> new RestItemDevice(d, stateManager.getState(d.getId())))
-                .collect(Collectors.toList());
-    }
 }

@@ -73,7 +73,7 @@ function setLabelValue(itemId, label, stateItem) {
     }
 
     var graphs = $("li.graph[itemId=" + itemId + "][labelId=" + label + "]");
-    if(graphs) {
+    if(graphs.length > 0) {
         $.each(graphs, function(i, graph) {
             var widgetId = graph.getAttribute("id");
             console.log("Updating graph with id: " + widgetId);
@@ -83,7 +83,7 @@ function setLabelValue(itemId, label, stateItem) {
             var time = (new Date).getTime();
 
             console.log("Adding datapoint: " + time + " val: " + rawValue);
-            series[0].addPoint([time, rawValue]);
+            series[0].addPoint([time, parseInt(rawValue)]);
         });
     }
 }
@@ -303,6 +303,8 @@ function renderGraph(containerId, item) {
 
     var label = item.properties.label;
     var unit = item.properties.unit;
+    var period = item.properties.period;
+    var grouping = item.properties.aggregation;
 
     var data = {
         "widgetId": item.id,
@@ -313,8 +315,13 @@ function renderGraph(containerId, item) {
     };
 
     renderWidgetTemplate("graphTemplate", data, item, containerId);
+    var periodBox = $("#period_" + item.id);
+    var groupingBox = $("#grouping_" + item.id);
+    periodBox.val(period);
+    groupingBox.val(grouping);
 
-    var widget = $("#" + item.id);
+
+    var widget = $("#chart_" + item.id);
     widget.highcharts({
         chart: {
             type: 'area'
@@ -357,7 +364,22 @@ function renderGraph(containerId, item) {
         }]
     });
 
-    $.get("/timeseries/item(" + item.itemId + ")/label(" + label + ")", function(data) {
+    periodBox.change(function() {
+        loadGraphData(item.itemId, label, groupingBox.val(), periodBox.val(), widget);
+    });
+    groupingBox.change(function() {
+        console.log("GRoup change")
+        loadGraphData(item.itemId, label, groupingBox.val(), periodBox.val(), widget);
+    });
+
+    loadGraphData(item.itemId, label, grouping, period, widget);
+}
+
+function loadGraphData(itemId, label, grouping, period, widget) {
+    //var series = widget.highcharts().series;
+    //series[0].setData([]);
+
+    $.get("/timeseries/item(" + itemId + ")/label(" + label + ")/grouping(" + grouping + ")/hours(" + period + ")", function(data) {
         var array = [];
         $.each(data, function(i, point) {
             var value = point.value;
@@ -368,8 +390,6 @@ function renderGraph(containerId, item) {
         var series = widget.highcharts().series;
         series[0].setData(array);
     });
-
-
 }
 
 function renderSlider(item, containerId) {

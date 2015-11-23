@@ -35,15 +35,19 @@ public class TimeSeriesRestController {
     @RequestMapping("/item({itemId})/label({label})")
     public List<DataPoint> findDeviceData(@PathVariable String itemId,
                                           @PathVariable String label) {
-        return findDeviceData(itemId, label, DEFAULT_TIME_SCALE);
+        return findDeviceData(itemId, label, "minute", DEFAULT_TIME_SCALE);
     }
 
 
-    @RequestMapping("/item({itemId})/label({label})/hours({time})")
+    @RequestMapping("/item({itemId})/label({label})/grouping({group})/hours({time})")
     public List<DataPoint> findDeviceData(@PathVariable String itemId,
-                                          @PathVariable String label, @PathVariable long time) {
+                                          @PathVariable String label, @PathVariable String group, @PathVariable long time) {
         if(timeSeriesStore != null) {
-            return timeSeriesStore.findDataPoints(bus.getControllerId(), itemId, label, time, TimeUnit.HOURS);
+            TimeSeriesStore.GROUPING grouping = TimeSeriesStore.GROUPING.fromName(group);
+            LOG.debug("Doing item: {} time series request for: {} hours grouped by: {}", itemId, time, grouping);
+
+            return timeSeriesStore.findDataPoints(bus.getControllerId(), itemId, label, grouping,
+                    time, TimeUnit.HOURS);
         }
         return new ArrayList<>();
     }

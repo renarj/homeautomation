@@ -87,9 +87,9 @@ public class InfluxDBStateStore implements TimeSeriesStore {
     }
 
     @Override
-    public List<DataPoint> findDataPoints(String controllerId, String itemId, String label, long time, TimeUnit unit) {
+    public List<DataPoint> findDataPoints(String controllerId, String itemId, String label, GROUPING grouping, long time, TimeUnit unit) {
         StringBuilder builder = new StringBuilder("select mean(value), label from ");
-        builder.append(controllerId).append(" group by time(60s), label");
+        builder.append(controllerId).append(" group by time(").append(grouping.getTimeString()).append("), label");
         builder.append(" where label='").append(label).append("' and itemId='").append(itemId);
         long hours = TimeUnit.HOURS.convert(time, unit);
         builder.append("' and time>now() - ").append(hours).append("h order asc");

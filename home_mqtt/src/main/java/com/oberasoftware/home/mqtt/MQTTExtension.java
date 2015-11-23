@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
+import static nl.renarj.core.utilities.StringUtils.stringNotEmpty;
 
 /**
  * @author Renze de Vries
@@ -51,7 +52,11 @@ public class MQTTExtension {
         LOG.info("Starting MQTT Connector");
 
         String brokers = environment.getProperty("mqtt.brokers");
-        asList(brokers.split(",")).forEach(this::loadBroker);
+        if(stringNotEmpty(brokers)) {
+            asList(brokers.split(",")).forEach(this::loadBroker);
+        } else {
+            LOG.info("No MQTT Brokers configured, skipping initialization");
+        }
     }
 
     @PreDestroy
@@ -64,15 +69,18 @@ public class MQTTExtension {
         String url = environment.getProperty("mqtt." + brokerId + ".url");
         String channels = environment.getProperty("mqtt." + brokerId + ".channels");
         LOG.info("Broker: {} on url: {} channels: {}", brokerId, url, channels);
+        if(stringNotEmpty(url) && stringNotEmpty(channels)) {
+            MQTTBroker broker = new MQTTBroker(url);
+            activeBrokers.add(broker);
+            try {
+                broker.connect();
 
-        MQTTBroker broker = new MQTTBroker(url);
-        activeBrokers.add(broker);
-        try {
-            broker.connect();
-
-            asList(channels.split(",")).forEach(c -> loadChannels(broker, brokerId, c));
-        } catch (HomeAutomationException e) {
-            throw new RuntimeHomeAutomationException("Unable to connect", e);
+                asList(channels.split(",")).forEach(c -> loadChannels(broker, brokerId, c));
+            } catch (HomeAutomationException e) {
+                throw new RuntimeHomeAutomationException("Unable to connect", e);
+            }
+        } else {
+            LOG.warn("Broker: {} has no url: {} or channels: {} configured", brokerId, url, channels);
         }
     }
 

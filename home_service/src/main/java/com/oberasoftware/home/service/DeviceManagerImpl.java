@@ -60,8 +60,8 @@ public class DeviceManagerImpl implements DeviceManager {
     }
 
     @Override
-    public List<DeviceItem> getDevices() {
-        return homeDAO.findDevices();
+    public List<DeviceItem> getDevices(String controllerId) {
+        return homeDAO.findDevices(controllerId);
     }
 
 }

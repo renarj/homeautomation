@@ -35,7 +35,7 @@ public class MockDeviceManager implements DeviceManager {
     }
 
     @Override
-    public List<DeviceItem> getDevices() {
+    public List<DeviceItem> getDevices(String controllerId) {
         return new ArrayList<>(deviceItems);
     }
 

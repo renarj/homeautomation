@@ -90,7 +90,7 @@ public class HueConnectorImpl implements EventHandler, HueConnector {
         }
 
         @Override
-        public void onBridgeConnected(PHBridge phBridge) {
+        public void onBridgeConnected(PHBridge phBridge, String s) {
             LOG.info("Bridge connected: {} with user: {}", phBridge, bridgeUser);
             connected.set(true);
 

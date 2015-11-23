@@ -1,0 +1,31 @@
+<div class="modal fade" id="containerModal" tabindex="-1" role="dialog" aria-labelledby="addContainerLabel"
+     aria-hidden="true" th:fragment="containerForm" xmlns:th="http://www.w3.org/1999/xhtml">
+    <form role="form" id="createContainerForm" action="#" method="post">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="addContainerLabel">Add a Container</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="containerName">Name</label>
+                        <input class="form-control" id="containerName" type="text"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="containerLayout">Layout</label>
+                        <select class="form-control" id="containerLayout">
+                            <option value="list">List</option>
+                            <option value="grid">Grid</option>
+                        </select>
+                    </div>
+                    <input type="hidden" value="" id="parentContainerId"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

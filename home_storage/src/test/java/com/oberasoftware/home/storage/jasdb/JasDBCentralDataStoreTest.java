@@ -66,7 +66,7 @@ public class JasDBCentralDataStoreTest {
 
         centralDatastore.store(new DeviceItemImpl(id, "controller1", "plugin1", "device1", "updated name", new HashMap<>()));
 
-        assertThat(jasDBDAO.findDevices().size(), is(1));
+        assertThat(jasDBDAO.findDevices("controller1").size(), is(1));
 
         item = jasDBDAO.findDevice("controller1", "plugin1", "device1");
         assertThat(item.isPresent(), is(true));

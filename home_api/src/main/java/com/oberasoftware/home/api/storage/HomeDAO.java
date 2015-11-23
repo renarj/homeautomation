@@ -35,7 +35,7 @@ public interface HomeDAO {
 
     Optional<DeviceItem> findDevice(String controllerId, String pluginId, String deviceId);
 
-    List<DeviceItem> findDevices();
+    List<DeviceItem> findDevices(String controllerId);
 
     <T extends VirtualItem> List<T> findVirtualItems(Class<T> type);
 

@@ -62,6 +62,7 @@ $(document).ready(function() {
 
 
     function loadControllers() {
+        $('#widgetList').attr('disabled', true);
         $.get("/data/controllers", function(data){
             if(!isEmpty(data)) {
                 var list = $("#controllerList");
@@ -102,6 +103,7 @@ $(document).ready(function() {
             if(!isEmpty(data)) {
                 var list = $("#virtualList");
                 list.empty();
+                list.append(new Option("", ""));
 
                 $.each(data, function (i, g) {
                     list.append(new Option(g.name, g.id));
@@ -116,6 +118,7 @@ $(document).ready(function() {
             if(!isEmpty(data)) {
                 var list = $("#virtualList");
                 list.empty();
+                list.append(new Option("", ""));
 
                 $.each(data, function (i, g) {
                     list.append(new Option(g.name, g.id));
@@ -128,7 +131,7 @@ $(document).ready(function() {
     $("#controllerList").change(function() {
         var selectedController = $("#controllerList").find('option:selected').val();
         loadPlugins(selectedController);
-    })
+    });
 
     function loadPlugins(controllerId) {
         console.log("Retrieving plugins for controller: " + controllerId);
@@ -162,13 +165,48 @@ $(document).ready(function() {
                 })
             }
         })
-    })
+    });
+
+    $("#deviceList").change(function() {
+        var selectedDevice = $("#deviceList").find('option:selected').val();
+        loadLabels(selectedDevice);
+    });
+
+    $("#virtualList").change(function() {
+        var selectedVirtual = $("#virtualList").find('option:selected').val();
+        loadLabels(selectedVirtual);
+    });
+
+    function loadLabels(itemId) {
+        $('#widgetList').attr('disabled', false);
+
+        $.get("/data/state(" + itemId + ")", function(data){
+            var list = $("#widgetLabel");
+            list.empty();
+            list.append(new Option("Custom", "custom"));
+
+            if(!isEmpty(data)) {
+                $.each(data.stateItems, function (i, stateItem) {
+                    var label = stateItem.label;
+
+                    list.append(new Option(label, label));
+                })
+            }
+        })
+
+    }
 
     $("#widgetList").change(function () {
         var widgetType = this.value;
         if(widgetType == "label" || widgetType == "graph") {
             $("#widgetValueTypeDiv").removeClass("hide");
             $("#widgetUnitTypeDiv").removeClass("hide");
+            $("#widgetCustomValueType").removeClass("hide");
+
+            if(widgetType == "graph") {
+                $("#graphTimeDiv").removeClass('hide');
+                $("#graphGroupingDiv").removeClass('hide');
+            }
         } else {
             $("#widgetValueTypeDiv").addClass("hide");
             $("#widgetUnitTypeDiv").addClass("hide");
@@ -228,6 +266,14 @@ $(document).ready(function() {
 
             item.properties.label = label;
             item.properties.unit = unit;
+
+            if(widget == "graph") {
+                var period = $("#graphTime").find('option:selected').val();
+                var aggregation = $("#graphGrouping").find('option:selected').val();
+
+                item.properties.period = period;
+                item.properties.aggregation = aggregation;
+            }
         }
 
         var jsonData = JSON.stringify(item);
@@ -237,18 +283,9 @@ $(document).ready(function() {
         $.ajax({url: "/ui/items", type: "POST", data: jsonData, dataType: "json", contentType: "application/json; charset=utf-8", success: function(data) {
             console.log("Posted UI Item successfully");
 
-            $('#dataModal').modal('hide')
+            $('#dataModal').modal('hide');
 
-            $("#itemName").val("");
-            $("#containerId").val("");
-            $("#widgetList").val("switch");
-            $("#widgetLabel").val("none");
-            $("#widgetLabelUnitType").val("none");
-
-            $("#deviceList").empty();
-            $("#pluginList").empty();
-            $("#controllerList").empty();
-            $("#groupList").empty();
+            resetForm();
 
             renderWidget(container, data);
         }})
@@ -258,4 +295,16 @@ $(document).ready(function() {
         return (!str || 0 === str.length);
     }
 
+    function resetForm() {
+        $("#itemName").val("");
+        $("#containerId").val("");
+        $("#widgetList").val("switch");
+        $("#widgetLabel").val("none");
+        $("#widgetLabelUnitType").val("none");
+
+        $("#deviceList").empty();
+        $("#pluginList").empty();
+        $("#controllerList").empty();
+        $("#groupList").empty();
+    }
 });

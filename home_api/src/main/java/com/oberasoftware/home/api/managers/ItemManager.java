@@ -25,7 +25,7 @@ public interface ItemManager {
 
     List<DeviceItem> findDevices(String controllerId, String pluginId);
 
-    List<DeviceItem> findDevices();
+    List<DeviceItem> findDevices(String controllerId);
 
     Item findItem(String id);
 }

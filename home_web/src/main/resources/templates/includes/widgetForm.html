@@ -1,0 +1,113 @@
+<!-- Modal for data insertion -->
+<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="addUiItemLabel" aria-hidden="true"
+     th:fragment="widgetForm" xmlns:th="http://www.w3.org/1999/xhtml">
+    <form role="form" id="createUIItemForm" action="#" method="post">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="addUiItemLabel">Add a Widget</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="itemName">Name</label>
+                                <input class="form-control" id="itemName" type="text"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="sourceItem">Item Type</label>
+                                <select class="form-control" id="sourceItem">
+                                    <option value="device">Device</option>
+                                    <option value="group">Group</option>
+                                    <option value="virtual">Virtual Item</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="controller">
+                                <label for="controllerList">Controller</label>
+                                <select class="form-control" id="controllerList">
+                                </select>
+                            </div>
+                            <div class="form-group" id="plugin">
+                                <label for="pluginList">Plugin</label>
+                                <select class="form-control" id="pluginList">
+                                </select>
+                            </div>
+                            <div class="form-group" id="device">
+                                <label for="deviceList">Device</label>
+                                <select class="form-control" id="deviceList">
+                                </select>
+                            </div>
+                            <div class="form-group" id="virtual">
+                                <label for="virtualList" id="virtualLabel">Group</label>
+                                <select class="form-control" id="virtualList">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="widgetList">Widget Type</label>
+                                <select class="form-control" id="widgetList">
+                                    <option value="switch">Switch</option>
+                                    <option value="dimmer">Dimmer</option>
+                                    <option value="color">Color</option>
+                                    <option value="label">Device Value</option>
+                                    <option value="graph">Graph</option>
+                                </select>
+                            </div>
+                            <div class="form-group hide" id="widgetValueTypeDiv">
+                                <label for="widgetLabel">Device Value Type</label>
+                                <select class="form-control" id="widgetLabel">
+                                    <option value="none"></option>
+                                    <option value="power">Power</option>
+                                    <option value="energy">Energy</option>
+                                    <option value="temperature">Temperature</option>
+                                    <option value="luminance">Luminance</option>
+                                    <option value="battery">Battery</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                            <div class="form-group hide" id="widgetCustomValueType">
+                                <label for="customLabel">Custom Label</label>
+                                <input class="form-control" id="customLabel" type="text"/>
+                            </div>
+                            <div class="form-group hide" id="widgetUnitTypeDiv">
+                                <label for="widgetLabelUnitType">Value Unit type</label>
+                                <select class="form-control" id="widgetLabelUnitType">
+                                    <option value="none"></option>
+                                    <option value="kwh">KWH</option>
+                                    <option value="watt">Watt</option>
+                                    <option value="celsius">°C</option>
+                                    <option value="lux">Lux</option>
+                                    <option value="percentage">%</option>
+                                </select>
+                            </div>
+                            <div class="form-group hide" id="graphTimeDiv">
+                                <label for="graphTime">Graph Time period</label>
+                                <select class="form-control" id="graphTime">
+                                    <option value="12">halfday</option>
+                                    <option value="24">day</option>
+                                    <option value="168">week</option>
+                                </select>
+                            </div>
+                            <div class="form-group hide" id="graphGroupingDiv">
+                                <label for="widgetLabel">Aggregration per:</label>
+                                <select class="form-control" id="graphGrouping">
+                                    <option value="minute">Minute</option>
+                                    <option value="hour">Hour</option>
+                                    <option value="day">Day</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <input type="hidden" value="" id="containerId"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

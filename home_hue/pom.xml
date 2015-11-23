@@ -14,13 +14,13 @@
     <dependencies>
         <dependency>
             <groupId>com.philips</groupId>
-            <artifactId>huesdk</artifactId>
-            <version>1.7</version>
+            <artifactId>localsdk</artifactId>
+            <version>1.8.1</version>
         </dependency>
         <dependency>
             <groupId>com.philips</groupId>
-            <artifactId>hueresource</artifactId>
-            <version>1.7</version>
+            <artifactId>resourcesdk</artifactId>
+            <version>1.8.1</version>
         </dependency>
 
         <dependency>

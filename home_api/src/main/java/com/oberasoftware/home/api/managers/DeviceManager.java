@@ -15,7 +15,7 @@ public interface DeviceManager {
 
     DeviceItem findDevice(String itemId);
 
-    List<DeviceItem> getDevices();
+    List<DeviceItem> getDevices(String controllerId);
 
     Optional<DeviceItem> findDeviceItem(String controllerId, String pluginId, String deviceId);
 }

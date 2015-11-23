@@ -132,8 +132,8 @@ public class ItemManagerImpl implements ItemManager {
     }
 
     @Override
-    public List<DeviceItem> findDevices() {
-        return homeDAO.findDevices();
+    public List<DeviceItem> findDevices(String controllerId) {
+        return homeDAO.findDevices(controllerId);
     }
 
     @Override

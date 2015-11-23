@@ -138,8 +138,9 @@ public class JasDBDAO implements HomeDAO {
     }
 
     @Override
-    public List<DeviceItem> findDevices() {
+    public List<DeviceItem> findDevices(String controllerId) {
         return newArrayList(findItems(DeviceItemImpl.class, new ImmutableMap.Builder<String, String>()
+                .put("controllerId", controllerId)
                 .build()));
     }
 
