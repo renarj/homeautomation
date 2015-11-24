@@ -154,14 +154,14 @@ pre code {
   color: #17baef;
   background: none;
 }
-.header .main-nav .nav .nav-item a {
-  color: #0a7396;
+.header .main-nav .nav .nav-item a {  
   -webkit-transition: none;
   -moz-transition: none;
   -ms-transition: none;
   -o-transition: none;
   font-size: 14px;
   padding: 15px 10px;
+  color: #fff;
 }
 .header .main-nav .nav .nav-item a:hover {
   color: #074f66;
