@@ -1,6 +1,8 @@
 package com.oberasoftware.home.rest;
 
+import com.oberasoftware.home.api.managers.DeviceManager;
 import com.oberasoftware.home.api.managers.GroupManager;
+import com.oberasoftware.home.api.model.storage.DeviceItem;
 import com.oberasoftware.home.api.model.storage.GroupItem;
 import com.oberasoftware.home.core.model.storage.GroupItemImpl;
 import org.slf4j.Logger;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -23,6 +26,9 @@ public class GroupRestController {
     @Autowired
     private GroupManager groupManager;
 
+    @Autowired
+    private DeviceManager deviceManager;
+
     @RequestMapping(value = "/")
     public List<? extends GroupItem> findAllGroups() {
         return groupManager.getItems();
@@ -34,9 +40,17 @@ public class GroupRestController {
     }
 
 
-    @RequestMapping(value = "/groups/controller({controllerId})")
+    @RequestMapping(value = "/controller({controllerId})")
     public List<? extends GroupItem> findGroupsByController(@PathVariable String controllerId) {
         return groupManager.getItems(controllerId);
+    }
+
+    @RequestMapping(value = "/groups({groupId})/devices")
+    public List<? extends DeviceItem> findDevices(@PathVariable String groupId) {
+        GroupItem groupItem = groupManager.getItem(groupId);
+
+        return groupItem.getDeviceIds().stream()
+                .map(d -> deviceManager.findDevice(d)).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")

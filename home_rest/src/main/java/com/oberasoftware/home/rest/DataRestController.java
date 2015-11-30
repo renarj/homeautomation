@@ -44,7 +44,7 @@ public class DataRestController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping("/controllers({controllerId}/devices")
+    @RequestMapping("/controllers({controllerId})/devices")
     public List<RestItemDevice> getDevices(@PathVariable String controllerId) {
         LOG.debug("Requested list of all devices");
 

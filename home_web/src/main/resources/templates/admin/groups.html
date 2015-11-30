@@ -4,6 +4,45 @@
 </head>
 <body>
 <script th:src="@{/javascript/groups.js}" src="/static/javascript/groups.js"></script>
+<script id="groupsTemplate" type="x-tmpl-mustache">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title pull-left">Groups</h3>
+            <div class="btn-group pull-right">
+                <a href="#" data-toggle="modal" data-target="#dataModal" data-id="" class="btn btn-default btn-sm addGroup" title="Add a Group"><span class="glyphicon glyphicon-plus"></span></a>
+
+            </div>
+        </div>
+        <div class="panel-body" >
+            <div class="list-group" id="groups">
+            </div>
+        </div>
+    </div>
+</script>
+<script id="groupListItem" type="x-tmpl-mustache">
+    <a href="#" class="list-group-item selectGroup" groupName="{{name}}" groupId="{{groupId}}">{{name}}</a>
+</script>
+
+<script id="groupInfoTemplate" type="x-tmpl-mustache">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title pull-left">Group: {{name}}</h3>
+            <div class="btn btn-group pull-right">
+                <a href="#" groupId="{{groupId}}" class="btn btn-default btn-sm removeGroup" title="Delete Group"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group" id="deviceList">
+            </ul>
+        </div>
+    </div>
+</script>
+
+<script id="deviceTemplate" type="x-tmpl-mustache">
+    <li class="list-group-item">{{name}} ({{id}})</li>
+</script>
+
+
 
 <div class="container-fluid">
     <div th:replace="includes/header :: navigation (selectTab='admin')"></div>
@@ -26,12 +65,7 @@
                         </div>
                         <div class="form-group">
                             <p>Available Devices</p>
-                            <ul class="panel-body list-group droppable sortable" th:each="plugin : ${plugins}">
-                                <li class="list-group-item"
-                                    th:each="device : ${plugin.devices}"
-                                    th:text="'Plugin: ' + ${plugin.name} + ', Device: ' + ${device.name}"
-                                        th:attr="deviceId=${device.id}">
-                                </li>
+                            <ul class="panel-body list-group droppable sortable" id="selectableDeviceList">
                             </ul>
                         </div>
                         <div class="form-group">
@@ -40,7 +74,7 @@
 
                             </ul>
                         </div>
-                        <input type="hidden" th:value="${selectedController}" id="controllerId"/>
+                        <input type="hidden" value="" id="controllerId"/>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -53,45 +87,25 @@
 
 
     <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Controllers</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="list-group" th:each="controller: ${controllers}">
-                        <a href="#" th:href="@{'/web/admin/groups/'+${controller.controllerId}}" class="list-group-item" th:classappend="${selectedController != null and selectedController == controller.controllerId} ? 'active'" th:text="${controller.controllerId}">Text</a>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Controllers</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="list-group" id="controllers">
+
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="row" id="groupList">
+
+            </div>
         </div>
-
-        <div class="col-md-8" th:if="${selectedController}">
-            <div class="panel panel-default">
-                <div class="panel-heading clearfix">
-                    <h3 class="panel-title pull-left">Groups</h3>
-                    <div class="btn-group pull-right">
-                        <a href="#" data-toggle="modal" data-target="#dataModal" data-id="" class="btn btn-default btn-sm addGroup" title="Add a Group"><span class="glyphicon glyphicon-plus"></span></a>
-
-                    </div>
-                </div>
-                <div class="panel-body" id="groups">
-                    <div class="panel panel-primary" th:each="group : ${groups}">
-                        <div class="panel-heading clearfix">
-                            <h3 class="panel-title pull-left" th:text="'Group: ' + ${group.name}"></h3>
-                            <div class="btn btn-group pull-right">
-                                <a href="#" th:attr="groupId=${group.id}" class="btn btn-default btn-sm removeGroup" title="Delete Group"><span class="glyphicon glyphicon-trash"></span></a>
-                            </div>
-
-                        </div>
-                        <div class="panel-body">
-                            <ul class="list-group">
-                                <li class="list-group-item" th:each="device: ${group.devices}"
-                                    th:text="${device.name} + ' (' + ${device.id} + ')'">deviceId</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+        <div class="col-md-10">
+            <div class="row" id="groupInfo">
             </div>
         </div>
     </div>
